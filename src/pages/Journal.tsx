@@ -20,6 +20,7 @@ import { AttachmentsPanel } from "@/components/journal/AttachmentsPanel";
 import { AiCoachPanel } from "@/components/journal/AiCoachPanel";
 import { CustomNotes } from "@/components/journal/CustomNotes";
 import { StickySidebar } from "@/components/journal/StickySidebar";
+import { cn } from "@/lib/utils";
 
 export default function Journal() {
   const [isFullscreen, setIsFullscreen] = useState(false);

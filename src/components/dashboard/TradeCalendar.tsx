@@ -65,8 +65,7 @@ export function TradeCalendar() {
             }
           }}
           components={{
-            Day: (props: DayProps & React.HTMLAttributes<HTMLDivElement>) => {
-              const { date, ...otherProps } = props;
+            Day: ({ date, ...otherProps }: DayProps & React.HTMLAttributes<HTMLDivElement>) => {
               const dayData = getTradingDayData(date);
               return (
                 <div 

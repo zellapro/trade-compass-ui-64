@@ -68,8 +68,7 @@ export function PerformanceCalendar({ timeframe }: PerformanceCalendarProps) {
           selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
         }}
         components={{
-          Day: (props: DayProps & React.HTMLAttributes<HTMLDivElement>) => {
-            const { date, ...otherProps } = props;
+          Day: ({ date, ...otherProps }: DayProps & React.HTMLAttributes<HTMLDivElement>) => {
             const dayData = getTradingDayData(date);
             return (
               <div 
