@@ -161,7 +161,7 @@ export function TradingChart({ chartType }: TradingChartProps) {
               />
               <Bar 
                 dataKey="pnl" 
-                fill={(entry) => entry.pnl >= 0 ? "#22C55E" : "#EF4444"}
+                fill={(data) => (data.pnl >= 0 ? "#22C55E" : "#EF4444")}
               />
             </RechartsBarChart>
           </ResponsiveContainer>
@@ -259,7 +259,7 @@ export function TradingChart({ chartType }: TradingChartProps) {
               <Scatter 
                 name="Trades" 
                 data={durationData} 
-                fill={(entry) => entry.pnl >= 0 ? "#22C55E" : "#EF4444"}
+                fill={(data) => (data.pnl >= 0 ? "#22C55E" : "#EF4444")}
               />
             </ScatterChart>
           </ResponsiveContainer>
