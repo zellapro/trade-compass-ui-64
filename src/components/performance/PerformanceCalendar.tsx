@@ -68,7 +68,7 @@ export function PerformanceCalendar({ timeframe }: PerformanceCalendarProps) {
           selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
         }}
         components={{
-          Day: ({ date, ...props }) => {
+          Day: ({ date, displayMonth, ...props }) => {
             const dayData = getTradingDayData(date);
             return (
               <div 

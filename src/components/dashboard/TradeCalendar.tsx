@@ -67,7 +67,7 @@ export function TradeCalendar() {
             }
           }}
           components={{
-            Day: ({ date, ...props }) => {
+            Day: ({ date, displayMonth, ...props }) => {
               const dayData = getTradingDayData(date);
               return (
                 <div 
