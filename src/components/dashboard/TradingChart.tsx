@@ -189,11 +189,15 @@ export function TradingChart({ chartType }: TradingChartProps) {
               <Tooltip 
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
+                    const value = Number(payload[0].value);
+                    const total = winLossData.reduce((sum, item) => sum + item.value, 0);
+                    const percentage = ((value / total) * 100).toFixed(0);
+                    
                     return (
                       <div className="rounded-lg border border-border bg-background p-2 shadow-md">
                         <p className="font-medium">{payload[0].name}</p>
                         <p className="text-sm">
-                          {payload[0].value} trades ({((payload[0].value / 100) * 100).toFixed(0)}%)
+                          {payload[0].value} trades ({percentage}%)
                         </p>
                       </div>
                     );

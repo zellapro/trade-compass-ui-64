@@ -157,7 +157,7 @@ export function TradeChart({ fullscreen = false, onToggleFullscreen }: TradeChar
                   fill="#8884d8" 
                 >
                   {volumeData.map((entry, index) => (
-                    <Bar 
+                    <Cell 
                       key={`volume-${index}`} 
                       fill={entry.direction === 'up' ? '#22C55E' : '#EF4444'} 
                     />
