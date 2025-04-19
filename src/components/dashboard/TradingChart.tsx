@@ -159,10 +159,11 @@ export function TradingChart({ chartType }: TradingChartProps) {
                   return null;
                 }}
               />
-              <Bar 
-                dataKey="pnl" 
-                fill={(data) => (data.pnl >= 0 ? "#22C55E" : "#EF4444")}
-              />
+              <Bar dataKey="pnl">
+                {pnlData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.pnl >= 0 ? "#22C55E" : "#EF4444"} />
+                ))}
+              </Bar>
             </RechartsBarChart>
           </ResponsiveContainer>
         );
@@ -192,7 +193,7 @@ export function TradingChart({ chartType }: TradingChartProps) {
                       <div className="rounded-lg border border-border bg-background p-2 shadow-md">
                         <p className="font-medium">{payload[0].name}</p>
                         <p className="text-sm">
-                          {payload[0].value} trades ({(payload[0].payload.value / 100).toFixed(0)}%)
+                          {payload[0].value} trades ({((payload[0].value / 100) * 100).toFixed(0)}%)
                         </p>
                       </div>
                     );
@@ -256,11 +257,11 @@ export function TradingChart({ chartType }: TradingChartProps) {
                   return null;
                 }}
               />
-              <Scatter 
-                name="Trades" 
-                data={durationData} 
-                fill={(data) => (data.pnl >= 0 ? "#22C55E" : "#EF4444")}
-              />
+              <Scatter name="Trades" data={durationData}>
+                {durationData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.pnl >= 0 ? "#22C55E" : "#EF4444"} />
+                ))}
+              </Scatter>
             </ScatterChart>
           </ResponsiveContainer>
         );
