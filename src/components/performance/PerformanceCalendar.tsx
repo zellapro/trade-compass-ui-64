@@ -1,9 +1,6 @@
-
-import { Card } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
 
 interface PerformanceCalendarProps {
   timeframe: string;
@@ -68,12 +65,12 @@ export function PerformanceCalendar({ timeframe }: PerformanceCalendarProps) {
           selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
         }}
         components={{
-          Day: ({ date, displayMonth, ...props }) => {
+          Day: ({ date, displayMonth, className, ...props }) => {
             const dayData = getTradingDayData(date);
             return (
               <div 
                 {...props}
-                className={cn(props.className as string, dayData && getDayClassName(date))}
+                className={cn(className, dayData && getDayClassName(date))}
               >
                 {format(date, "d")}
                 {dayData && (

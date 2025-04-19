@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
@@ -6,7 +5,6 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
-// Mock data for the calendar
 const calendarData = [
   { date: new Date(2025, 3, 1), pnl: 150, trades: 2, isWin: true },
   { date: new Date(2025, 3, 2), pnl: -80, trades: 1, isWin: false },
@@ -19,7 +17,6 @@ const calendarData = [
   { date: new Date(2025, 3, 19), pnl: 415, trades: 3, isWin: true }
 ];
 
-// Helper function to get trading day data
 const getTradingDayData = (date: Date) => {
   return calendarData.find(day => 
     day.date.getDate() === date.getDate() && 
@@ -31,7 +28,6 @@ const getTradingDayData = (date: Date) => {
 export function TradeCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
-  // This function is of type (date: Date) => string
   const dayClassName = (date: Date) => {
     const dayData = getTradingDayData(date);
     if (!dayData) return "";
@@ -67,12 +63,12 @@ export function TradeCalendar() {
             }
           }}
           components={{
-            Day: ({ date, displayMonth, ...props }) => {
+            Day: ({ date, displayMonth, className, ...props }) => {
               const dayData = getTradingDayData(date);
               return (
                 <div 
                   {...props} 
-                  className={cn(props.className as string, dayData && dayClassName(date))}
+                  className={cn(className, dayData && dayClassName(date))}
                 >
                   {format(date, "d")}
                   {dayData && (
