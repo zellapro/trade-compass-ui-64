@@ -65,13 +65,13 @@ export function TradeCalendar() {
             }
           }}
           components={{
-            Day: ({ date, displayMonth, ...props }: DayProps) => {
+            Day: (props: DayProps & React.HTMLAttributes<HTMLDivElement>) => {
+              const { date, ...otherProps } = props;
               const dayData = getTradingDayData(date);
-              const className = (props as any).className || "";
               return (
                 <div 
-                  {...props} 
-                  className={cn(className, dayData && dayClassName(date))}
+                  {...otherProps} 
+                  className={cn(otherProps.className, dayData && dayClassName(date))}
                 >
                   {format(date, "d")}
                   {dayData && (
