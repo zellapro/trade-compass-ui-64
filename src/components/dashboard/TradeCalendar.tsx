@@ -72,7 +72,7 @@ export function TradeCalendar() {
               return (
                 <div 
                   {...props} 
-                  className={cn(props.className, dayData && dayClassName(date))}
+                  className={cn(props.className as string, dayData && dayClassName(date))}
                 >
                   {format(date, "d")}
                   {dayData && (

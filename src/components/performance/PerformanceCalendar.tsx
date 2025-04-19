@@ -73,7 +73,7 @@ export function PerformanceCalendar({ timeframe }: PerformanceCalendarProps) {
             return (
               <div 
                 {...props}
-                className={cn(props.className, dayData && getDayClassName(date))}
+                className={cn(props.className as string, dayData && getDayClassName(date))}
               >
                 {format(date, "d")}
                 {dayData && (
