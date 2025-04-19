@@ -1,21 +1,20 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  MarkerType,
-  AreaSeries,
-  BarSeries,
-  CandlestickSeries,
-  Chart,
-  LineSeries,
-  TimeAxis,
-  ValueAxis,
-  Annotation,
-  ZoomButtons
-} from "recharts";
 import { Button } from "@/components/ui/button";
 import { Play, Maximize, Minimize } from "lucide-react";
 import { useState } from "react";
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  BarChart,
+  Bar
+} from "recharts";
 
 // Mock data for a candlestick chart
 const candlestickData = [
@@ -40,11 +39,17 @@ const volumeData = candlestickData.map(d => ({
   direction: d.close > d.open ? 'up' : 'down'
 }));
 
+// Mock price data for area chart (simplified representation of price movement)
+const priceData = candlestickData.map(d => ({
+  time: d.time,
+  price: d.close
+}));
+
 // Mock annotations (entries, exits, etc.)
 const annotations = [
-  { time: '10:30', value: 164.75, type: 'entry', label: 'Entry' },
-  { time: '12:15', value: 168.40, type: 'exit', label: 'Exit' },
-  { time: '10:30', value: 163.50, type: 'stop', label: 'Stop' }
+  { time: '10:30', price: 164.75, type: 'entry', label: 'Entry' },
+  { time: '12:15', price: 168.40, type: 'exit', label: 'Exit' },
+  { time: '10:30', price: 163.50, type: 'stop', label: 'Stop' }
 ];
 
 interface TradeChartProps {
@@ -83,10 +88,83 @@ export function TradeChart({ fullscreen = false, onToggleFullscreen }: TradeChar
               <span>Replay</span>
             </Button>
           </div>
-          <div className="h-[400px] bg-accent/30 flex items-center justify-center rounded-md border overflow-hidden">
-            <div className="text-muted-foreground">
-              The interactive chart will be displayed here, showing TSLA price action with your entry and exit points.
-            </div>
+          <div className="h-[400px] bg-accent/30 rounded-md border overflow-hidden">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={priceData}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="time" />
+                <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
+                <CartesianGrid strokeDasharray="3 3" />
+                <Tooltip 
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="rounded-lg border border-border bg-background p-2 shadow-md">
+                          <p className="font-medium">{label}</p>
+                          <p className="text-sm">
+                            Price: <span className="font-mono">${payload[0].value}</span>
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="price" 
+                  stroke="#3B82F6" 
+                  fillOpacity={1} 
+                  fill="url(#colorPrice)" 
+                />
+                {/* Annotation markers would go here in a real implementation */}
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="h-[100px] mt-2 bg-accent/30 rounded-md border overflow-hidden">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={volumeData}
+                margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+              >
+                <XAxis dataKey="time" />
+                <YAxis />
+                <Tooltip 
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="rounded-lg border border-border bg-background p-2 shadow-md">
+                          <p className="font-medium">{label}</p>
+                          <p className="text-sm">
+                            Volume: <span className="font-mono">{payload[0].value}</span>
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar 
+                  dataKey="volume" 
+                  fill="#8884d8" 
+                >
+                  {volumeData.map((entry, index) => (
+                    <Bar 
+                      key={`volume-${index}`} 
+                      fill={entry.direction === 'up' ? '#22C55E' : '#EF4444'} 
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </CardContent>

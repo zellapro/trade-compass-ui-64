@@ -70,7 +70,10 @@ export function TradeCalendar() {
             Day: ({ date, ...props }) => {
               const dayData = getTradingDayData(date);
               return (
-                <div {...props} className={cn(props.className, dayData && dayClassName(date))}>
+                <div 
+                  {...props} 
+                  className={cn(props.className, dayData && dayClassName(date))}
+                >
                   {format(date, "d")}
                   {dayData && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-center">

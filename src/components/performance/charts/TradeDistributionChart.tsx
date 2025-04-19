@@ -250,7 +250,15 @@ export function TradeDistributionChart({ chartType = "histogram", timeframe }: T
         }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-        <XAxis dataKey="time" tick={{ fontSize: 10, angle: -45, textAnchor: 'end' }} height={50} />
+        <XAxis 
+          dataKey="time" 
+          tick={{ 
+            fontSize: 10,
+            transform: "rotate(-45 0 0)",
+            textAnchor: 'end'
+          }} 
+          height={50} 
+        />
         <YAxis yAxisId="left" orientation="left" stroke="#22C55E" tickFormatter={(value) => `$${value}`} />
         <YAxis yAxisId="right" orientation="right" stroke="#3B82F6" />
         <Tooltip

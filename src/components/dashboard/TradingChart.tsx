@@ -180,7 +180,7 @@ export function TradingChart({ chartType }: TradingChartProps) {
                 outerRadius={120}
                 fill="#8884d8"
                 dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) => `${name} ${(Number(percent) * 100).toFixed(0)}%`}
               >
                 {winLossData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

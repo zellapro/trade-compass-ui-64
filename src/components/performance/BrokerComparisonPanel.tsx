@@ -77,9 +77,9 @@ export function BrokerComparisonPanel() {
                           <span className="text-green-600">Actual:</span>{" "}
                           <span className="font-mono">${payload[1].value}</span>
                         </p>
-                        <p className={`text-sm ${payload[2].value >= 0 ? "text-trading-green" : "text-trading-red"}`}>
+                        <p className={`text-sm ${Number(payload[2].value) >= 0 ? "text-trading-green" : "text-trading-red"}`}>
                           <span>Difference:</span>{" "}
-                          <span className="font-mono">{payload[2].value >= 0 ? "+" : ""}${payload[2].value}</span>
+                          <span className="font-mono">{Number(payload[2].value) >= 0 ? "+" : ""}${payload[2].value}</span>
                         </p>
                       </div>
                     );
