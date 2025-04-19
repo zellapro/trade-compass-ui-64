@@ -5,6 +5,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { type DayProps } from "react-day-picker";
 
 const calendarData = [
   { date: new Date(2025, 3, 1), pnl: 150, trades: 2, isWin: true },
@@ -64,12 +65,13 @@ export function TradeCalendar() {
             }
           }}
           components={{
-            Day: ({ date, displayMonth, ...props }) => {
+            Day: ({ date, displayMonth, ...props }: DayProps) => {
               const dayData = getTradingDayData(date);
+              const className = (props as any).className || "";
               return (
                 <div 
                   {...props} 
-                  className={cn(props.className || "", dayData && dayClassName(date))}
+                  className={cn(className, dayData && dayClassName(date))}
                 >
                   {format(date, "d")}
                   {dayData && (

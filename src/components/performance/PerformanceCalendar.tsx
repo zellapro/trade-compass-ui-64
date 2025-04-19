@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
+import { type DayProps } from "react-day-picker";
 
 interface PerformanceCalendarProps {
   timeframe: string;
@@ -67,12 +68,13 @@ export function PerformanceCalendar({ timeframe }: PerformanceCalendarProps) {
           selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
         }}
         components={{
-          Day: ({ date, displayMonth, ...props }) => {
+          Day: ({ date, displayMonth, ...props }: DayProps) => {
             const dayData = getTradingDayData(date);
+            const className = (props as any).className || "";
             return (
               <div 
                 {...props}
-                className={cn(props.className || "", dayData && getDayClassName(date))}
+                className={cn(className, dayData && getDayClassName(date))}
               >
                 {format(date, "d")}
                 {dayData && (
