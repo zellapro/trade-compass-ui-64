@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
@@ -63,12 +64,12 @@ export function TradeCalendar() {
             }
           }}
           components={{
-            Day: ({ date, displayMonth, className, ...props }) => {
+            Day: ({ date, displayMonth, ...props }) => {
               const dayData = getTradingDayData(date);
               return (
                 <div 
                   {...props} 
-                  className={cn(className, dayData && dayClassName(date))}
+                  className={cn(props.className || "", dayData && dayClassName(date))}
                 >
                   {format(date, "d")}
                   {dayData && (
