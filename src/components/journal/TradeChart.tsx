@@ -13,7 +13,8 @@ import {
   Tooltip, 
   ResponsiveContainer,
   BarChart,
-  Bar
+  Bar,
+  Cell
 } from "recharts";
 
 // Mock data for a candlestick chart
