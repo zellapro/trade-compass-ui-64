@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 
 export function StickySidebar() {
   return (
-    <div className="sticky top-4 flex flex-col gap-2 max-h-[calc(100vh-2rem)] overflow-y-auto p-2 bg-background/80 backdrop-blur-sm rounded-lg shadow-sm">
+    <div className="sticky top-4 flex flex-col gap-2 max-h-[calc(100vh-2rem)] overflow-y-auto p-3 bg-background/80 backdrop-blur-sm rounded-lg shadow-md border">
       <div className="space-y-2">
         <Button variant="default" className="gap-2 w-full justify-start">
           <Play size={16} />

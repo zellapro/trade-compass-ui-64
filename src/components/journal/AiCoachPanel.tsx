@@ -10,21 +10,21 @@ const insights = [
     id: 1,
     type: "pattern",
     icon: TrendingUp,
-    content: "This trade matches your most profitable setup - morning breakouts with increasing volume. Your win rate is 78% when you enter before 10:45 AM.",
+    content: "This VWAP Reclaim setup has a 78% win rate for you in the morning session. Your average R-multiple is 2.3 when entry is within 5 minutes of VWAP cross.",
     iconColor: "text-blue-500"
   },
   {
     id: 2,
     type: "improvement",
     icon: LightbulbIcon,
-    content: "You sized this position at 1.5% risk, which is optimal based on your historical performance. Trades above 2% risk have a 30% lower win rate.",
+    content: "Your position size (100 shares) represents 1.5% account risk, which is optimal based on historical performance. Trades above 2% risk have shown a 30% lower win rate.",
     iconColor: "text-amber-500"
   },
   {
     id: 3,
     type: "warning",
     icon: AlertTriangle,
-    content: "You've had 3 consecutive wins trading TSLA. Be cautious of overconfidence - your win rate drops by 15% after win streaks of 3 or more.",
+    content: "You've had 3 consecutive wins trading TSLA. Historical data shows your win rate drops by 15% after win streaks of 3 or more. Consider tighter risk management.",
     iconColor: "text-red-500"
   }
 ];

@@ -7,9 +7,9 @@ import { Plus, Mic, Hash } from "lucide-react";
 
 // Sample custom tags
 const tags = [
-  { id: 1, name: "Fear", color: "red" },
-  { id: 2, name: "PowerHour", color: "blue" },
-  { id: 3, name: "LowVolume", color: "amber" }
+  { id: 1, name: "HighConfidence", color: "green" },
+  { id: 2, name: "MorningSession", color: "blue" },
+  { id: 3, name: "VolumeConfirmation", color: "amber" }
 ];
 
 export function CustomNotes() {
@@ -29,12 +29,12 @@ export function CustomNotes() {
               </Button>
             </div>
             <div className="text-sm p-2.5 border rounded-md bg-accent/30 italic">
-              Did I follow my morning preparation routine?
+              Did I follow my pre-market analysis plan for this trade?
             </div>
             <Textarea 
               placeholder="Enter your answer..."
               className="min-h-[80px]"
-              defaultValue="Yes, I reviewed market news, set clear levels, and identified my watchlist stocks before market open."
+              defaultValue="Yes, I identified the VWAP reclaim setup during pre-market analysis and waited for the perfect entry after seeing volume confirmation. The trade executed exactly according to plan with minimal drawdown."
             />
           </div>
           
@@ -47,7 +47,13 @@ export function CustomNotes() {
               </Button>
             </div>
             <div className="text-sm p-2.5 border rounded-md">
-              No voice notes recorded for this trade.
+              <span className="text-muted-foreground">Voice note recorded - 0:45</span>
+              <div className="mt-1 flex items-center gap-2">
+                <div className="h-4 bg-primary/20 rounded-full flex-1">
+                  <div className="h-full w-3/4 bg-primary rounded-full"></div>
+                </div>
+                <span className="text-xs text-muted-foreground">0:45</span>
+              </div>
             </div>
           </div>
           
@@ -65,7 +71,7 @@ export function CustomNotes() {
                   key={tag.id} 
                   variant="secondary"
                   className={cn(
-                    tag.color === "red" && "bg-red-100 text-red-800 hover:bg-red-200",
+                    tag.color === "green" && "bg-green-100 text-green-800 hover:bg-green-200",
                     tag.color === "blue" && "bg-blue-100 text-blue-800 hover:bg-blue-200",
                     tag.color === "amber" && "bg-amber-100 text-amber-800 hover:bg-amber-200"
                   )}

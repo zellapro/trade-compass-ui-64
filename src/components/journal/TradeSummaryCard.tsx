@@ -30,7 +30,7 @@ interface TradeSummaryCardProps {
 
 // Demo trade data
 const demoTrade = {
-  id: "TRD-2023-04-19-001",
+  id: "TRD-2025-04-19-001",
   ticker: "TSLA",
   date: "2025-04-19",
   time: "10:30 AM",

@@ -7,11 +7,11 @@ import { ExternalLink } from "lucide-react";
 
 // Sample data for related trades
 const relatedTrades = [
-  { id: "TR001", date: "Apr 18", ticker: "TSLA", setup: "Breakout", pnl: 345, isWin: true },
-  { id: "TR002", date: "Apr 15", ticker: "TSLA", setup: "VWAP Reclaim", pnl: -120, isWin: false },
-  { id: "TR003", date: "Apr 12", ticker: "TSLA", setup: "Morning Gap", pnl: 210, isWin: true },
-  { id: "TR004", date: "Apr 05", ticker: "TSLA", setup: "Breakout", pnl: 180, isWin: true },
-  { id: "TR005", date: "Mar 28", ticker: "AAPL", setup: "VWAP Reclaim", pnl: 95, isWin: true }
+  { id: "TRD-2025-04-18-003", date: "Apr 18", ticker: "TSLA", setup: "Breakout", pnl: 345, isWin: true },
+  { id: "TRD-2025-04-15-002", date: "Apr 15", ticker: "TSLA", setup: "VWAP Reclaim", pnl: -120, isWin: false },
+  { id: "TRD-2025-04-12-001", date: "Apr 12", ticker: "TSLA", setup: "Morning Gap", pnl: 210, isWin: true },
+  { id: "TRD-2025-04-05-004", date: "Apr 05", ticker: "TSLA", setup: "Breakout", pnl: 180, isWin: true },
+  { id: "TRD-2025-03-28-006", date: "Mar 28", ticker: "AAPL", setup: "VWAP Reclaim", pnl: 95, isWin: true }
 ];
 
 export function RelatedTrades() {

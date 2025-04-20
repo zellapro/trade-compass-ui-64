@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 
 // Sample attachments data
 const attachments = [
-  { id: 1, name: "TSLA_Apr19_screenshot.png", type: "image", size: "1.2 MB" },
-  { id: 2, name: "TradingView_Chart_Link", type: "link", size: "URL" },
-  { id: 3, name: "Trade_Notes.pdf", type: "document", size: "320 KB" }
+  { id: 1, name: "TSLA_Apr19_2025_chart.png", type: "image", size: "1.2 MB" },
+  { id: 2, name: "TradingView_TSLA_Breakout", type: "link", size: "URL" },
+  { id: 3, name: "VWAP_Strategy_Notes.pdf", type: "document", size: "420 KB" }
 ];
 
 export function AttachmentsPanel() {

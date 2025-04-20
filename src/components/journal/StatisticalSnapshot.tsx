@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 const stats = [
   { 
-    name: "Strategy Win Rate", 
+    name: "VWAP Reclaim Win Rate", 
     value: 78, 
     benchmark: 65, 
     format: (v: number) => `${v}%`,
@@ -19,17 +19,17 @@ const stats = [
     comparison: "above"
   },
   { 
-    name: "Win Rate for TSLA", 
+    name: "TSLA Win Rate", 
     value: 72, 
-    benchmark: 70, 
+    benchmark: 68, 
     format: (v: number) => `${v}%`,
     comparison: "above"
   },
   { 
-    name: "Avg Hold Time", 
-    value: 45, 
-    benchmark: 38, 
-    format: (v: number) => `${v} min`,
+    name: "Morning Session Win Rate", 
+    value: 81, 
+    benchmark: 73, 
+    format: (v: number) => `${v}%`,
     comparison: "above"
   }
 ];

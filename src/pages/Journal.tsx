@@ -106,7 +106,7 @@ function AddTradeDialog() {
               <label className="text-sm font-medium">Ticker Symbol</label>
               <input 
                 type="text" 
-                placeholder="e.g., AAPL" 
+                placeholder="e.g., TSLA" 
                 className="px-3 py-2 border rounded-md"
               />
             </div>
@@ -117,6 +117,7 @@ function AddTradeDialog() {
                 <div className="relative">
                   <input 
                     type="date" 
+                    defaultValue="2025-04-19"
                     className="w-full px-3 py-2 border rounded-md"
                   />
                   <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -125,7 +126,7 @@ function AddTradeDialog() {
               
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium">Trade Type</label>
-                <select className="px-3 py-2 border rounded-md">
+                <select className="px-3 py-2 border rounded-md" defaultValue="Long">
                   <option>Long</option>
                   <option>Short</option>
                   <option>Option</option>
@@ -140,6 +141,7 @@ function AddTradeDialog() {
                 <input 
                   type="number" 
                   placeholder="0.00" 
+                  defaultValue="164.25"
                   className="px-3 py-2 border rounded-md"
                 />
               </div>
@@ -148,7 +150,8 @@ function AddTradeDialog() {
                 <label className="text-sm font-medium">Exit Price</label>
                 <input 
                   type="number" 
-                  placeholder="0.00" 
+                  placeholder="0.00"
+                  defaultValue="168.40" 
                   className="px-3 py-2 border rounded-md"
                 />
               </div>
@@ -156,7 +159,7 @@ function AddTradeDialog() {
             
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium">Setup Type</label>
-              <select className="px-3 py-2 border rounded-md">
+              <select className="px-3 py-2 border rounded-md" defaultValue="VWAP Reclaim">
                 <option>Breakout</option>
                 <option>VWAP Reclaim</option>
                 <option>Gap Fill</option>
