@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Calendar, Tag, Check, X, ChevronDown, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -99,8 +98,6 @@ export function TradeFilterBar() {
 
   const handlePresetSelect = (preset: string) => {
     setSelectedPreset(preset);
-    // Here you would normally load the preset's filters
-    // For demo, just add a tag showing the selected preset
     if (!activeTags.includes(`preset:${preset}`)) {
       setActiveTags([...activeTags.filter(t => !t.startsWith('preset:')), `preset:${preset}`]);
     }
@@ -135,7 +132,6 @@ export function TradeFilterBar() {
 
   return (
     <div className="space-y-4">
-      {/* Search and Date Filter Row */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-grow max-w-md">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -396,7 +392,7 @@ export function TradeFilterBar() {
             <SelectValue placeholder="Filter Presets" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Filter Presets</SelectItem>
+            <SelectItem value="placeholder">Filter Presets</SelectItem>
             {presetFilters.map(preset => (
               <SelectItem key={preset} value={preset}>{preset}</SelectItem>
             ))}
@@ -406,7 +402,6 @@ export function TradeFilterBar() {
         <Button size="sm" variant="outline">Save as Preset</Button>
       </div>
       
-      {/* Active Filters */}
       {activeTags.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {activeTags.map(tag => {
