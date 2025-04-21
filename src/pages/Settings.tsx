@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   User, 
   CreditCard, 
@@ -18,313 +22,300 @@ import {
   Bot, 
   BarChart, 
   Shield, 
-  Code
+  Code,
+  CircleSlash,
+  LucideIcon,
+  Upload,
+  Zap,
+  Calendar,
+  Save,
+  RotateCcw,
+  X,
+  Check,
+  UserCog,
+  Key,
+  BellDot,
+  FileType,
+  BellRing,
+  FileCheck,
+  Mail,
+  FileJson,
+  FileSearch,
+  ExternalLink,
+  UserRoundCheck,
+  ShieldCheck,
+  ShieldAlert,
+  Upload as UploadIcon
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-// Rename the imported Settings to avoid conflict
-// The error was: Import declaration conflicts with local declaration of 'Settings'
+// Import Section Components
+import ProfileSettings from "@/components/settings/ProfileSettings";
+import AccountManagement from "@/components/settings/AccountManagement";
+import BrokerIntegrations from "@/components/settings/BrokerIntegrations";
+import AppearanceSettings from "@/components/settings/AppearanceSettings";
+import NotificationSettings from "@/components/settings/NotificationSettings";
+import TradingRulesSettings from "@/components/settings/TradingRulesSettings";
+import AiPreferences from "@/components/settings/AiPreferences";
+import ReportSettings from "@/components/settings/ReportSettings";
+import SecuritySettings from "@/components/settings/SecuritySettings";
+import DeveloperSettings from "@/components/settings/DeveloperSettings";
+import BonusFeatures from "@/components/settings/BonusFeatures";
+
+// Define the Section types for settings page navigation
+interface SettingsSection {
+  id: string;
+  name: string;
+  icon: LucideIcon;
+  description: string;
+}
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState("profile");
+  const [isSaving, setIsSaving] = useState(false);
+  const [unsavedChanges, setUnsavedChanges] = useState<Record<string, boolean>>({});
+  
+  // Define all the settings sections
+  const sections: SettingsSection[] = [
+    { id: "profile", name: "Profile Settings", icon: User, description: "Manage your personal information and preferences" },
+    { id: "account", name: "Account Management", icon: CreditCard, description: "Subscription, billing and data management" },
+    { id: "integrations", name: "Broker & Platform Integrations", icon: Link, description: "Connect your trading accounts and platforms" },
+    { id: "appearance", name: "Appearance & UI", icon: Palette, description: "Customize how the application looks and feels" },
+    { id: "notifications", name: "Notifications & Alerts", icon: BellRing, description: "Configure your notification preferences" },
+    { id: "trading-rules", name: "Trading Rules & Checklists", icon: CheckSquare, description: "Set up rules and checklists for your trading" },
+    { id: "ai-preferences", name: "AI Preferences", icon: Bot, description: "Configure AI behavior and journaling settings" },
+    { id: "reports", name: "Report Settings", icon: BarChart, description: "Customize your trading reports" },
+    { id: "security", name: "Security & Privacy", icon: Shield, description: "Manage security options and privacy settings" },
+    { id: "developer", name: "Developer / API", icon: Code, description: "API keys and developer options" },
+    { id: "bonus", name: "Additional Features", icon: Zap, description: "Focus mode, market sync and more" }
+  ];
+
+  // Track changes for save button state
+  const handleSettingChange = (section: string) => {
+    setUnsavedChanges({
+      ...unsavedChanges,
+      [section]: true
+    });
+  };
+
+  // Mock save function
+  const handleSave = (section: string) => {
+    setIsSaving(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSaving(false);
+      setUnsavedChanges({
+        ...unsavedChanges,
+        [section]: false
+      });
+      
+      toast.success("Settings saved successfully", {
+        description: `Your ${sections.find(s => s.id === section)?.name.toLowerCase() || section} settings have been updated.`
+      });
+    }, 800);
+  };
+
+  // Mock reset function
+  const handleReset = (section: string) => {
+    setUnsavedChanges({
+      ...unsavedChanges,
+      [section]: false
+    });
+    
+    toast.info("Settings reset to default", {
+      description: `Your ${sections.find(s => s.id === section)?.name.toLowerCase() || section} settings have been reset.`
+    });
+  };
+
+  // Save button component with state management
+  const SaveResetButtons = ({ section }: { section: string }) => (
+    <div className="flex items-center gap-2 mt-4">
+      <Button 
+        onClick={() => handleSave(section)} 
+        disabled={!unsavedChanges[section] || isSaving}
+        className="flex items-center gap-2"
+      >
+        {isSaving ? (
+          <>
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+            <span>Saving...</span>
+          </>
+        ) : (
+          <>
+            <Save size={16} />
+            <span>Save Changes</span>
+          </>
+        )}
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        onClick={() => handleReset(section)}
+        disabled={!unsavedChanges[section] || isSaving}
+        className="flex items-center gap-2"
+      >
+        <RotateCcw size={16} />
+        <span>Reset</span>
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="container py-10">
-      <h1 className="text-3xl font-bold mb-8">Settings</h1>
+    <div className="container max-w-6xl py-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Settings</h1>
+        <p className="text-muted-foreground mt-1">
+          Configure your trading journal preferences and account settings
+        </p>
+      </div>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="bg-background border overflow-auto w-full flex justify-start gap-2 p-1">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User size={16} />
-            <span>Profile</span>
-          </TabsTrigger>
-          <TabsTrigger value="account" className="flex items-center gap-2">
-            <CreditCard size={16} />
-            <span>Account</span>
-          </TabsTrigger>
-          <TabsTrigger value="integrations" className="flex items-center gap-2">
-            <Link size={16} />
-            <span>Integrations</span>
-          </TabsTrigger>
-          <TabsTrigger value="appearance" className="flex items-center gap-2">
-            <Palette size={16} />
-            <span>Appearance</span>
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
-            <Bell size={16} />
-            <span>Notifications</span>
-          </TabsTrigger>
-          <TabsTrigger value="trading-rules" className="flex items-center gap-2">
-            <CheckSquare size={16} />
-            <span>Trading Rules</span>
-          </TabsTrigger>
-          <TabsTrigger value="ai-preferences" className="flex items-center gap-2">
-            <Bot size={16} />
-            <span>AI Preferences</span>
-          </TabsTrigger>
-          <TabsTrigger value="reports" className="flex items-center gap-2">
-            <BarChart size={16} />
-            <span>Reports</span>
-          </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2">
-            <Shield size={16} />
-            <span>Security</span>
-          </TabsTrigger>
-          <TabsTrigger value="developer" className="flex items-center gap-2">
-            <Code size={16} />
-            <span>Developer</span>
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Profile Section */}
-        <TabsContent value="profile" className="space-y-6">
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Settings Navigation Sidebar */}
+        <div className="w-full lg:w-1/4 space-y-2">
           <Card>
-            <CardHeader>
-              <CardTitle>Profile Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex flex-col items-center space-y-2">
-                  <Avatar className="w-32 h-32">
-                    <AvatarImage src="/placeholder.svg" alt="Profile picture" />
-                    <AvatarFallback>JD</AvatarFallback>
-                  </Avatar>
-                  <Button variant="outline" size="sm">Upload Photo</Button>
+            <CardContent className="p-4">
+              <nav className="space-y-1">
+                {sections.map((section) => (
+                  <Button
+                    key={section.id}
+                    variant={activeTab === section.id ? "default" : "ghost"}
+                    className={`w-full justify-start text-left mb-1 ${
+                      activeTab === section.id ? "bg-primary text-primary-foreground" : ""
+                    }`}
+                    onClick={() => setActiveTab(section.id)}
+                  >
+                    <section.icon className="mr-2 h-4 w-4" />
+                    <span>{section.name}</span>
+                    {unsavedChanges[section.id] && (
+                      <Badge variant="outline" className="ml-auto bg-orange-500/10 text-orange-500 border-orange-500/20">
+                        Unsaved
+                      </Badge>
+                    )}
+                  </Button>
+                ))}
+              </nav>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-green-500/10 p-2">
+                  <Check className="h-4 w-4 text-green-500" />
                 </div>
-                
-                <div className="space-y-4 flex-1">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input id="name" placeholder="John Doe" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="john@example.com" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="timezone">Time Zone</Label>
-                      <Select defaultValue="utc">
-                        <SelectTrigger id="timezone">
-                          <SelectValue placeholder="Select a timezone" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="utc">UTC (GMT)</SelectItem>
-                          <SelectItem value="est">Eastern Time (EST/EDT)</SelectItem>
-                          <SelectItem value="ist">India Standard Time (IST)</SelectItem>
-                          <SelectItem value="jst">Japan Standard Time (JST)</SelectItem>
-                          <SelectItem value="pst">Pacific Time (PST/PDT)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="market-timezone">Default Trading Time Zone</Label>
-                      <Select defaultValue="est">
-                        <SelectTrigger id="market-timezone">
-                          <SelectValue placeholder="Select market timezone" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="est">Eastern Time (NYSE/NASDAQ)</SelectItem>
-                          <SelectItem value="ist">India Standard Time (NSE/BSE)</SelectItem>
-                          <SelectItem value="utc">UTC (Crypto)</SelectItem>
-                          <SelectItem value="jst">Japan Standard Time (TSE)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 pt-2">
-                    <Label htmlFor="asset-class">Preferred Asset Class</Label>
-                    <Select defaultValue="equities">
-                      <SelectTrigger id="asset-class">
-                        <SelectValue placeholder="Select asset class" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="equities">Equities</SelectItem>
-                        <SelectItem value="options">Options</SelectItem>
-                        <SelectItem value="futures">Futures</SelectItem>
-                        <SelectItem value="forex">Forex</SelectItem>
-                        <SelectItem value="crypto">Crypto</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2 pt-2">
-                    <Label htmlFor="account-type">Account Type</Label>
-                    <Select defaultValue="retail">
-                      <SelectTrigger id="account-type">
-                        <SelectValue placeholder="Select account type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="retail">Retail Trader</SelectItem>
-                        <SelectItem value="prop">Prop Firm</SelectItem>
-                        <SelectItem value="funded">Funded Trader</SelectItem>
-                        <SelectItem value="institutional">Institutional</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="pt-4">
-                    <Button>Save Profile</Button>
-                  </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Settings auto-sync</p>
+                  <p className="text-xs text-muted-foreground">All your settings are saved to the cloud</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        {/* Account Section */}
-        <TabsContent value="account" className="space-y-6">
-          <Card>
+        </div>
+        
+        {/* Settings Content */}
+        <div className="flex-1">
+          <Card className="mb-4">
             <CardHeader>
-              <CardTitle>Account Management</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="border rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-medium">Current Plan</h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xl font-bold">Pro</span>
-                        <Badge variant="success">Active</Badge>
-                      </div>
-                    </div>
-                    <Button variant="outline">Manage Subscription</Button>
-                  </div>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle>{sections.find(s => s.id === activeTab)?.name || "Settings"}</CardTitle>
+                  <CardDescription>
+                    {sections.find(s => s.id === activeTab)?.description || "Manage your account settings and preferences"}
+                  </CardDescription>
                 </div>
-                
-                <div className="border rounded-lg p-4 space-y-4">
-                  <h3 className="font-medium">Linked Devices</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <p className="font-medium">Chrome on Windows</p>
-                        <p className="text-sm text-muted-foreground">Last active: Today</p>
-                      </div>
-                      <Badge>Current</Badge>
-                    </div>
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <p className="font-medium">Safari on iPhone</p>
-                        <p className="text-sm text-muted-foreground">Last active: Yesterday</p>
-                      </div>
-                      <Button variant="ghost" size="sm">Remove</Button>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm">Logout from all devices</Button>
-                </div>
-                
-                <div className="border rounded-lg p-4 space-y-4">
-                  <h3 className="font-medium">Data Management</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" size="sm">Export as JSON</Button>
-                    <Button variant="outline" size="sm">Export as CSV</Button>
-                    <Button variant="outline" size="sm">Export as PDF</Button>
-                  </div>
-                  <div className="pt-2">
-                    <p className="text-sm font-medium mb-2">Import from other platforms</p>
-                    <div className="flex flex-wrap gap-2">
-                      <Button variant="outline" size="sm">Tradervue</Button>
-                      <Button variant="outline" size="sm">TraderSync</Button>
-                      <Button variant="outline" size="sm">Edgewonk</Button>
-                    </div>
-                  </div>
-                </div>
+                {unsavedChanges[activeTab] && (
+                  <Badge variant="outline" className="bg-orange-500/10 text-orange-500 border-orange-500/20">
+                    Unsaved Changes
+                  </Badge>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Placeholder for other tabs */}
-        <TabsContent value="integrations">
-          <Card>
-            <CardHeader>
-              <CardTitle>Broker & Platform Integrations</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p>Configure your broker integrations here.</p>
-            </CardContent>
           </Card>
-        </TabsContent>
-        
-        {/* Placeholders for remaining tabs */}
-        <TabsContent value="appearance">
-          <Card>
-            <CardHeader>
-              <CardTitle>Appearance & UI Customization</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Customize the app appearance here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="notifications">
-          <Card>
-            <CardHeader>
-              <CardTitle>Notifications & Alerts</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Manage your notification preferences here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="trading-rules">
-          <Card>
-            <CardHeader>
-              <CardTitle>Trading Rules & Checklists</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Configure your trading rules here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="ai-preferences">
-          <Card>
-            <CardHeader>
-              <CardTitle>AI Preferences & Journaling Configs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Manage AI behavior and journaling configurations here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="reports">
-          <Card>
-            <CardHeader>
-              <CardTitle>Reports Preferences</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Configure your reporting preferences here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="security">
-          <Card>
-            <CardHeader>
-              <CardTitle>Security & Privacy Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Manage your security settings here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="developer">
-          <Card>
-            <CardHeader>
-              <CardTitle>Developer / API Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Access developer tools and API configurations here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          
+          {/* Settings Content Sections */}
+          <div className="space-y-4">
+            {activeTab === "profile" && (
+              <ProfileSettings 
+                onSettingChange={() => handleSettingChange('profile')} 
+                saveResetButtons={<SaveResetButtons section="profile" />}
+              />
+            )}
+            
+            {activeTab === "account" && (
+              <AccountManagement 
+                onSettingChange={() => handleSettingChange('account')} 
+                saveResetButtons={<SaveResetButtons section="account" />}
+              />
+            )}
+            
+            {activeTab === "integrations" && (
+              <BrokerIntegrations 
+                onSettingChange={() => handleSettingChange('integrations')} 
+                saveResetButtons={<SaveResetButtons section="integrations" />}
+              />
+            )}
+            
+            {activeTab === "appearance" && (
+              <AppearanceSettings 
+                onSettingChange={() => handleSettingChange('appearance')} 
+                saveResetButtons={<SaveResetButtons section="appearance" />}
+              />
+            )}
+            
+            {activeTab === "notifications" && (
+              <NotificationSettings 
+                onSettingChange={() => handleSettingChange('notifications')} 
+                saveResetButtons={<SaveResetButtons section="notifications" />}
+              />
+            )}
+            
+            {activeTab === "trading-rules" && (
+              <TradingRulesSettings 
+                onSettingChange={() => handleSettingChange('trading-rules')} 
+                saveResetButtons={<SaveResetButtons section="trading-rules" />}
+              />
+            )}
+            
+            {activeTab === "ai-preferences" && (
+              <AiPreferences 
+                onSettingChange={() => handleSettingChange('ai-preferences')} 
+                saveResetButtons={<SaveResetButtons section="ai-preferences" />}
+              />
+            )}
+            
+            {activeTab === "reports" && (
+              <ReportSettings 
+                onSettingChange={() => handleSettingChange('reports')} 
+                saveResetButtons={<SaveResetButtons section="reports" />}
+              />
+            )}
+            
+            {activeTab === "security" && (
+              <SecuritySettings 
+                onSettingChange={() => handleSettingChange('security')} 
+                saveResetButtons={<SaveResetButtons section="security" />}
+              />
+            )}
+            
+            {activeTab === "developer" && (
+              <DeveloperSettings 
+                onSettingChange={() => handleSettingChange('developer')} 
+                saveResetButtons={<SaveResetButtons section="developer" />}
+              />
+            )}
+            
+            {activeTab === "bonus" && (
+              <BonusFeatures 
+                onSettingChange={() => handleSettingChange('bonus')} 
+                saveResetButtons={<SaveResetButtons section="bonus" />}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
