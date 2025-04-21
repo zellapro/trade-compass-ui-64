@@ -69,18 +69,24 @@ export function BrokerComparisonPanel() {
                     return (
                       <div className="rounded-lg border border-border bg-background p-2 shadow-md">
                         <p className="font-medium">{label}</p>
-                        <p className="text-sm">
-                          <span className="text-blue-600">Journal:</span>{" "}
-                          <span className="font-mono">${payload[0].value}</span>
-                        </p>
-                        <p className="text-sm">
-                          <span className="text-green-600">Actual:</span>{" "}
-                          <span className="font-mono">${payload[1].value}</span>
-                        </p>
-                        <p className={`text-sm ${Number(payload[2].value) >= 0 ? "text-trading-green" : "text-trading-red"}`}>
-                          <span>Difference:</span>{" "}
-                          <span className="font-mono">{Number(payload[2].value) >= 0 ? "+" : ""}${payload[2].value}</span>
-                        </p>
+                        {payload[0] && (
+                          <p className="text-sm">
+                            <span className="text-blue-600">Journal:</span>{" "}
+                            <span className="font-mono">${payload[0].value}</span>
+                          </p>
+                        )}
+                        {payload[1] && (
+                          <p className="text-sm">
+                            <span className="text-green-600">Actual:</span>{" "}
+                            <span className="font-mono">${payload[1].value}</span>
+                          </p>
+                        )}
+                        {payload[2] && (
+                          <p className={`text-sm ${Number(payload[2].value) >= 0 ? "text-trading-green" : "text-trading-red"}`}>
+                            <span>Difference:</span>{" "}
+                            <span className="font-mono">{Number(payload[2].value) >= 0 ? "+" : ""}${payload[2].value}</span>
+                          </p>
+                        )}
                       </div>
                     );
                   }
@@ -106,7 +112,7 @@ export function BrokerComparisonPanel() {
               <YAxis tickFormatter={(value) => `$${value}`} />
               <Tooltip
                 content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) {
+                  if (active && payload && payload.length && payload[0]) {
                     return (
                       <div className="rounded-lg border border-border bg-background p-2 shadow-md">
                         <p className="font-medium">{label}</p>
