@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Calendar, Tag, Strategy, Setup, Check, X, Star, ChevronDown } from "lucide-react";
+import { Calendar, Tag, Check, X, Star, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const tagOptions = ["Premarket", "FOMO", "VWAP Fade"];

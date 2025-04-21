@@ -27,7 +27,7 @@ export default function Journal() {
       rMultiple: 2.2,
       setup: "VWAP Fade",
       strategy: "Premarket",
-      outcome: "win",
+      outcome: "win" as "win" | "loss" | "be",
       emotionTags: ["Confident"],
       flagged: ["A+ Setup"],
       ruleChecks: [
@@ -56,7 +56,7 @@ export default function Journal() {
       rMultiple: -0.5,
       setup: "Breakout",
       strategy: "Trend",
-      outcome: "loss",
+      outcome: "loss" as "win" | "loss" | "be",
       emotionTags: ["Hesitation", "FOMO"],
       flagged: ["Mistake", "Rule Break"],
       ruleChecks: [
