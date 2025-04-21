@@ -1,33 +1,19 @@
 
 import { useState } from "react";
-import { Star, Check, X, Edit, Trash2, ChevronDown, ChevronUp, FileText } from "lucide-react";
+import { Star, Check, X, Edit, Trash2, ChevronDown, ChevronUp, FileText, ExternalLink, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Trade } from "@/pages/Journal";
 
-type Trade = {
-  id: string;
-  ticker: string;
-  entryTime: string;
-  exitTime: string;
-  entryPrice: number;
-  exitPrice: number;
-  size: number;
-  pnl: number;
-  pnlPct: number;
-  rMultiple: number;
-  setup: string;
-  strategy: string;
-  outcome: "win" | "loss" | "be";
-  emotionTags: string[];
-  flagged: string[];
-  ruleChecks: { name: string, passed: boolean }[];
-  grade: string;
-  rating: number;
-  notes: string;
-  aiSummary: string;
-  attachments: { type: string; url: string }[];
-  replay: boolean;
-  pinned: boolean;
+const emojis = {
+  Confident: "😌",
+  Hesitation: "😕",
+  FOMO: "😨",
+  Calm: "😀",
+  Focused: "🧠",
+  Neutral: "😐"
 };
 
 export function TradeEntryCard({
@@ -40,137 +26,221 @@ export function TradeEntryCard({
   voiceToJournal: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  
+  // Get emoji for the first emotion tag
+  const getEmoji = (emotionTags: string[]) => {
+    if (emotionTags.length === 0) return "";
+    const emotion = emotionTags[0];
+    return emojis[emotion as keyof typeof emojis] || "";
+  };
 
   return (
-    <div className={cn(
-        "border rounded-lg bg-card shadow-sm transition ring-1 ring-inset ring-muted/10 relative overflow-hidden",
-        trade.pinned && "border-primary shadow-lg"
-      )}>
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 hover:bg-accent/30 cursor-pointer" onClick={() => setExpanded(e => !e)}>
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xl font-bold">{trade.ticker}</span>
-          <span className={cn(
-            "text-xs px-2 py-0.5 rounded bg-muted",
-            trade.outcome === "win" && "bg-green-100 text-green-700",
-            trade.outcome === "loss" && "bg-red-100 text-red-700",
-            trade.outcome === "be" && "bg-amber-100 text-amber-700"
-          )}>
-            {trade.outcome === "win" ? "Win" : trade.outcome === "loss" ? "Loss" : "BE"}
-          </span>
-          {trade.pinned && (
-            <span className="text-white bg-primary rounded px-1.5 text-xs">Pinned</span>
-          )}
-          {trade.flagged.map(f => (
-            <span key={f} className={cn(
-                "rounded px-1.5 py-0.5 text-xs ml-1",
-                f === "Mistake" && "bg-red-100 text-red-700",
-                f === "Rule Break" && "bg-yellow-100 text-yellow-700",
-                f === "A+ Setup" && "bg-green-100 text-green-700"
-              )}>{f}</span>
-          ))}
-          <span className="ml-2 text-xs text-muted-foreground">{trade.setup}</span>
-          <span className="ml-1 text-xs text-muted-foreground">{trade.strategy}</span>
-          <div className="flex ml-2">
-            {trade.emotionTags.map(et => (
-              <span className="bg-accent text-xs rounded px-1 ml-1" key={et}>{et}</span>
+    <Card className={cn(
+      "hover:shadow-md transition-all duration-300 overflow-hidden",
+      trade.pinned && "ring-2 ring-primary ring-opacity-50"
+    )}>
+      <CardHeader className="p-4 pb-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xl font-bold">{trade.ticker}</span>
+            {trade.pinned && (
+              <Badge variant="secondary" className="bg-primary text-white">📌 Pinned</Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant={trade.outcome === "win" ? "success" : trade.outcome === "loss" ? "error" : "warning"} 
+              className="text-xs font-medium"
+            >
+              {trade.outcome === "win" ? "Win" : trade.outcome === "loss" ? "Loss" : "BE"}
+            </Badge>
+            <span className="text-lg font-semibold">
+              {trade.pnl > 0 ? "+" : ""}{trade.pnl.toFixed(2)}
+            </span>
+            <span className={cn(
+              "text-xs font-bold",
+              trade.pnl > 0 ? "text-green-700" : trade.pnl < 0 ? "text-red-700" : "text-muted-foreground"
+            )}>
+              {trade.pnlPct.toFixed(1)}%
+            </span>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="p-4 pt-0">
+        <div className="flex flex-col gap-3">
+          {/* Quick Stats Row */}
+          <div className="grid grid-cols-3 gap-2 mt-1">
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">Setup</span>
+              <span className="text-sm font-medium">{trade.setup}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">Time</span>
+              <span className="text-sm font-medium">{formatTime(trade.entryTime)}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">R-Multiple</span>
+              <span className="text-sm font-medium">{trade.rMultiple.toFixed(1)}R</span>
+            </div>
+          </div>
+          
+          {/* Tags and Emotions */}
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            <Badge variant="outline" className="text-xs">
+              {trade.strategy}
+            </Badge>
+            
+            {trade.emotionTags.map(emotion => (
+              <Badge 
+                key={emotion} 
+                variant="outline" 
+                className="text-xs bg-amber-50"
+              >
+                {emojis[emotion as keyof typeof emojis] || ""} {emotion}
+              </Badge>
             ))}
+            
+            {trade.flagged.map(flag => (
+              <Badge 
+                key={flag}
+                variant={flag === "A+ Setup" ? "success" : "error"}
+                className="text-xs"
+              >
+                {flag}
+              </Badge>
+            ))}
+            
+            <Badge variant="outline" className="text-xs bg-blue-50">
+              {trade.grade}
+            </Badge>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="mr-1 text-lg">{trade.pnl > 0 ? "+" : ""}{trade.pnl}</span>
-          <span className={cn(
-            "ml-1 text-xs font-bold",
-            trade.pnl > 0 ? "text-green-700" : trade.pnl < 0 ? "text-red-700" : "text-muted-foreground"
-          )}>{trade.pnlPct}%</span>
-          <span className="ml-1 text-xs text-muted-foreground">{trade.rMultiple}R</span>
-          {expanded ? <ChevronUp size={18}/> : <ChevronDown size={18}/>}
-        </div>
-      </div>
-      {/* Expanded Content */}
-      {expanded && (
-        <div className="border-t bg-muted/10 px-4 py-4 animate-fade-in space-y-4">
-          <div className="grid md:grid-cols-2 gap-4 mb-2">
-            <div className="space-y-2">
-              <div className="flex gap-2 items-center">
-                <span className="text-xs font-semibold">Entry</span>
-                <span className="text-xs font-mono">{formatTime(trade.entryTime)}</span>
-                <span className="ml-2 text-xs font-semibold">at</span>
-                <span className="font-mono">${trade.entryPrice.toFixed(2)}</span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <span className="text-xs font-semibold">Exit</span>
-                <span className="text-xs font-mono">{formatTime(trade.exitTime)}</span>
-                <span className="ml-2 text-xs font-semibold">at</span>
-                <span className="font-mono">${trade.exitPrice.toFixed(2)}</span>
-              </div>
-              <div className="flex gap-2 items-center text-xs mt-2">
-                Size: <span className="font-mono">{trade.size}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium">Self-rating: </span>
-              <div className="flex">
-                {Array.from({length: 5}).map((_, i) => (
-                  <Star key={i} size={16} className={i < trade.rating ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"} />
-                ))}
-              </div>
-              <span className="ml-4 text-xs font-medium">Grade:</span>
-              <span className={cn(
-                "text-xs px-2 py-0.5 rounded",
-                trade.grade === "A+" && "bg-green-100 text-green-700",
-                trade.grade === "C" && "bg-amber-100 text-amber-700"
-              )}>{trade.grade}</span>
-              <span className="ml-4 text-muted-foreground">R-multiple: {trade.rMultiple}</span>
-            </div>
-          </div>
-          <div>
-            <span className="text-xs font-semibold">Rule Compliance</span>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {trade.ruleChecks.map((rc, idx) => (
-                <span key={idx} className={cn(
-                  "text-xs px-2 py-0.5 rounded flex items-center gap-1",
-                  rc.passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                )}>{rc.passed ? <Check size={12}/> : <X size={12}/>} {rc.name}</span>
+          
+          {/* Trade Score Visualization */}
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs text-muted-foreground">Execution:</span>
+            <div className="flex">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star 
+                  key={i} 
+                  size={16} 
+                  className={cn(
+                    i < trade.rating 
+                      ? "text-yellow-400 fill-yellow-400" 
+                      : "text-muted-foreground"
+                  )} 
+                />
               ))}
             </div>
           </div>
-          {/* AI Summary + Improve */}
-          <div className="bg-cyan-50 border rounded p-2 flex flex-col gap-2">
-            <div className="flex gap-2 items-center">
-              <FileText size={16} className="text-blue-400" />
-              <span className="font-semibold text-sm">AI Summary</span>
+          
+          {/* AI Summary Preview */}
+          <div className="text-xs line-clamp-2 italic text-muted-foreground mt-1">
+            {trade.aiSummary}
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex items-center justify-between gap-2 mt-2">
+            <div className="flex gap-1">
+              {trade.replay && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-7 gap-1 text-xs"
+                >
+                  <Play size={12} /> Replay
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-7 gap-1 text-xs"
+                onClick={() => setExpanded(!expanded)}
+              >
+                {expanded ? "Less" : "More"} {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              </Button>
             </div>
-            <p className="text-sm italic">{trade.aiSummary}</p>
-            <Button size="sm" variant="outline" className="w-fit text-xs">🧠 Improve Me</Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-7 gap-1 text-xs"
+            >
+              <ExternalLink size={12} /> Journal
+            </Button>
           </div>
-          {/* Attachments, Replay */}
-          <div className="flex gap-2 items-center flex-wrap">
-            {trade.attachments.length > 0 && (
-              <Button variant="outline" size="sm" className="text-xs">📎 View Attachments</Button>
-            )}
-            {trade.replay && (
-              <Button variant="outline" size="sm" className="text-xs">🎥 Watch Replay</Button>
-            )}
-          </div>
-          <div>
-            <span className="text-xs font-semibold">Quick Notes</span>
-            <textarea
-              className="mt-1 w-full px-2 py-1 rounded border text-xs"
-              defaultValue={trade.notes}
-              placeholder="Add your notes here..."
-              rows={quickLog ? 2 : 3}
-              disabled={voiceToJournal}
-            />
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="ghost" size="sm" className="gap-1 text-xs"><Edit size={14}/>Edit</Button>
-            <Button variant="destructive" size="sm" className="gap-1 text-xs"><Trash2 size={14}/>Delete</Button>
-            <Button variant="outline" size="sm" className="gap-1 text-xs">📌 Pin</Button>
-          </div>
+          
+          {/* Expanded Content */}
+          {expanded && (
+            <div className="mt-3 space-y-4 animate-fade-in border-t pt-3">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <div className="flex gap-2 text-xs">
+                    <span className="font-semibold">Entry:</span>
+                    <span className="font-mono">${trade.entryPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex gap-2 text-xs">
+                    <span className="font-semibold">Exit:</span>
+                    <span className="font-mono">${trade.exitPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex gap-2 text-xs">
+                    <span className="font-semibold">Size:</span>
+                    <span className="font-mono">{trade.size} shares</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-1">
+                  <div className="text-xs font-semibold">Rule Compliance:</div>
+                  <div className="flex flex-wrap gap-1">
+                    {trade.ruleChecks.map((rule, idx) => (
+                      <Badge 
+                        key={idx}
+                        variant={rule.passed ? "success" : "error"}
+                        className="text-xs flex items-center gap-1"
+                      >
+                        {rule.passed ? <Check size={10} /> : <X size={10} />}
+                        {rule.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* AI Summary */}
+              <div className="bg-cyan-50 rounded-md p-2 border border-cyan-200">
+                <div className="flex gap-1 items-center text-xs font-semibold text-cyan-800">
+                  <FileText size={12} />
+                  AI Trade Analysis
+                </div>
+                <p className="text-xs mt-1">{trade.aiSummary}</p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 mt-1 text-xs text-cyan-800"
+                >
+                  🧠 Improve Me
+                </Button>
+              </div>
+              
+              {/* Notes Section */}
+              <div>
+                <span className="text-xs font-semibold">Notes:</span>
+                <p className="text-xs mt-1">{trade.notes}</p>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs">
+                  <Edit size={12} /> Edit
+                </Button>
+                <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs text-destructive">
+                  <Trash2 size={12} /> Delete
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
