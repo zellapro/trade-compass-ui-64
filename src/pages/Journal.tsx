@@ -1,179 +1,132 @@
 
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Calendar, Plus, Search } from "lucide-react";
-import { TradeSummaryCard } from "@/components/journal/TradeSummaryCard";
-import { TradeChart } from "@/components/journal/TradeChart";
-import { TraderCommentary } from "@/components/journal/TraderCommentary";
-import { TradeGrading } from "@/components/journal/TradeGrading";
-import { TradeChecklist } from "@/components/journal/TradeChecklist";
-import { RelatedTrades } from "@/components/journal/RelatedTrades";
-import { StatisticalSnapshot } from "@/components/journal/StatisticalSnapshot";
-import { AttachmentsPanel } from "@/components/journal/AttachmentsPanel";
-import { AiCoachPanel } from "@/components/journal/AiCoachPanel";
-import { CustomNotes } from "@/components/journal/CustomNotes";
-import { StickySidebar } from "@/components/journal/StickySidebar";
-import { cn } from "@/lib/utils";
+import { TradeFilterBar } from "@/components/journal/TradeFilterBar";
+import { MiniAnalyticsPanel } from "@/components/journal/MiniAnalyticsPanel";
+import { TradeEntryCard } from "@/components/journal/TradeEntryCard";
+import { DailySummaryCard } from "@/components/journal/DailySummaryCard";
+import { JournalExportModal } from "@/components/journal/JournalExportModal";
 
 export default function Journal() {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  
+  // For demo, static trades and summaries
+  const [showExport, setShowExport] = useState(false);
+  const [voiceToJournal, setVoiceToJournal] = useState(false);
+  const [quickLog, setQuickLog] = useState(false);
+
+  // Sample trades per day
+  const trades = [
+    {
+      id: "T-001",
+      ticker: "TSLA",
+      entryTime: "2025-04-21T09:15:00Z",
+      exitTime: "2025-04-21T10:40:00Z",
+      entryPrice: 152.7,
+      exitPrice: 161.1,
+      size: 100,
+      pnl: 840,
+      pnlPct: 5.6,
+      rMultiple: 2.2,
+      setup: "VWAP Fade",
+      strategy: "Premarket",
+      outcome: "win",
+      emotionTags: ["Confident"],
+      flagged: ["A+ Setup"],
+      ruleChecks: [
+        {name: "Premarket Entry", passed: true},
+        {name: "Position Sizing", passed: true},
+        {name: "No FOMO", passed: true},
+      ],
+      grade: "A+",
+      rating: 5,
+      notes: "Good execution, trailed my stop well.",
+      aiSummary: "Excellent VWAP Fade timing, strong adherence to plan. Consider scaling out next time for even better R.",
+      attachments: [{type: "image", url: ""}],
+      replay: true,
+      pinned: true,
+    },
+    {
+      id: "T-002",
+      ticker: "AAPL",
+      entryTime: "2025-04-21T13:40:00Z",
+      exitTime: "2025-04-21T14:21:00Z",
+      entryPrice: 187.7,
+      exitPrice: 186.15,
+      size: 50,
+      pnl: -77.5,
+      pnlPct: -0.8,
+      rMultiple: -0.5,
+      setup: "Breakout",
+      strategy: "Trend",
+      outcome: "loss",
+      emotionTags: ["Hesitation", "FOMO"],
+      flagged: ["Mistake", "Rule Break"],
+      ruleChecks: [
+        {name: "Trend Confirmed", passed: false},
+        {name: "Waited for Pullback", passed: false},
+      ],
+      grade: "C",
+      rating: 2,
+      notes: "Chased late. Did not wait for setup. Slippage.",
+      aiSummary: "Too much hesitation entering late. FOMO detected. Loss controlled by stop. Next time, wait for confirmation.",
+      attachments: [],
+      replay: false,
+      pinned: false,
+    }
+    // Add more trades as needed
+  ];
+
+  // Demo daily summary
+  const dailySummary = {
+    date: "2025-04-21",
+    netPnl: 762.5,
+    winRate: 50,
+    mistakes: ["Late entry on AAPL, FOMO"],
+    mostTraded: "TSLA",
+    aiRecap: "Solid discipline on TSLA. Main miss was late AAPL entry. Focus on pre-entry criteria to boost win rate."
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Trade Journal</h1>
-          <p className="text-muted-foreground">Log and review your trade history.</p>
+          <p className="text-muted-foreground">Log, analyze, and review all your trades—AI-powered for deeper insights.</p>
         </div>
-        <div className="flex gap-2">
-          <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search trades..."
-              className="w-full rounded-md border border-input pl-9 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            />
-          </div>
-          <AddTradeDialog />
+        <div className="flex flex-wrap gap-2">
+          <button
+            className={`px-3 py-2 rounded-md text-xs font-medium border ${voiceToJournal ? "bg-primary text-white" : "bg-background"} transition`}
+            onClick={() => setVoiceToJournal(v => !v)}
+          >
+            🎤 {voiceToJournal ? "Voice-to-Journal: ON" : "Voice-to-Journal"}
+          </button>
+          <button
+            className={`px-3 py-2 rounded-md text-xs font-medium border ${quickLog ? "bg-primary text-white" : "bg-background"} transition`}
+            onClick={() => setQuickLog(l => !l)}
+          >
+            ⚡ {quickLog ? "Quick Log: ON" : "Quick Log"}
+          </button>
+          <button
+            className="px-3 py-2 rounded-md text-xs font-medium border bg-background hover:bg-accent transition"
+            onClick={() => setShowExport(true)}
+          >
+            📤 Export
+          </button>
         </div>
       </div>
-      
-      {isFullscreen ? (
-        <div className="fixed inset-0 bg-background z-50 p-4">
-          <TradeChart fullscreen={true} onToggleFullscreen={() => setIsFullscreen(false)} />
-        </div>
-      ) : (
-        <div className="grid grid-cols-12 gap-6">
-          {/* Main Content - Left */}
-          <div className="col-span-12 lg:col-span-8 space-y-6">
-            <TradeSummaryCard />
-            
-            <TradeChart onToggleFullscreen={() => setIsFullscreen(true)} />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <TraderCommentary />
-              <div className="space-y-6">
-                <TradeGrading />
-                <TradeChecklist />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <AttachmentsPanel />
-              <CustomNotes />
-            </div>
-          </div>
-          
-          {/* Sidebar - Right */}
-          <div className="col-span-12 lg:col-span-4 space-y-6">
-            <StickySidebar />
-            
-            <AiCoachPanel />
-            
-            <RelatedTrades />
-            
-            <StatisticalSnapshot />
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="flex-1 min-w-0 space-y-4">
+          <TradeFilterBar />
+          <MiniAnalyticsPanel />
+          {/* Trade entry cards */}
+          <div className="space-y-4">
+            {trades.map((trade) => (
+              <TradeEntryCard key={trade.id} trade={trade} quickLog={quickLog} voiceToJournal={voiceToJournal} />
+            ))}
+            <DailySummaryCard summary={dailySummary} />
           </div>
         </div>
-      )}
+        {/* Optionally: right rail for exporting, search, analytics—skip for now */}
+      </div>
+      <JournalExportModal open={showExport} onOpenChange={setShowExport} />
     </div>
-  );
-}
-
-function AddTradeDialog() {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="flex items-center gap-2">
-          <Plus size={16} />
-          <span>Add New Trade</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Add New Trade</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="flex flex-col space-y-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium">Ticker Symbol</label>
-              <input 
-                type="text" 
-                placeholder="e.g., TSLA" 
-                className="px-3 py-2 border rounded-md"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium">Date</label>
-                <div className="relative">
-                  <input 
-                    type="date" 
-                    defaultValue="2025-04-19"
-                    className="w-full px-3 py-2 border rounded-md"
-                  />
-                  <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                </div>
-              </div>
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium">Trade Type</label>
-                <select className="px-3 py-2 border rounded-md" defaultValue="Long">
-                  <option>Long</option>
-                  <option>Short</option>
-                  <option>Option</option>
-                  <option>Future</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium">Entry Price</label>
-                <input 
-                  type="number" 
-                  placeholder="0.00" 
-                  defaultValue="164.25"
-                  className="px-3 py-2 border rounded-md"
-                />
-              </div>
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium">Exit Price</label>
-                <input 
-                  type="number" 
-                  placeholder="0.00"
-                  defaultValue="168.40" 
-                  className="px-3 py-2 border rounded-md"
-                />
-              </div>
-            </div>
-            
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium">Setup Type</label>
-              <select className="px-3 py-2 border rounded-md" defaultValue="VWAP Reclaim">
-                <option>Breakout</option>
-                <option>VWAP Reclaim</option>
-                <option>Gap Fill</option>
-                <option>Reversal</option>
-                <option>Trend Continuation</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline">Cancel</Button>
-          <Button>Create Trade</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }
