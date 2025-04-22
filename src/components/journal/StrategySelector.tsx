@@ -12,12 +12,16 @@ interface StrategySelectorProps {
   onStrategyChange?: (strategy: SelectedStrategy) => void;
   currentStrategy?: SelectedStrategy;
   className?: string;
+  compact?: boolean;
+  buttonLabel?: string;
 }
 
 export function StrategySelector({ 
   onStrategyChange, 
   currentStrategy,
-  className 
+  className,
+  compact = false,
+  buttonLabel = "Select Strategy"
 }: StrategySelectorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -26,6 +30,30 @@ export function StrategySelector({
       onStrategyChange(updatedStrategy);
     }
   };
+  
+  // Compact version for trade entries
+  if (compact) {
+    return (
+      <>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => setIsModalOpen(true)}
+          className={cn("flex items-center gap-1.5 text-xs", className)}
+        >
+          <Tag className="h-3.5 w-3.5" />
+          <span>{currentStrategy ? 'Edit Strategy' : buttonLabel}</span>
+        </Button>
+        
+        <StrategySelectionModal
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          initialSelection={currentStrategy}
+          onSave={handleStrategyUpdate}
+        />
+      </>
+    );
+  }
   
   return (
     <div className={cn("space-y-4", className)}>
@@ -38,7 +66,7 @@ export function StrategySelector({
           className="flex items-center gap-1.5"
         >
           <Tag className="h-4 w-4" />
-          <span>{currentStrategy ? 'Change Strategy' : 'Select Strategy'}</span>
+          <span>{currentStrategy ? 'Change Strategy' : buttonLabel}</span>
         </Button>
       </div>
       

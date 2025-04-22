@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -84,7 +83,6 @@ export default function Performance() {
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
         </TabsList>
         
-        {/* Overview Tab Content */}
         <TabsContent value="overview" className="pt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <Card>
@@ -136,7 +134,6 @@ export default function Performance() {
           </div>
         </TabsContent>
         
-        {/* Equity Curve Tab Content */}
         <TabsContent value="equity" className="pt-4">
           <div className="grid grid-cols-1 gap-4">
             <Card>
@@ -207,7 +204,6 @@ export default function Performance() {
           </div>
         </TabsContent>
         
-        {/* Distributions Tab Content */}
         <TabsContent value="distribution" className="pt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <Card>
@@ -258,14 +254,13 @@ export default function Performance() {
           </div>
         </TabsContent>
         
-        {/* Strategies Tab Content */}
         <TabsContent value="strategies" className="pt-4">
           <div className="grid grid-cols-1 gap-4 mb-4">
             <Card>
               <CardHeader className="pb-2 flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>Strategy Performance</CardTitle>
-                  <CardDescription>Detailed analysis by strategy and setup</CardDescription>
+                  <CardDescription>Detailed analysis by strategy category and setup</CardDescription>
                 </div>
                 <div className="flex items-center gap-3">
                   <Select defaultValue="winrate">
@@ -309,7 +304,6 @@ export default function Performance() {
           </div>
         </TabsContent>
         
-        {/* Calendar Tab Content */}
         <TabsContent value="calendar" className="pt-4">
           <div className="grid grid-cols-1 gap-4">
             <Card>

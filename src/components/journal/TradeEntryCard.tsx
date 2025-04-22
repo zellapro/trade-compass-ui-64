@@ -1,250 +1,191 @@
 
 import { useState } from "react";
-import { Star, Check, X, Edit, Trash2, ChevronDown, ChevronUp, FileText, ExternalLink, Play } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ChevronDown, ChevronUp, Maximize2, Edit, BarChart, Star, Flag, Tag, Plus, BookOpen } from "lucide-react";
+import { TradeChart } from "./TradeChart";
+import { StatisticalSnapshot } from "./StatisticalSnapshot";
+import { StrategySelector } from "./StrategySelector";
 import { Trade } from "@/pages/Journal";
+import { StrategyDisplay } from "./StrategyDisplay";
+import { SelectedStrategy } from "./StrategySelectionModal";
 
-const emojis = {
-  Confident: "😌",
-  Hesitation: "😕",
-  FOMO: "😨",
-  Calm: "😀",
-  Focused: "🧠",
-  Neutral: "😐"
-};
-
-export function TradeEntryCard({
-  trade,
-  quickLog,
-  voiceToJournal,
-}: {
+interface TradeEntryCardProps {
   trade: Trade;
-  quickLog: boolean;
-  voiceToJournal: boolean;
-}) {
+  quickLog?: boolean;
+  voiceToJournal?: boolean;
+}
+
+export function TradeEntryCard({ trade, quickLog = false, voiceToJournal = false }: TradeEntryCardProps) {
   const [expanded, setExpanded] = useState(false);
-  
-  // Get emoji for the first emotion tag
-  const getEmoji = (emotionTags: string[]) => {
-    if (emotionTags.length === 0) return "";
-    const emotion = emotionTags[0];
-    return emojis[emotion as keyof typeof emojis] || "";
-  };
+  const [showStats, setShowStats] = useState(false);
+
+  // Prepare strategy object from trade data if present
+  const tradeStrategy: SelectedStrategy | undefined = trade.strategyCategory ? {
+    categoryId: trade.strategyCategory,
+    setupIds: trade.setupIds || [],
+    gradeId: trade.setupGrade,
+    contextTagIds: trade.contextTags || [],
+    isFavorite: trade.isFavoriteStrategy || false,
+    notes: trade.strategyNotes || ""
+  } : undefined;
 
   return (
-    <Card className={cn(
-      "hover:shadow-md transition-all duration-300 overflow-hidden",
-      trade.pinned && "ring-2 ring-primary ring-opacity-50"
-    )}>
-      <CardHeader className="p-4 pb-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xl font-bold">{trade.ticker}</span>
-            {trade.pinned && (
-              <Badge variant="secondary" className="bg-primary text-white">📌 Pinned</Badge>
-            )}
+    <Card className={expanded ? "col-span-full" : ""}>
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h3 className="text-lg font-bold">{trade.ticker}</h3>
+              {trade.pinned && <Star className="h-4 w-4 fill-amber-400 text-amber-400" />}
+              <Badge variant={trade.outcome === "win" ? "success" : trade.outcome === "loss" ? "destructive" : "outline"}>
+                {trade.outcome === "win" ? "WIN" : trade.outcome === "loss" ? "LOSS" : "BE"}
+              </Badge>
+            </div>
+            <div className="flex items-center text-sm text-muted-foreground gap-1.5 mt-0.5">
+              {new Date(trade.entryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+              {new Date(trade.exitTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              <span>·</span>
+              <span className="font-medium">{trade.strategy}</span>
+              <span>·</span>
+              <span>{trade.size} shares</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge 
-              variant={trade.outcome === "win" ? "success" : trade.outcome === "loss" ? "error" : "warning"} 
-              className="text-xs font-medium"
-            >
-              {trade.outcome === "win" ? "Win" : trade.outcome === "loss" ? "Loss" : "BE"}
-            </Badge>
-            <span className="text-lg font-semibold">
-              {trade.pnl > 0 ? "+" : ""}{trade.pnl.toFixed(2)}
-            </span>
-            <span className={cn(
-              "text-xs font-bold",
-              trade.pnl > 0 ? "text-green-700" : trade.pnl < 0 ? "text-red-700" : "text-muted-foreground"
-            )}>
-              {trade.pnlPct.toFixed(1)}%
-            </span>
+          <div className="text-right">
+            <div className={`text-lg font-bold ${trade.pnl > 0 ? 'text-trading-green' : trade.pnl < 0 ? 'text-trading-red' : ''}`}>
+              {trade.pnl > 0 ? '+' : ''}{trade.pnl.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+            </div>
+            <div className="flex items-center justify-end text-sm gap-2 mt-0.5">
+              <span className={`${trade.pnlPct > 0 ? 'text-trading-green' : trade.pnlPct < 0 ? 'text-trading-red' : ''}`}>
+                {trade.pnlPct > 0 ? '+' : ''}{trade.pnlPct}%
+              </span>
+              <span>·</span>
+              <span>{trade.rMultiple}R</span>
+            </div>
           </div>
         </div>
       </CardHeader>
-      
-      <CardContent className="p-4 pt-0">
-        <div className="flex flex-col gap-3">
-          {/* Quick Stats Row */}
-          <div className="grid grid-cols-3 gap-2 mt-1">
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">Setup</span>
-              <span className="text-sm font-medium">{trade.setup}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">Time</span>
-              <span className="text-sm font-medium">{formatTime(trade.entryTime)}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">R-Multiple</span>
-              <span className="text-sm font-medium">{trade.rMultiple.toFixed(1)}R</span>
-            </div>
-          </div>
-          
-          {/* Tags and Emotions */}
-          <div className="flex flex-wrap gap-1.5 mt-1">
-            <Badge variant="outline" className="text-xs">
-              {trade.strategy}
-            </Badge>
-            
-            {trade.emotionTags.map(emotion => (
-              <Badge 
-                key={emotion} 
-                variant="outline" 
-                className="text-xs bg-amber-50"
-              >
-                {emojis[emotion as keyof typeof emojis] || ""} {emotion}
+      <CardContent className="pb-0">
+        <div className="grid gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {trade.emotionTags.map((tag, i) => (
+              <Badge key={i} variant="outline" className="text-xs">
+                {tag}
               </Badge>
             ))}
-            
-            {trade.flagged.map(flag => (
-              <Badge 
-                key={flag}
-                variant={flag === "A+ Setup" ? "success" : "error"}
-                className="text-xs"
-              >
-                {flag}
-              </Badge>
-            ))}
-            
-            <Badge variant="outline" className="text-xs bg-blue-50">
-              {trade.grade}
-            </Badge>
           </div>
           
-          {/* Trade Score Visualization */}
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-muted-foreground">Execution:</span>
-            <div className="flex">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star 
-                  key={i} 
-                  size={16} 
-                  className={cn(
-                    i < trade.rating 
-                      ? "text-yellow-400 fill-yellow-400" 
-                      : "text-muted-foreground"
-                  )} 
-                />
-              ))}
-            </div>
-          </div>
-          
-          {/* AI Summary Preview */}
-          <div className="text-xs line-clamp-2 italic text-muted-foreground mt-1">
-            {trade.aiSummary}
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex items-center justify-between gap-2 mt-2">
-            <div className="flex gap-1">
-              {trade.replay && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="h-7 gap-1 text-xs"
-                >
-                  <Play size={12} /> Replay
-                </Button>
-              )}
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-7 gap-1 text-xs"
-                onClick={() => setExpanded(!expanded)}
-              >
-                {expanded ? "Less" : "More"} {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          {/* Trade Chart */}
+          <div className="bg-muted mt-1 rounded-md aspect-video relative">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-muted-foreground text-sm">Chart Placeholder</div>
+              <Button variant="secondary" size="sm" className="absolute top-2 right-2">
+                <Maximize2 className="h-3.5 w-3.5" />
               </Button>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-7 gap-1 text-xs"
-            >
-              <ExternalLink size={12} /> Journal
-            </Button>
           </div>
           
-          {/* Expanded Content */}
+          {/* Strategy Display if available */}
+          {tradeStrategy && (
+            <div className="mt-2">
+              <StrategyDisplay 
+                strategy={tradeStrategy}
+                variant="inline"
+                size="sm"
+              />
+            </div>
+          )}
+          
+          {/* Expanded View */}
           {expanded && (
-            <div className="mt-3 space-y-4 animate-fade-in border-t pt-3">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <div className="flex gap-2 text-xs">
-                    <span className="font-semibold">Entry:</span>
-                    <span className="font-mono">${trade.entryPrice.toFixed(2)}</span>
+            <div className="mt-3 space-y-4">
+              <Separator />
+              
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div className="md:col-span-7 space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium mb-1">Trade Notes</h4>
+                    <div className="text-sm">{trade.notes}</div>
                   </div>
-                  <div className="flex gap-2 text-xs">
-                    <span className="font-semibold">Exit:</span>
-                    <span className="font-mono">${trade.exitPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex gap-2 text-xs">
-                    <span className="font-semibold">Size:</span>
-                    <span className="font-mono">{trade.size} shares</span>
+                  
+                  <div>
+                    <h4 className="text-sm font-medium mb-1">AI Summary</h4>
+                    <div className="text-sm">{trade.aiSummary}</div>
                   </div>
                 </div>
                 
-                <div className="space-y-1">
-                  <div className="text-xs font-semibold">Rule Compliance:</div>
-                  <div className="flex flex-wrap gap-1">
-                    {trade.ruleChecks.map((rule, idx) => (
-                      <Badge 
-                        key={idx}
-                        variant={rule.passed ? "success" : "error"}
-                        className="text-xs flex items-center gap-1"
-                      >
-                        {rule.passed ? <Check size={10} /> : <X size={10} />}
-                        {rule.name}
-                      </Badge>
-                    ))}
+                <div className="md:col-span-5">
+                  {showStats ? (
+                    <StatisticalSnapshot />
+                  ) : (
+                    <div className="border rounded-lg p-4">
+                      <h4 className="text-sm font-medium mb-2">Rule Checks</h4>
+                      <ul className="space-y-1.5">
+                        {trade.ruleChecks.map((rule, i) => (
+                          <li key={i} className="flex items-center text-sm">
+                            <span className={`w-4 h-4 rounded-full mr-2 ${rule.passed ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                            {rule.name}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-end mt-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setShowStats(prev => !prev)}
+                      className="text-xs"
+                    >
+                      {showStats ? "Show Rules" : "Show Statistics"}
+                    </Button>
                   </div>
                 </div>
-              </div>
-              
-              {/* AI Summary */}
-              <div className="bg-cyan-50 rounded-md p-2 border border-cyan-200">
-                <div className="flex gap-1 items-center text-xs font-semibold text-cyan-800">
-                  <FileText size={12} />
-                  AI Trade Analysis
-                </div>
-                <p className="text-xs mt-1">{trade.aiSummary}</p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 mt-1 text-xs text-cyan-800"
-                >
-                  🧠 Improve Me
-                </Button>
-              </div>
-              
-              {/* Notes Section */}
-              <div>
-                <span className="text-xs font-semibold">Notes:</span>
-                <p className="text-xs mt-1">{trade.notes}</p>
-              </div>
-              
-              {/* Actions */}
-              <div className="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs">
-                  <Edit size={12} /> Edit
-                </Button>
-                <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs text-destructive">
-                  <Trash2 size={12} /> Delete
-                </Button>
               </div>
             </div>
           )}
         </div>
       </CardContent>
+      <CardFooter className="flex justify-between py-2">
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" className="h-8 px-2">
+            <Edit className="h-3.5 w-3.5 mr-1" />
+            Edit
+          </Button>
+          <Button variant="ghost" size="sm" className="h-8 px-2">
+            <BarChart className="h-3.5 w-3.5 mr-1" />
+            Stats
+          </Button>
+          {/* Added Strategy Button */}
+          <StrategySelector
+            compact={true}
+            buttonLabel="Strategy"
+            currentStrategy={tradeStrategy}
+            className="h-8 px-2"
+          />
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => setExpanded(prev => !prev)}
+          className="h-8 px-2"
+        >
+          {expanded ? (
+            <>
+              <ChevronUp className="h-3.5 w-3.5 mr-1" />
+              Collapse
+            </>
+          ) : (
+            <>
+              <ChevronDown className="h-3.5 w-3.5 mr-1" />
+              Expand
+            </>
+          )}
+        </Button>
+      </CardFooter>
     </Card>
   );
-}
-
-function formatTime(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }

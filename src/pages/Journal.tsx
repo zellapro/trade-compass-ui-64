@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Calendar, RefreshCw, LayoutGrid, Table as TableIcon } from "lucide-react";
+import { Calendar, RefreshCw, LayoutGrid, Table as TableIcon, BookOpen } from "lucide-react";
 import { TradeFilterBar } from "@/components/journal/TradeFilterBar";
 import { MiniAnalyticsPanel } from "@/components/journal/MiniAnalyticsPanel";
 import { TradeEntryCard } from "@/components/journal/TradeEntryCard";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { TradeTable } from "@/components/journal/TradeTable";
 import { cn } from "@/lib/utils";
 import { StrategyFilter, StrategyFilterState } from "@/components/journal/StrategyFilter";
+import { ViewStrategiesModal } from "@/components/journal/ViewStrategiesModal";
 
 // Define the Trade type to be used throughout the Journal page
 export type Trade = {
@@ -37,7 +38,7 @@ export type Trade = {
   attachments: { type: string; url: string }[];
   replay: boolean;
   pinned: boolean;
-  // New strategy fields
+  // Strategy fields
   strategyCategory?: string;
   setupIds?: string[];
   setupGrade?: string;
@@ -56,6 +57,7 @@ export default function Journal() {
   const [quickLog, setQuickLog] = useState(false);
   const [viewMode, setViewMode] = useState<"card" | "table">("card");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
+  const [showViewStrategies, setShowViewStrategies] = useState(false);
   
   // Strategy filtering
   const [strategyFilters, setStrategyFilters] = useState<StrategyFilterState>({
@@ -398,9 +400,23 @@ export default function Journal() {
           
           {/* Daily Summary */}
           <DailySummaryCard summary={dailySummary} />
+          
+          {/* Add View Strategies Button */}
+          <div className="flex justify-center mt-6">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="rounded-full px-6 shadow-sm border"
+              onClick={() => setShowViewStrategies(true)}
+            >
+              <BookOpen className="h-4 w-4 mr-2" />
+              View All Strategies
+            </Button>
+          </div>
         </div>
       </div>
       <JournalExportModal open={showExport} onOpenChange={setShowExport} />
+      <ViewStrategiesModal open={showViewStrategies} onOpenChange={setShowViewStrategies} />
     </div>
   );
 }
