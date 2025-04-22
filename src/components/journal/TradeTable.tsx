@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, FileText, Play, ExternalLink, Eye } from "lucide-react";
+import { Star, FileText, Play, ExternalLink, Eye, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Trade } from "@/pages/Journal";
 import { useState } from "react";
@@ -19,6 +19,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { findCategoryById, findSetupById, findGradeById } from "@/data/strategyData";
+import { StrategyDisplay } from "./StrategyDisplay";
 
 export function TradeTable({ trades }: { trades: Trade[] }) {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -31,6 +33,25 @@ export function TradeTable({ trades }: { trades: Trade[] }) {
     }
   };
 
+  const getStrategyInfo = (trade: Trade) => {
+    if (!trade.strategyCategory) {
+      return { category: "", setupNames: [] };
+    }
+    
+    const category = findCategoryById(trade.strategyCategory);
+    const setupNames = trade.setupIds ? 
+      trade.setupIds.map(id => {
+        const setup = findSetupById(id);
+        return setup ? setup.name : "";
+      }).filter(Boolean) :
+      [];
+      
+    return { 
+      category: category?.name || "", 
+      setupNames 
+    };
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -38,7 +59,7 @@ export function TradeTable({ trades }: { trades: Trade[] }) {
           <TableRow>
             <TableHead className="w-[100px]">Ticker</TableHead>
             <TableHead className="w-[80px]">Time</TableHead>
-            <TableHead className="w-[80px]">Setup</TableHead>
+            <TableHead className="w-[120px]">Strategy</TableHead>
             <TableHead className="text-right">Entry</TableHead>
             <TableHead className="text-right">Exit</TableHead>
             <TableHead className="text-right">P&L</TableHead>
@@ -67,9 +88,46 @@ export function TradeTable({ trades }: { trades: Trade[] }) {
                 </TableCell>
                 <TableCell>{formatTime(trade.entryTime)}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="text-xs font-normal">
-                    {trade.setup}
-                  </Badge>
+                  {trade.strategyCategory ? (
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-1">
+                        {trade.isFavoriteStrategy && (
+                          <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+                        )}
+                        {getStrategyInfo(trade).setupNames.length > 0 ? (
+                          <Badge variant="outline" className="text-xs font-normal">
+                            {getStrategyInfo(trade).setupNames[0]}
+                            {getStrategyInfo(trade).setupNames.length > 1 && "+"}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs font-normal">
+                            {trade.setup}
+                          </Badge>
+                        )}
+                      </div>
+                      {trade.setupGrade && (
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-xs mt-1 w-fit",
+                            trade.setupGrade === "a-plus" && "text-green-600 border-green-200 bg-green-50",
+                            trade.setupGrade === "a" && "text-green-500 border-green-200 bg-green-50",
+                            trade.setupGrade === "b-plus" && "text-blue-500 border-blue-200 bg-blue-50",
+                            trade.setupGrade === "b" && "text-blue-400 border-blue-200 bg-blue-50",
+                            trade.setupGrade === "c" && "text-yellow-500 border-yellow-200 bg-yellow-50",
+                            trade.setupGrade === "d" && "text-orange-500 border-orange-200 bg-orange-50",
+                            trade.setupGrade === "f" && "text-red-500 border-red-200 bg-red-50",
+                          )}
+                        >
+                          {findGradeById(trade.setupGrade)?.name || ""}
+                        </Badge>
+                      )}
+                    </div>
+                  ) : (
+                    <Badge variant="outline" className="text-xs font-normal">
+                      {trade.setup}
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="text-right font-mono">${trade.entryPrice.toFixed(2)}</TableCell>
                 <TableCell className="text-right font-mono">${trade.exitPrice.toFixed(2)}</TableCell>
@@ -188,6 +246,27 @@ export function TradeTable({ trades }: { trades: Trade[] }) {
                             </div>
                           </div>
                         </div>
+                        
+                        {/* Display Strategy Information */}
+                        {trade.strategyCategory && trade.setupIds && (
+                          <div className="mt-3">
+                            <h4 className="text-sm font-medium mb-2">Strategy Information</h4>
+                            {trade.strategyCategory && trade.setupIds && (
+                              <StrategyDisplay
+                                strategy={{
+                                  categoryId: trade.strategyCategory,
+                                  setupIds: trade.setupIds,
+                                  gradeId: trade.setupGrade,
+                                  contextTagIds: trade.contextTags || [],
+                                  isFavorite: trade.isFavoriteStrategy || false,
+                                  notes: trade.strategyNotes
+                                }}
+                                variant="compact"
+                                editable={true}
+                              />
+                            )}
+                          </div>
+                        )}
                       </div>
                       
                       <div>

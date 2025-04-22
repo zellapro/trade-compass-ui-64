@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { StrategyFilter } from "./StrategyFilter";
 
 const tagOptions = ["Premarket", "FOMO", "VWAP Fade"];
 const strategyOptions = ["Breakout", "VWAP Fade", "Gap Fill", "Trend", "Reversal", "Support Bounce"];

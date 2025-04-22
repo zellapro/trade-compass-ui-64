@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TradeTable } from "@/components/journal/TradeTable";
 import { cn } from "@/lib/utils";
+import { StrategyFilter, StrategyFilterState } from "@/components/journal/StrategyFilter";
 
 // Define the Trade type to be used throughout the Journal page
 export type Trade = {
@@ -36,6 +37,13 @@ export type Trade = {
   attachments: { type: string; url: string }[];
   replay: boolean;
   pinned: boolean;
+  // New strategy fields
+  strategyCategory?: string;
+  setupIds?: string[];
+  setupGrade?: string;
+  contextTags?: string[];
+  isFavoriteStrategy?: boolean;
+  strategyNotes?: string;
 };
 
 // Define sync status type
@@ -48,6 +56,15 @@ export default function Journal() {
   const [quickLog, setQuickLog] = useState(false);
   const [viewMode, setViewMode] = useState<"card" | "table">("card");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
+  
+  // Strategy filtering
+  const [strategyFilters, setStrategyFilters] = useState<StrategyFilterState>({
+    categories: [],
+    setups: [],
+    grades: [],
+    contextTags: [],
+    favorites: null
+  });
 
   // Sample trades per day
   const trades: Trade[] = [
@@ -79,6 +96,13 @@ export default function Journal() {
       attachments: [{type: "image", url: ""}],
       replay: true,
       pinned: true,
+      // Added strategy fields
+      strategyCategory: "indicator",
+      setupIds: ["ind-vwap"],
+      setupGrade: "a-plus",
+      contextTags: ["pre-market", "bullish-bias"],
+      isFavoriteStrategy: true,
+      strategyNotes: "VWAP rejection in premarket with strong volume confirmation."
     },
     {
       id: "T-002",
@@ -107,6 +131,13 @@ export default function Journal() {
       attachments: [],
       replay: false,
       pinned: false,
+      // Added strategy fields
+      strategyCategory: "breakout",
+      setupIds: ["bo-resistance"],
+      setupGrade: "c",
+      contextTags: ["regular-hours", "trending-market"],
+      isFavoriteStrategy: false,
+      strategyNotes: "Failed to wait for proper confirmation before entering."
     },
     {
       id: "T-003", 
@@ -135,6 +166,13 @@ export default function Journal() {
       attachments: [{type: "image", url: ""}],
       replay: true,
       pinned: false,
+      // Added strategy fields
+      strategyCategory: "smc",
+      setupIds: ["smc-sd", "smc-bos"],
+      setupGrade: "b-plus",
+      contextTags: ["regular-hours", "trending-market"],
+      isFavoriteStrategy: true,
+      strategyNotes: "Strong demand zone with break of structure confirmation."
     },
     {
       id: "T-004",
@@ -163,6 +201,13 @@ export default function Journal() {
       attachments: [],
       replay: false,
       pinned: false,
+      // Added strategy fields
+      strategyCategory: "trend",
+      setupIds: ["trend-pullback"],
+      setupGrade: "b",
+      contextTags: ["regular-hours", "neutral-bias"],
+      isFavoriteStrategy: false,
+      strategyNotes: "Textbook pullback to moving average entry."
     }
     // Add more trades as needed
   ];
@@ -183,6 +228,72 @@ export default function Journal() {
       setSyncStatus("synced");
     }, 2000);
   };
+
+  const handleStrategyFilterChange = (filters: StrategyFilterState) => {
+    setStrategyFilters(filters);
+    // In a real app, this would trigger filtering of the trades list
+    console.log("Strategy filters updated:", filters);
+  };
+
+  // Apply strategy filters to trades
+  const filteredTrades = trades.filter(trade => {
+    // If no filters are applied, show all trades
+    if (
+      strategyFilters.categories.length === 0 &&
+      strategyFilters.setups.length === 0 &&
+      strategyFilters.grades.length === 0 &&
+      strategyFilters.contextTags.length === 0 &&
+      strategyFilters.favorites === null
+    ) {
+      return true;
+    }
+    
+    // Check category filter
+    if (
+      strategyFilters.categories.length > 0 &&
+      trade.strategyCategory &&
+      !strategyFilters.categories.includes(trade.strategyCategory)
+    ) {
+      return false;
+    }
+    
+    // Check setup filter
+    if (
+      strategyFilters.setups.length > 0 &&
+      trade.setupIds &&
+      !trade.setupIds.some(id => strategyFilters.setups.includes(id))
+    ) {
+      return false;
+    }
+    
+    // Check grade filter
+    if (
+      strategyFilters.grades.length > 0 &&
+      trade.setupGrade &&
+      !strategyFilters.grades.includes(trade.setupGrade)
+    ) {
+      return false;
+    }
+    
+    // Check context tags filter
+    if (
+      strategyFilters.contextTags.length > 0 &&
+      trade.contextTags &&
+      !trade.contextTags.some(tag => strategyFilters.contextTags.includes(tag))
+    ) {
+      return false;
+    }
+    
+    // Check favorites filter
+    if (
+      strategyFilters.favorites !== null &&
+      trade.isFavoriteStrategy !== strategyFilters.favorites
+    ) {
+      return false;
+    }
+    
+    return true;
+  });
 
   return (
     <div className="space-y-6">
@@ -254,19 +365,34 @@ export default function Journal() {
       </div>
       <div className="flex flex-col md:flex-row gap-6">
         <div className="flex-1 min-w-0 space-y-4">
-          <TradeFilterBar />
+          <div className="flex flex-col space-y-4">
+            <TradeFilterBar />
+            
+            {/* Add Strategy Filter Component */}
+            <StrategyFilter
+              activeFilters={strategyFilters}
+              onFilterChange={handleStrategyFilterChange}
+              className="mt-2"
+            />
+          </div>
+          
           <MiniAnalyticsPanel />
           
           {/* Card/Table View Toggle */}
           <div className={cn("grid gap-4", viewMode === "card" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "")}>
             {viewMode === "card" ? (
               <>
-                {trades.map((trade) => (
-                  <TradeEntryCard key={trade.id} trade={trade} quickLog={quickLog} voiceToJournal={voiceToJournal} />
+                {filteredTrades.map((trade) => (
+                  <TradeEntryCard 
+                    key={trade.id} 
+                    trade={trade} 
+                    quickLog={quickLog} 
+                    voiceToJournal={voiceToJournal} 
+                  />
                 ))}
               </>
             ) : (
-              <TradeTable trades={trades} />
+              <TradeTable trades={filteredTrades} />
             )}
           </div>
           
