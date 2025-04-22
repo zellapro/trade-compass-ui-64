@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,8 +20,8 @@ interface TradeEntryCardProps {
 export function TradeEntryCard({ trade, quickLog = false, voiceToJournal = false }: TradeEntryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [strategyModalOpen, setStrategyModalOpen] = useState(false);
 
-  // Prepare strategy object from trade data if present
   const tradeStrategy: SelectedStrategy | undefined = trade.strategyCategory ? {
     categoryId: trade.strategyCategory,
     setupIds: trade.setupIds || [],
@@ -77,7 +76,6 @@ export function TradeEntryCard({ trade, quickLog = false, voiceToJournal = false
             ))}
           </div>
           
-          {/* Trade Chart */}
           <div className="bg-muted mt-1 rounded-md aspect-video relative">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-muted-foreground text-sm">Chart Placeholder</div>
@@ -87,7 +85,6 @@ export function TradeEntryCard({ trade, quickLog = false, voiceToJournal = false
             </div>
           </div>
           
-          {/* Strategy Display if available */}
           {tradeStrategy && (
             <div className="mt-2">
               <StrategyDisplay 
@@ -98,7 +95,18 @@ export function TradeEntryCard({ trade, quickLog = false, voiceToJournal = false
             </div>
           )}
           
-          {/* Expanded View */}
+          {!tradeStrategy && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setStrategyModalOpen(true)}
+              className="mt-2 w-full flex items-center justify-center gap-2 bg-background/50 hover:bg-accent/50 border-dashed"
+            >
+              <Plus className="h-4 w-4" />
+              Add Strategy & Setup
+            </Button>
+          )}
+          
           {expanded && (
             <div className="mt-3 space-y-4">
               <Separator />
@@ -159,12 +167,14 @@ export function TradeEntryCard({ trade, quickLog = false, voiceToJournal = false
             <BarChart className="h-3.5 w-3.5 mr-1" />
             Stats
           </Button>
-          {/* Added Strategy Button */}
           <StrategySelector
             compact={true}
             buttonLabel="Strategy"
             currentStrategy={tradeStrategy}
             className="h-8 px-2"
+            onStrategyChange={(strategy) => {
+              console.log("Strategy updated:", strategy);
+            }}
           />
         </div>
         <Button 
