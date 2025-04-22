@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Code, Copy, RefreshCcw, FileCog, LinkIcon, Webhook, BookOpen, Lock, KeyRound, Key, FileJson } from "lucide-react";
 import { toast } from "sonner";
 
@@ -63,7 +63,6 @@ const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({
           </TabsTrigger>
         </TabsList>
         
-        {/* API Keys Tab */}
         <TabsContent value="api-keys" className="space-y-4 pt-4">
           <Card>
             <CardHeader>
@@ -210,7 +209,6 @@ const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({
           </Card>
         </TabsContent>
         
-        {/* Webhooks Tab */}
         <TabsContent value="webhooks" className="space-y-4 pt-4">
           <Card>
             <CardHeader>
@@ -349,7 +347,6 @@ const DeveloperSettings: React.FC<DeveloperSettingsProps> = ({
           </Card>
         </TabsContent>
         
-        {/* Integration Tab */}
         <TabsContent value="integration" className="space-y-4 pt-4">
           <Card>
             <CardHeader>
