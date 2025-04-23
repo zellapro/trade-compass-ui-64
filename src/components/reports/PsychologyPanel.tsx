@@ -386,13 +386,12 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                   />
                   <Tooltip
                     content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
+                      if (active && payload && payload.length > 0) {
                         return (
                           <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.subject}</p>
+                            <p className="font-medium">{payload[0]?.payload?.subject || ""}</p>
                             <p className="text-sm" style={{ color: "#3b82f6" }}>
-                              Score: {data.A}/100
+                              Score: {payload[0]?.value || 0}/100
                             </p>
                           </div>
                         );
