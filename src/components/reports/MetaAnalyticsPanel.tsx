@@ -1,4 +1,3 @@
-
 import { 
   Card, 
   CardContent, 
@@ -22,7 +21,9 @@ import {
   Cell,
   Legend,
   AreaChart,
-  Area
+  Area,
+  ScatterChart,  // Add this import to resolve ScatterChart not being defined
+  Scatter
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -206,9 +207,8 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
                         }
                       />
                     ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+                  </BarChart>
+                </ResponsiveContainer>
             </div>
             <div className="text-sm text-center text-muted-foreground mt-2">
               <p>Breakout trades provide highest profit per unit of time</p>
@@ -340,8 +340,22 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
                       const { cx, cy, payload } = props;
                       return (
                         <g>
-                          <circle cx={cx} cy={cy} r={10} fill="#0f172a" stroke="#3b82f6" strokeWidth={2} />
-                          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fill="#f8fafc" fontSize={10}>
+                          <circle 
+                            cx={cx} 
+                            cy={cy} 
+                            r={10} 
+                            fill="#0f172a" 
+                            stroke="#3b82f6" 
+                            strokeWidth={2} 
+                          />
+                          <text 
+                            x={cx} 
+                            y={cy} 
+                            textAnchor="middle" 
+                            dominantBaseline="middle" 
+                            fill="#f8fafc" 
+                            fontSize={10}
+                          >
                             {payload.setup.charAt(0)}
                           </text>
                         </g>
