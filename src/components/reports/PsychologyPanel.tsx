@@ -224,23 +224,26 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                     <Tooltip
                       content={({ active, payload, label }) => {
                         if (active && payload && payload.length) {
+                          const data = payload[0]?.payload;
+                          if (!data) return null;
+                          
                           return (
                             <div className="rounded-lg border border-border/50 bg-background/95 p-3 shadow-md">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xl">{payload[0].payload.emoji}</span>
+                                <span className="text-xl">{data.emoji}</span>
                                 <p className="font-medium">{label}</p>
                               </div>
                               <p className="text-sm" style={{ color: "#3b82f6" }}>
-                                Before Trade: {payload[0].value}/10
+                                Before Trade: {payload[0]?.value}/10
                               </p>
                               <p className="text-sm" style={{ color: "#8b5cf6" }}>
-                                During Trade: {payload[1].value}/10
+                                During Trade: {payload[1]?.value}/10
                               </p>
                               <p className="text-sm" style={{ color: "#10b981" }}>
-                                After Trade: {payload[2].value}/10
+                                After Trade: {payload[2]?.value}/10
                               </p>
-                              <div className={`text-sm font-medium mt-2 px-2 py-1 rounded ${Number(payload[3].value) >= 0 ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
-                                P&L: ${payload[3].value}
+                              <div className={`text-sm font-medium mt-2 px-2 py-1 rounded ${Number(payload[3]?.value) >= 0 ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
+                                P&L: ${payload[3]?.value}
                               </div>
                             </div>
                           );
@@ -560,12 +563,11 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                     <ZAxis dataKey="size" range={[50, 400]} />
                     <Tooltip 
                       cursor={{ strokeDasharray: "3 3" }}
-                      content={(props: {
-                        active?: boolean;
-                        payload?: Array<any>;
-                      }) => {
-                        if (props.active && props.payload && props.payload.length) {
-                          const data = props.payload[0].payload;
+                      content={(props) => {
+                        if (props.active && props.payload && props.payload.length > 0) {
+                          const data = props.payload[0]?.payload;
+                          if (!data) return null;
+                          
                           return (
                             <div className="rounded-lg border border-border/50 bg-background/95 p-3 shadow-md">
                               <div className="font-medium mb-1 text-purple-400">{data.correlation}% Correlation</div>
@@ -585,12 +587,10 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                       name="Correlation" 
                       data={correlationData} 
                       fill="#8b5cf6"
-                      shape={(props: {
-                        cx?: number;
-                        cy?: number;
-                        payload?: any;
-                      }) => {
+                      shape={(props) => {
                         const { cx = 0, cy = 0, payload } = props;
+                        if (!payload) return null;
+                        
                         return (
                           <g>
                             <circle
@@ -610,7 +610,7 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                               fontSize={9}
                               fontWeight="bold"
                             >
-                              {payload?.emotion?.charAt(0) || ""}
+                              {payload.emotion?.charAt(0) || ""}
                             </text>
                           </g>
                         );
