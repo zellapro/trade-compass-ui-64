@@ -1,4 +1,3 @@
-
 import { 
   Card, 
   CardContent, 
@@ -474,19 +473,15 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="border border-emerald-500/20 bg-emerald-500/5 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium">Trade Replay Usage</h4>
-                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-800">
-                  +27% RR
-                </Badge>
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                Trades with Replay used before entry show significantly higher R:R ratios
-                compared to non-replay trades.
-              </p>
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>42 trades with replay</span>
-                <span>85 trades without</span>
+              <div className="flex items-start gap-2">
+                <Activity size={16} className="text-emerald-400 mt-1" />
+                <div>
+                  <p className="font-medium text-emerald-400 text-sm">Performance Insights</p>
+                  <p className="text-xs text-muted-foreground">
+                    When your win rate is {'>'}60%, you see better consistency in trade outcomes.
+                    Focus on maintaining disciplined entry and exit strategies.
+                  </p>
+                </div>
               </div>
             </div>
             
