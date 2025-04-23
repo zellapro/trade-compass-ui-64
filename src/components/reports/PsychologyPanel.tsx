@@ -83,6 +83,18 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
     { name: "Trend direction accuracy", value: 70 }
   ];
 
+  // Psychological strength profile data
+  const psychProfileData = [
+    { subject: 'Patience', A: 85, fullMark: 100 },
+    { subject: 'Discipline', A: 72, fullMark: 100 },
+    { subject: 'Focus', A: 78, fullMark: 100 },
+    { subject: 'Adaptability', A: 65, fullMark: 100 },
+    { subject: 'Emotional Control', A: 58, fullMark: 100 },
+    { subject: 'Loss Acceptance', A: 75, fullMark: 100 },
+    { subject: 'Risk Management', A: 82, fullMark: 100 },
+    { subject: 'Plan Adherence', A: 70, fullMark: 100 },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Emotion Tracker Graphs */}
@@ -107,16 +119,16 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                         <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
                           <p className="font-medium">{label}</p>
                           <p className="text-sm" style={{ color: "#3b82f6" }}>
-                            Before Trade: {payload[0].value}/10
+                            Before Trade: {payload[0]?.value}/10
                           </p>
                           <p className="text-sm" style={{ color: "#8b5cf6" }}>
-                            During Trade: {payload[1].value}/10
+                            During Trade: {payload[1]?.value}/10
                           </p>
                           <p className="text-sm" style={{ color: "#10b981" }}>
-                            After Trade: {payload[2].value}/10
+                            After Trade: {payload[2]?.value}/10
                           </p>
                           <p className="text-sm font-medium mt-1">
-                            P&L: ${payload[3].value}
+                            P&L: ${payload[3]?.value}
                           </p>
                         </div>
                       );
@@ -363,16 +375,7 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                   cx="50%" 
                   cy="50%" 
                   outerRadius="80%" 
-                  data={[
-                    { subject: 'Patience', A: 85, fullMark: 100 },
-                    { subject: 'Discipline', A: 72, fullMark: 100 },
-                    { subject: 'Focus', A: 78, fullMark: 100 },
-                    { subject: 'Adaptability', A: 65, fullMark: 100 },
-                    { subject: 'Emotional Control', A: 58, fullMark: 100 },
-                    { subject: 'Loss Acceptance', A: 75, fullMark: 100 },
-                    { subject: 'Risk Management', A: 82, fullMark: 100 },
-                    { subject: 'Plan Adherence', A: 70, fullMark: 100 },
-                  ]}
+                  data={psychProfileData}
                 >
                   <PolarGrid stroke="#1e293b" />
                   <PolarAngleAxis dataKey="subject" stroke="#64748b" />
@@ -386,7 +389,7 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                   />
                   <Tooltip
                     content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
+                      if (active && payload && payload.length > 0 && payload[0]?.payload) {
                         const data = payload[0].payload;
                         return (
                           <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
