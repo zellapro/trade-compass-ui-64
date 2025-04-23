@@ -1,3 +1,4 @@
+
 import { 
   Card, 
   CardContent, 
@@ -22,7 +23,7 @@ import {
   Legend,
   AreaChart,
   Area,
-  ScatterChart,  // Add this import to resolve ScatterChart not being defined
+  ScatterChart,
   Scatter
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
@@ -207,8 +208,9 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
                         }
                       />
                     ))}
-                  </BarChart>
-                </ResponsiveContainer>
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
             <div className="text-sm text-center text-muted-foreground mt-2">
               <p>Breakout trades provide highest profit per unit of time</p>
@@ -336,7 +338,7 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
                   <Scatter 
                     data={timeEfficiencyData} 
                     fill="#3b82f6"
-                    shape={(props: any) => {
+                    shape={(props) => {
                       const { cx, cy, payload } = props;
                       return (
                         <g>
