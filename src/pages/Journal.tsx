@@ -1,15 +1,11 @@
 
 import { useState } from "react";
-import { Calendar, RefreshCw, LayoutGrid, Table as TableIcon, BookOpen } from "lucide-react";
-import { TradeFilterBar } from "@/components/journal/TradeFilterBar";
-import { MiniAnalyticsPanel } from "@/components/journal/MiniAnalyticsPanel";
-import { TradeEntryCard } from "@/components/journal/TradeEntryCard";
-import { DailySummaryCard } from "@/components/journal/DailySummaryCard";
-import { JournalExportModal } from "@/components/journal/JournalExportModal";
+import { Search, Calendar, FileText, Filter, ArrowUpDown, Plus, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { TradeTable } from "@/components/journal/TradeTable";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TradeEntryCard } from "@/components/journal/TradeEntryCard";
 import { StrategyFilter, StrategyFilterState } from "@/components/journal/StrategyFilter";
 import { ViewStrategiesModal } from "@/components/journal/ViewStrategiesModal";
 
@@ -47,17 +43,11 @@ export type Trade = {
   strategyNotes?: string;
 };
 
-// Define sync status type
-type SyncStatus = "synced" | "pending" | "failed";
-
 export default function Journal() {
-  // For demo, static trades and summaries
-  const [showExport, setShowExport] = useState(false);
-  const [voiceToJournal, setVoiceToJournal] = useState(false);
-  const [quickLog, setQuickLog] = useState(false);
-  const [viewMode, setViewMode] = useState<"card" | "table">("card");
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>("synced");
+  const [activeView, setActiveView] = useState<"journal" | "calendar" | "plans">("journal");
   const [showViewStrategies, setShowViewStrategies] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month">("all");
   
   // Strategy filtering
   const [strategyFilters, setStrategyFilters] = useState<StrategyFilterState>({
@@ -68,7 +58,7 @@ export default function Journal() {
     favorites: null
   });
 
-  // Sample trades per day
+  // Sample trades
   const trades: Trade[] = [
     {
       id: "T-001",
@@ -211,35 +201,29 @@ export default function Journal() {
       isFavoriteStrategy: false,
       strategyNotes: "Textbook pullback to moving average entry."
     }
-    // Add more trades as needed
   ];
-
-  // Demo daily summary
-  const dailySummary = {
-    date: "2025-04-21",
-    netPnl: 1195, // Updated sum of all trades
-    winRate: 50,
-    mistakes: ["Late entry on AAPL, FOMO"],
-    mostTraded: "TSLA",
-    aiRecap: "Solid discipline on TSLA. Main miss was late AAPL entry. Focus on pre-entry criteria to boost win rate."
-  };
-
-  const handleSyncClick = () => {
-    setSyncStatus("pending");
-    setTimeout(() => {
-      setSyncStatus("synced");
-    }, 2000);
-  };
 
   const handleStrategyFilterChange = (filters: StrategyFilterState) => {
     setStrategyFilters(filters);
-    // In a real app, this would trigger filtering of the trades list
     console.log("Strategy filters updated:", filters);
   };
 
   // Apply strategy filters to trades
   const filteredTrades = trades.filter(trade => {
-    // If no filters are applied, show all trades
+    // Filter by search query
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      const matchesTicker = trade.ticker.toLowerCase().includes(searchLower);
+      const matchesSetup = trade.setup.toLowerCase().includes(searchLower);
+      const matchesStrategy = trade.strategy.toLowerCase().includes(searchLower);
+      const matchesNotes = trade.notes.toLowerCase().includes(searchLower);
+      
+      if (!(matchesTicker || matchesSetup || matchesStrategy || matchesNotes)) {
+        return false;
+      }
+    }
+    
+    // If no strategy filters are applied, show all trades
     if (
       strategyFilters.categories.length === 0 &&
       strategyFilters.setups.length === 0 &&
@@ -302,120 +286,159 @@ export default function Journal() {
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Trade Journal</h1>
-          <p className="text-muted-foreground">All trades are automatically synced from your connected brokers.</p>
+          <p className="text-muted-foreground">Document, analyze, and improve your trading strategies.</p>
         </div>
-        <div className="flex flex-wrap gap-2 items-center">
-          <div className="flex items-center gap-2">
-            <Badge 
-              variant={syncStatus === "synced" ? "success" : syncStatus === "pending" ? "warning" : "error"} 
-              className="px-3 py-1 text-xs font-medium"
-            >
-              {syncStatus === "synced" ? "✅ Synced" : syncStatus === "pending" ? "⏳ Syncing..." : "❌ Sync Failed"}
-            </Badge>
+        
+        <div className="flex flex-wrap gap-2">
+          <Tabs defaultValue="all" className="w-auto">
+            <TabsList className="h-9">
+              <TabsTrigger 
+                value="all" 
+                className="text-xs h-8"
+                onClick={() => setDateFilter("all")}
+              >
+                All Time
+              </TabsTrigger>
+              <TabsTrigger 
+                value="today"
+                className="text-xs h-8"
+                onClick={() => setDateFilter("today")}
+              >
+                Today
+              </TabsTrigger>
+              <TabsTrigger 
+                value="week"
+                className="text-xs h-8"
+                onClick={() => setDateFilter("week")}
+              >
+                This Week
+              </TabsTrigger>
+              <TabsTrigger 
+                value="month"
+                className="text-xs h-8"
+                onClick={() => setDateFilter("month")}
+              >
+                This Month
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <div className="flex">
             <Button 
-              variant="outline" 
+              variant={activeView === "journal" ? "default" : "outline"}
               size="sm" 
-              className="flex items-center gap-1"
-              onClick={handleSyncClick}
-              disabled={syncStatus === "pending"}
+              className="rounded-r-none"
+              onClick={() => setActiveView("journal")}
             >
-              <RefreshCw size={14} className={syncStatus === "pending" ? "animate-spin" : ""} />
-              <span>Refresh Journal</span>
+              <FileText className="h-4 w-4 mr-1" />
+              Journal
+            </Button>
+            <Button 
+              variant={activeView === "calendar" ? "default" : "outline"}
+              size="sm" 
+              className="rounded-none"
+              onClick={() => setActiveView("calendar")}
+            >
+              <Calendar className="h-4 w-4 mr-1" />
+              Calendar
+            </Button>
+            <Button 
+              variant={activeView === "plans" ? "default" : "outline"}
+              size="sm" 
+              className="rounded-l-none"
+              onClick={() => setActiveView("plans")}
+            >
+              <BookOpen className="h-4 w-4 mr-1" />
+              Plans
             </Button>
           </div>
-          <div className="h-6 border-l border-muted mx-1"></div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant={viewMode === "card" ? "default" : "outline"}
-              size="sm"
-              className="px-3"
-              onClick={() => setViewMode("card")}
-            >
-              <LayoutGrid size={16} />
-            </Button>
-            <Button
-              variant={viewMode === "table" ? "default" : "outline"}
-              size="sm"
-              className="px-3"
-              onClick={() => setViewMode("table")}
-            >
-              <TableIcon size={16} />
-            </Button>
-          </div>
-          <div className="h-6 border-l border-muted mx-1"></div>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              className={`px-3 py-2 rounded-md text-xs font-medium ${voiceToJournal ? "bg-primary text-white" : "bg-background"} transition`}
-              onClick={() => setVoiceToJournal(v => !v)}
-            >
-              🎤 {voiceToJournal ? "Voice-to-Journal: ON" : "Voice-to-Journal"}
-            </Button>
-            <Button
-              className={`px-3 py-2 rounded-md text-xs font-medium ${quickLog ? "bg-primary text-white" : "bg-background"} transition`}
-              onClick={() => setQuickLog(l => !l)}
-            >
-              ⚡ {quickLog ? "Quick Log: ON" : "Quick Log"}
-            </Button>
-            <Button
-              className="px-3 py-2 rounded-md text-xs font-medium hover:bg-accent transition"
-              onClick={() => setShowExport(true)}
-            >
-              📤 Export
-            </Button>
-          </div>
+          
+          <Button variant="outline" size="sm">
+            <Plus className="h-4 w-4 mr-1" />
+            New Trade
+          </Button>
         </div>
       </div>
-      <div className="flex flex-col md:flex-row gap-6">
-        <div className="flex-1 min-w-0 space-y-4">
-          <div className="flex flex-col space-y-4">
-            <TradeFilterBar />
-            
-            {/* Add Strategy Filter Component */}
-            <StrategyFilter
-              activeFilters={strategyFilters}
-              onFilterChange={handleStrategyFilterChange}
-              className="mt-2"
+      
+      <div className="flex flex-col space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="relative md:col-span-2">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search tickers, setups, strategies, or notes..." 
+              className="pl-9 h-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           
-          <MiniAnalyticsPanel />
-          
-          {/* Card/Table View Toggle */}
-          <div className={cn("grid gap-4", viewMode === "card" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "")}>
-            {viewMode === "card" ? (
-              <>
-                {filteredTrades.map((trade) => (
-                  <TradeEntryCard 
-                    key={trade.id} 
-                    trade={trade} 
-                    quickLog={quickLog} 
-                    voiceToJournal={voiceToJournal} 
-                  />
-                ))}
-              </>
-            ) : (
-              <TradeTable trades={filteredTrades} />
-            )}
-          </div>
-          
-          {/* Daily Summary */}
-          <DailySummaryCard summary={dailySummary} />
-          
-          {/* Add View Strategies Button */}
-          <div className="flex justify-center mt-6">
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="flex-1 h-10">
+              <Filter className="h-4 w-4 mr-1" />
+              Filters
+            </Button>
+            <Button variant="outline" size="sm" className="flex-1 h-10">
+              <ArrowUpDown className="h-4 w-4 mr-1" />
+              Sort
+            </Button>
             <Button 
               variant="outline" 
-              size="lg" 
-              className="rounded-full px-6 shadow-sm border"
+              size="sm" 
+              className="flex-1 h-10"
               onClick={() => setShowViewStrategies(true)}
             >
-              <BookOpen className="h-4 w-4 mr-2" />
-              View All Strategies
+              <BookOpen className="h-4 w-4 mr-1" />
+              Strategies
             </Button>
           </div>
         </div>
+        
+        <StrategyFilter
+          activeFilters={strategyFilters}
+          onFilterChange={handleStrategyFilterChange}
+        />
       </div>
-      <JournalExportModal open={showExport} onOpenChange={setShowExport} />
+      
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold">Trades ({filteredTrades.length})</h2>
+            <Badge variant="outline" className="font-normal">
+              {dateFilter === "all" ? "All Time" : 
+               dateFilter === "today" ? "Today" : 
+               dateFilter === "week" ? "This Week" : "This Month"}
+            </Badge>
+          </div>
+        </div>
+        
+        <div className="grid gap-4">
+          {filteredTrades.length > 0 ? (
+            filteredTrades.map((trade) => (
+              <TradeEntryCard key={trade.id} trade={trade} />
+            ))
+          ) : (
+            <div className="text-center py-10 border rounded-lg bg-background/50">
+              <p className="text-muted-foreground">No trades found matching your filters.</p>
+              <Button 
+                variant="link" 
+                onClick={() => {
+                  setSearchQuery("");
+                  setStrategyFilters({
+                    categories: [],
+                    setups: [],
+                    grades: [],
+                    contextTags: [],
+                    favorites: null
+                  });
+                }}
+              >
+                Clear all filters
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+      
       <ViewStrategiesModal open={showViewStrategies} onOpenChange={setShowViewStrategies} />
     </div>
   );
