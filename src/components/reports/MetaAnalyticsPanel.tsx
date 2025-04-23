@@ -337,31 +337,30 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
                   <Scatter 
                     data={timeEfficiencyData} 
                     fill="#3b82f6"
-                    shape={(props: { 
-                      cx: number, 
-                      cy: number, 
-                      payload: { setup: string }
-                    }) => {
-                      const { cx, cy, payload } = props;
+                    shape={(props) => {
+                      const { cx = 0, cy = 0, payload } = props;
+                      if (!payload) return null;
+                      
                       return (
                         <g>
-                          <circle 
-                            cx={cx} 
-                            cy={cy} 
-                            r={10} 
-                            fill="#0f172a" 
-                            stroke="#3b82f6" 
-                            strokeWidth={2} 
+                          <circle
+                            cx={cx}
+                            cy={cy}
+                            r={10}
+                            fill="#8b5cf6"
+                            fillOpacity={0.6}
+                            stroke="#8b5cf6"
                           />
-                          <text 
-                            x={cx} 
-                            y={cy} 
-                            textAnchor="middle" 
-                            dominantBaseline="middle" 
-                            fill="#f8fafc" 
-                            fontSize={10}
+                          <text
+                            x={cx}
+                            y={cy}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="#f8fafc"
+                            fontSize={9}
+                            fontWeight="bold"
                           >
-                            {payload?.setup?.charAt(0) || ''}
+                            {payload.emotion?.charAt(0) || ""}
                           </text>
                         </g>
                       );
