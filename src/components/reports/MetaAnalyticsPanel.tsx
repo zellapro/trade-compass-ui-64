@@ -1,4 +1,3 @@
-
 import { 
   Card, 
   CardContent, 
@@ -338,7 +337,11 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
                   <Scatter 
                     data={timeEfficiencyData} 
                     fill="#3b82f6"
-                    shape={(props) => {
+                    shape={(props: { 
+                      cx: number, 
+                      cy: number, 
+                      payload: { setup: string }
+                    }) => {
                       const { cx, cy, payload } = props;
                       return (
                         <g>
@@ -358,7 +361,7 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
                             fill="#f8fafc" 
                             fontSize={10}
                           >
-                            {payload.setup.charAt(0)}
+                            {payload?.setup?.charAt(0) || ''}
                           </text>
                         </g>
                       );
