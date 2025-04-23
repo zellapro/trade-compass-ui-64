@@ -1,3 +1,4 @@
+
 import { 
   Card, 
   CardContent, 
@@ -21,9 +22,7 @@ import {
   Cell,
   Legend,
   AreaChart,
-  Area,
-  ScatterChart,
-  Scatter
+  Area
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -337,30 +336,13 @@ export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProp
                   <Scatter 
                     data={timeEfficiencyData} 
                     fill="#3b82f6"
-                    shape={(props) => {
-                      const { cx = 0, cy = 0, payload } = props;
-                      if (!payload) return null;
-                      
+                    shape={(props: any) => {
+                      const { cx, cy, payload } = props;
                       return (
                         <g>
-                          <circle
-                            cx={cx}
-                            cy={cy}
-                            r={10}
-                            fill="#8b5cf6"
-                            fillOpacity={0.6}
-                            stroke="#8b5cf6"
-                          />
-                          <text
-                            x={cx}
-                            y={cy}
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                            fill="#f8fafc"
-                            fontSize={9}
-                            fontWeight="bold"
-                          >
-                            {payload.emotion?.charAt(0) || ""}
+                          <circle cx={cx} cy={cy} r={10} fill="#0f172a" stroke="#3b82f6" strokeWidth={2} />
+                          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fill="#f8fafc" fontSize={10}>
+                            {payload.setup.charAt(0)}
                           </text>
                         </g>
                       );
