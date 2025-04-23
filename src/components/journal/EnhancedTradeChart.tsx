@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   AreaChart, 
@@ -23,7 +22,6 @@ interface EnhancedTradeChartProps {
   onToggleFullscreen?: () => void;
 }
 
-// Mock data for a candlestick chart based on trade info
 const generateChartData = (trade: Trade) => {
   const basePrice = trade.entryPrice;
   const priceRange = Math.abs(trade.exitPrice - trade.entryPrice);
@@ -33,17 +31,15 @@ const generateChartData = (trade: Trade) => {
     const time = new Date(new Date(trade.entryTime).getTime() + i * 15 * 60 * 1000)
       .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    // Create a price path that moves toward the exit price
     let price;
     if (i === 0) {
       price = basePrice;
     } else if (i === timePoints - 1) {
       price = trade.exitPrice;
     } else {
-      // Create some random movement but trending toward exit price
       const progress = i / (timePoints - 1);
       const direction = trade.exitPrice > trade.entryPrice ? 1 : -1;
-      const randomFactor = Math.random() * 0.5 - 0.25; // -0.25 to 0.25
+      const randomFactor = Math.random() * 0.5 - 0.25;
       price = basePrice + (priceRange * progress * direction) + (randomFactor * priceRange);
     }
     
@@ -60,20 +56,17 @@ export function EnhancedTradeChart({ trade, fullscreen = false, onToggleFullscre
   const [timeframe, setTimeframe] = useState('1m');
   const chartData = generateChartData(trade);
   
-  // Extract price data for area chart
   const priceData = chartData.map(d => ({
     time: d.time,
     price: d.price
   }));
   
-  // Extract volume data
   const volumeData = chartData.map(d => ({
     time: d.time,
     volume: d.volume,
     direction: d.direction
   }));
   
-  // Annotations for entry/exit points
   const annotations = [
     { time: priceData[0].time, price: trade.entryPrice, type: 'entry', label: 'Entry' },
     { time: priceData[priceData.length - 1].time, price: trade.exitPrice, type: 'exit', label: 'Exit' }
@@ -125,11 +118,12 @@ export function EnhancedTradeChart({ trade, fullscreen = false, onToggleFullscre
                 <Tooltip 
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
+                      const priceValue = Number(payload[0].value);
                       return (
                         <div className="rounded-lg border border-border bg-background p-2 shadow-md">
                           <p className="font-medium">{label}</p>
                           <p className="text-sm">
-                            Price: <span className="font-mono">${payload[0].value.toFixed(2)}</span>
+                            Price: <span className="font-mono">${priceValue.toFixed(2)}</span>
                           </p>
                         </div>
                       );
@@ -144,7 +138,6 @@ export function EnhancedTradeChart({ trade, fullscreen = false, onToggleFullscre
                   fillOpacity={1} 
                   fill="url(#colorPrice)" 
                 />
-                {/* Entry/Exit markers would go here in a real implementation */}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -159,11 +152,12 @@ export function EnhancedTradeChart({ trade, fullscreen = false, onToggleFullscre
                 <Tooltip 
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
+                      const volumeValue = Number(payload[0].value);
                       return (
                         <div className="rounded-lg border border-border bg-background p-2 shadow-md">
                           <p className="font-medium">{label}</p>
                           <p className="text-sm">
-                            Volume: <span className="font-mono">{payload[0].value}</span>
+                            Volume: <span className="font-mono">{volumeValue.toFixed(0)}</span>
                           </p>
                         </div>
                       );
