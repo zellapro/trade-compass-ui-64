@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -18,14 +17,10 @@ import {
   Link, 
   Palette, 
   Bell, 
-  CheckSquare, 
   Bot, 
   BarChart, 
   Shield, 
   Code,
-  CircleSlash,
-  LucideIcon,
-  Upload,
   Zap,
   Calendar,
   Save,
@@ -57,9 +52,7 @@ import AccountManagement from "@/components/settings/AccountManagement";
 import BrokerIntegrations from "@/components/settings/BrokerIntegrations";
 import AppearanceSettings from "@/components/settings/AppearanceSettings";
 import NotificationSettings from "@/components/settings/NotificationSettings";
-import TradingRulesSettings from "@/components/settings/TradingRulesSettings";
 import AiPreferences from "@/components/settings/AiPreferences";
-import ReportSettings from "@/components/settings/ReportSettings";
 import SecuritySettings from "@/components/settings/SecuritySettings";
 import DeveloperSettings from "@/components/settings/DeveloperSettings";
 import BonusFeatures from "@/components/settings/BonusFeatures";
@@ -84,9 +77,7 @@ const SettingsPage = () => {
     { id: "integrations", name: "Broker & Platform Integrations", icon: Link, description: "Connect your trading accounts and platforms" },
     { id: "appearance", name: "Appearance & UI", icon: Palette, description: "Customize how the application looks and feels" },
     { id: "notifications", name: "Notifications & Alerts", icon: BellRing, description: "Configure your notification preferences" },
-    { id: "trading-rules", name: "Trading Rules & Checklists", icon: CheckSquare, description: "Set up rules and checklists for your trading" },
     { id: "ai-preferences", name: "AI Preferences", icon: Bot, description: "Configure AI behavior and journaling settings" },
-    { id: "reports", name: "Report Settings", icon: BarChart, description: "Customize your trading reports" },
     { id: "security", name: "Security & Privacy", icon: Shield, description: "Manage security options and privacy settings" },
     { id: "developer", name: "Developer / API", icon: Code, description: "API keys and developer options" },
     { id: "bonus", name: "Additional Features", icon: Zap, description: "Focus mode, market sync and more" }
@@ -272,24 +263,10 @@ const SettingsPage = () => {
               />
             )}
             
-            {activeTab === "trading-rules" && (
-              <TradingRulesSettings 
-                onSettingChange={() => handleSettingChange('trading-rules')} 
-                saveResetButtons={<SaveResetButtons section="trading-rules" />}
-              />
-            )}
-            
             {activeTab === "ai-preferences" && (
               <AiPreferences 
                 onSettingChange={() => handleSettingChange('ai-preferences')} 
                 saveResetButtons={<SaveResetButtons section="ai-preferences" />}
-              />
-            )}
-            
-            {activeTab === "reports" && (
-              <ReportSettings 
-                onSettingChange={() => handleSettingChange('reports')} 
-                saveResetButtons={<SaveResetButtons section="reports" />}
               />
             )}
             
