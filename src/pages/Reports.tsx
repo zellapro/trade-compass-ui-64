@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -191,7 +190,7 @@ const Reports = () => {
               Psychology
             </TabsTrigger>
             <TabsTrigger value="meta" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Meta-Analytics
+              AI Analytics
             </TabsTrigger>
             <TabsTrigger value="identity" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Trader Identity
