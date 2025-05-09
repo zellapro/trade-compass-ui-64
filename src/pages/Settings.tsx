@@ -21,17 +21,31 @@ import { Switch } from "@/components/ui/switch";
 import { 
   User, 
   CreditCard, 
+  Smartphone, 
+  FileText, 
+  Share2, 
   Link, 
   Palette, 
   Bell, 
   Bot, 
-  BarChart, 
   Shield, 
-  Code,
-  Zap,
-  Calendar,
+  Lock,
+  Code, 
+  Key,
+  Puzzle,
+  Star,
+  Keyboard,
+  Command,
   Save,
   Undo,
+  Globe,
+  Database,
+  Download,
+  Upload,
+  Mail,
+  Slack,
+  Server,
+  Calendar,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -59,13 +73,13 @@ export default function Settings() {
 
   const settingsCategories: SettingsCategory[] = [
     { id: "account", name: "Account Management", icon: User, description: "Manage your profile and account settings" },
-    { id: "integrations", name: "Broker & Platform Integrations", icon: Link, description: "Connect your trading accounts and platforms" },
+    { id: "integrations", name: "Broker & Platform Integrations", icon: Server, description: "Connect your trading accounts and platforms" },
     { id: "appearance", name: "Appearance & UI", icon: Palette, description: "Customize how the application looks and feels" },
     { id: "notifications", name: "Notifications & Alerts", icon: Bell, description: "Configure your notification preferences" },
     { id: "ai-preferences", name: "AI Preferences", icon: Bot, description: "Configure AI behavior and journaling settings" },
     { id: "security", name: "Security & Privacy", icon: Shield, description: "Manage security options and privacy settings" },
     { id: "developer", name: "Developer / API", icon: Code, description: "API keys and developer options" },
-    { id: "bonus", name: "Additional Features", icon: Zap, description: "Focus mode, market sync and more" }
+    { id: "bonus", name: "Additional Features", icon: Puzzle, description: "Focus mode, market sync and more" }
   ];
 
   // Effect to handle tab change from URL
