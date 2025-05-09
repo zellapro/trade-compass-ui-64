@@ -318,8 +318,16 @@ export function MetaAnalyticsPanel() {
                   <Tooltip content={<CustomTooltip />} />
                   <Bar
                     dataKey="outcome"
-                    fill={(entry) => (entry.outcome > 0 ? "#10b981" : "#ef4444")}
-                  />
+                    fill="#8884d8"
+                    name="Outcome"
+                  >
+                    {behaviorData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.outcome > 0 ? "#10b981" : "#ef4444"} 
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
