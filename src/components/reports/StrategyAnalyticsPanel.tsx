@@ -1,479 +1,379 @@
 
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription,
-  CardFooter
-} from "@/components/ui/card";
-import { 
-  BarChart as RechartsBarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
+  PieChart, 
+  Pie, 
   LineChart,
   Line,
   Cell,
-  PieChart,
-  Pie,
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   Scatter,
   ScatterChart,
-  ZAxis
+  ZAxis,
 } from "recharts";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Clock, Calendar, Target, TrendingUp, Search, Lightbulb, Flag } from "lucide-react";
+import { CircleCheck, CircleX, Info, ArrowUp, ArrowDown } from "lucide-react";
 
-interface StrategyAnalyticsPanelProps {
-  timeframe?: string;
-}
+// Mock data
+const strategyBreakdownData = [
+  { name: 'Order Block', value: 35, fill: '#8b5cf6' },
+  { name: 'Fair Value Gap', value: 25, fill: '#3b82f6' },
+  { name: 'Breakout', value: 20, fill: '#10b981' },
+  { name: 'Range Trade', value: 15, fill: '#f59e0b' },
+  { name: 'Other', value: 5, fill: '#6b7280' },
+];
 
-export function StrategyAnalyticsPanel({ timeframe = "30d" }: StrategyAnalyticsPanelProps) {
-  // Mock data for strategy analytics
-  const strategies = [
-    { 
-      name: "OB Reclaim", 
-      winRate: 78, 
-      avgRR: 2.4, 
-      pnl: 3850,
-      trades: 35, 
-      drawdown: 420,
-      confidence: 8.5
-    },
-    { 
-      name: "VWAP Bounce", 
-      winRate: 72, 
-      avgRR: 2.1, 
-      pnl: 2650,
-      trades: 28, 
-      drawdown: 380,
-      confidence: 7.8
-    },
-    { 
-      name: "Breakout", 
-      winRate: 68, 
-      avgRR: 1.9, 
-      pnl: 2120,
-      trades: 32, 
-      drawdown: 450,
-      confidence: 7.2
-    },
-    { 
-      name: "SMC", 
-      winRate: 75, 
-      avgRR: 2.3, 
-      pnl: 3240,
-      trades: 30, 
-      drawdown: 390,
-      confidence: 8.2
-    },
-    { 
-      name: "Fib Retracement", 
-      winRate: 65, 
-      avgRR: 1.8, 
-      pnl: 1950,
-      trades: 25, 
-      drawdown: 460,
-      confidence: 6.9
-    }
-  ];
+const strategyPerformanceData = [
+  { strategy: 'Order Block', winRate: 64, avgRR: 2.1, trades: 28 },
+  { strategy: 'Fair Value Gap', winRate: 58, avgRR: 2.8, trades: 19 },
+  { strategy: 'Breakout', winRate: 72, avgRR: 1.6, trades: 18 },
+  { strategy: 'Range Trade', winRate: 60, avgRR: 1.9, trades: 15 },
+  { strategy: 'All', winRate: 62, avgRR: 2.1, trades: 80 },
+];
 
-  // Weekly frequency data
-  const frequencyData = [
-    { day: "Monday", obReclaim: 8, vwap: 6, breakout: 5, smc: 7, fib: 4 },
-    { day: "Tuesday", obReclaim: 7, vwap: 8, breakout: 6, smc: 5, fib: 3 },
-    { day: "Wednesday", obReclaim: 5, vwap: 4, breakout: 8, smc: 6, fib: 5 },
-    { day: "Thursday", obReclaim: 9, vwap: 5, breakout: 7, smc: 6, fib: 4 },
-    { day: "Friday", obReclaim: 6, vwap: 5, breakout: 6, smc: 6, fib: 9 }
-  ];
+const strategyTimeframeData = [
+  { name: 'M1', OB: 5, FVG: 8, Breakout: 12, Range: 6 },
+  { name: 'M5', OB: 18, FVG: 14, Breakout: 8, Range: 4 },
+  { name: 'M15', OB: 32, FVG: 20, Breakout: 14, Range: 9 },
+  { name: 'H1', OB: 12, FVG: 22, Breakout: 5, Range: 18 },
+  { name: 'H4', OB: 8, FVG: 10, Breakout: 2, Range: 12 },
+];
 
-  // Confidence vs Performance data
-  const confidenceData = [
-    { name: "OB Reclaim", confidence: 8.5, winRate: 78, size: 35 },
-    { name: "VWAP Bounce", confidence: 7.8, winRate: 72, size: 28 },
-    { name: "Breakout", confidence: 7.2, winRate: 68, size: 32 },
-    { name: "SMC", confidence: 8.2, winRate: 75, size: 30 },
-    { name: "Fib Retracement", confidence: 6.9, winRate: 65, size: 25 },
-    { name: "Gap & Go", confidence: 6.5, winRate: 62, size: 18 },
-    { name: "Counter-Trend", confidence: 5.8, winRate: 58, size: 15 },
-    { name: "Higher TF Trend", confidence: 7.5, winRate: 70, size: 20 }
-  ];
+const scatterData = [
+  { x: 54, y: 3.2, z: 18, name: 'Fair Value Gap' },
+  { x: 68, y: 1.8, z: 30, name: 'Order Block' },
+  { x: 72, y: 1.5, z: 22, name: 'Breakout' },
+  { x: 62, y: 2.0, z: 14, name: 'Range Trade' },
+  { x: 48, y: 2.8, z: 10, name: 'Pullback' },
+];
 
+const chartConfig = {
+  "OB": { color: "#8b5cf6" },
+  "FVG": { color: "#3b82f6" },
+  "Breakout": { color: "#10b981" },
+  "Range": { color: "#f59e0b" },
+  "Other": { color: "#6b7280" },
+};
+
+export function StrategyAnalyticsPanel() {
+  const [activeTab, setActiveTab] = useState("breakdown");
+  
   return (
-    <div className="space-y-6">
-      {/* Strategy Selection & Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="grid grid-cols-2 gap-3 w-full md:w-auto">
-              <Select defaultValue="all">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Strategy" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Strategies</SelectItem>
-                  <SelectItem value="obreclaim">OB Reclaim</SelectItem>
-                  <SelectItem value="vwap">VWAP Bounce</SelectItem>
-                  <SelectItem value="breakout">Breakout</SelectItem>
-                  <SelectItem value="smc">SMC</SelectItem>
-                  <SelectItem value="fib">Fib Retracement</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select defaultValue="winrate">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort By" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="winrate">Win Rate</SelectItem>
-                  <SelectItem value="rr">Reward/Risk</SelectItem>
-                  <SelectItem value="pnl">Net P&L</SelectItem>
-                  <SelectItem value="trades">Trade Count</SelectItem>
-                  <SelectItem value="drawdown">Max Drawdown</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <Button variant="outline" className="flex items-center gap-2" size="sm">
-                <Flag size={14} />
-                <span>A+ Setups</span>
-              </Button>
-              <Button variant="outline" className="flex items-center gap-2" size="sm">
-                <Target size={14} />
-                <span>High Confidence</span>
-              </Button>
-              <Button variant="outline" className="flex items-center gap-2" size="sm">
-                <Calendar size={14} />
-                <span>Day Filter</span>
-              </Button>
-            </div>
+    <Card className="w-full">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-xl">Strategy Analytics</CardTitle>
+            <CardDescription>Performance metrics across different trading strategies</CardDescription>
           </div>
-        </CardContent>
-      </Card>
+          <Badge variant="outline">Last 30 Days</Badge>
+        </div>
+      </CardHeader>
       
-      {/* Strategy Performance Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Strategy Win Rates */}
-        <Card className="md:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <TrendingUp size={18} className="mr-2" />
-              Strategy Win Rates
-            </CardTitle>
-            <CardDescription>
-              Performance breakdown by strategy and success rate
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[350px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <RechartsBarChart
-                  data={strategies}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.1} />
-                  <XAxis type="number" domain={[0, 100]} />
-                  <YAxis type="category" dataKey="name" />
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.name}</p>
-                            <p className="text-sm">Win Rate: {data.winRate}%</p>
-                            <p className="text-sm">Avg R:R: {data.avgRR}</p>
-                            <p className="text-sm">Net P&L: ${data.pnl}</p>
-                            <p className="text-sm">Trades: {data.trades}</p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar 
-                    dataKey="winRate" 
-                    radius={[0, 4, 4, 0]}
-                  >
-                    {strategies.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`}
-                        fill={
-                          entry.winRate >= 75 ? '#10b981' : 
-                          entry.winRate >= 65 ? '#3b82f6' : 
-                          entry.winRate >= 55 ? '#f59e0b' : '#ef4444'
-                        }
-                      />
-                    ))}
-                  </Bar>
-                </RechartsBarChart>
-              </ResponsiveContainer>
+      <Tabs defaultValue="breakdown" className="w-full" onValueChange={setActiveTab}>
+        <div className="px-6">
+          <TabsList className="w-full h-auto justify-start flex-wrap">
+            <TabsTrigger value="breakdown" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Strategy Breakdown
+            </TabsTrigger>
+            <TabsTrigger value="performance" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Performance
+            </TabsTrigger>
+            <TabsTrigger value="timeframes" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Timeframe Analysis
+            </TabsTrigger>
+            <TabsTrigger value="matrix" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Win Rate vs RR
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <CardContent className="p-6">
+          <TabsContent value="breakdown" className="mt-0 space-y-4">
+            <div className="flex flex-col lg:flex-row">
+              <div className="w-full lg:w-1/2 flex items-center justify-center">
+                <div className="h-80 w-full">
+                  <ChartContainer config={chartConfig}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={strategyBreakdownData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          paddingAngle={5}
+                          dataKey="value"
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {strategyBreakdownData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<ChartTooltipContent />} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
+                </div>
+              </div>
+              <div className="w-full lg:w-1/2 space-y-4">
+                <h3 className="text-lg font-semibold">Strategy Usage</h3>
+                
+                <div className="space-y-3">
+                  {strategyBreakdownData.map((strategy) => (
+                    <div key={strategy.name} className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">{strategy.name}</span>
+                        <span className="text-sm">{strategy.value}%</span>
+                      </div>
+                      <div className="h-2 rounded-full overflow-hidden bg-muted">
+                        <div
+                          className="h-full rounded-full"
+                          style={{
+                            width: `${strategy.value}%`,
+                            backgroundColor: strategy.fill,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-4 p-3 bg-muted rounded-md">
+                  <div className="flex items-start gap-2">
+                    <Info className="h-5 w-5 text-blue-500 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium mb-1">Strategic Balance</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Order Block remains your most used strategy at 35%. Consider exploring FVG setups more as they show higher RR when successful.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        {/* Strategy P&L Breakdown */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-lg">
-              <PieChart size={18} className="mr-2" />
-              P&L Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[350px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={strategies}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="pnl"
-                    nameKey="name"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {strategies.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`}
-                        fill={
-                          index === 0 ? '#3b82f6' : 
-                          index === 1 ? '#10b981' : 
-                          index === 2 ? '#f59e0b' :
-                          index === 3 ? '#8b5cf6' : '#6366f1'
-                        }
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.name}</p>
-                            <p className="text-sm">P&L: ${data.pnl}</p>
-                            <p className="text-sm">
-                              {(data.pnl / strategies.reduce((sum, s) => sum + s.pnl, 0) * 100).toFixed(1)}% of total
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+          </TabsContent>
+          
+          <TabsContent value="performance" className="mt-0 space-y-4">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="p-2 text-left font-medium text-sm">Strategy</th>
+                    <th className="p-2 text-left font-medium text-sm">Win Rate</th>
+                    <th className="p-2 text-left font-medium text-sm">Avg RR</th>
+                    <th className="p-2 text-left font-medium text-sm">Trades</th>
+                    <th className="p-2 text-left font-medium text-sm">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {strategyPerformanceData.map((strategy) => (
+                    <tr key={strategy.strategy} className={strategy.strategy === 'All' ? 'bg-muted/50' : ''}>
+                      <td className="p-2 text-sm font-medium">
+                        {strategy.strategy}
+                        {strategy.strategy === 'All' && <span className="text-xs text-muted-foreground ml-2">(Average)</span>}
+                      </td>
+                      <td className="p-2 text-sm">
+                        <div className="flex items-center">
+                          <span className="font-medium">{strategy.winRate}%</span>
+                          <Progress value={strategy.winRate} className="h-1 w-20 ml-2" />
+                        </div>
+                      </td>
+                      <td className="p-2 text-sm font-medium">{strategy.avgRR}R</td>
+                      <td className="p-2 text-sm">{strategy.trades}</td>
+                      <td className="p-2 text-sm">
+                        {strategy.winRate > 65 ? (
+                          <Badge className="bg-green-100 text-green-800">
+                            <CircleCheck className="mr-1 h-3.5 w-3.5" />
+                            Strong
+                          </Badge>
+                        ) : strategy.winRate < 55 ? (
+                          <Badge className="bg-red-100 text-red-800">
+                            <CircleX className="mr-1 h-3.5 w-3.5" />
+                            Weak
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-amber-100 text-amber-800">
+                            Average
+                          </Badge>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Additional Analysis Tabs */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Strategy Deep Dive</CardTitle>
-          <CardDescription>
-            Detailed analysis and correlations between strategies and performance
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="frequency" className="w-full">
-            <TabsList className="w-full grid grid-cols-3 mb-6">
-              <TabsTrigger value="frequency">Frequency Heatmap</TabsTrigger>
-              <TabsTrigger value="confidence">Confidence Correlation</TabsTrigger>
-              <TabsTrigger value="suggestions">Smart Suggestions</TabsTrigger>
-            </TabsList>
             
-            {/* Frequency Heatmap Tab */}
-            <TabsContent value="frequency" className="pt-2">
-              <div className="h-[400px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-3 bg-muted rounded-md">
+                <div className="flex items-start gap-2">
+                  <ArrowUp className="h-5 w-5 text-green-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium mb-1">Top Performer</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Breakout strategy has the highest win rate at 72%, but lowest RR at 1.6. Consider optimizing exit criteria to improve profitability.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-3 bg-muted rounded-md">
+                <div className="flex items-start gap-2">
+                  <ArrowDown className="h-5 w-5 text-amber-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium mb-1">Needs Improvement</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Fair Value Gap has high RR (2.8) but lower win rate (58%). Refining entry criteria could substantially improve overall performance.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="timeframes" className="mt-0 space-y-4">
+            <div className="h-80 w-full">
+              <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <RechartsBarChart
-                    data={frequencyData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  <BarChart
+                    data={strategyTimeframeData}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                    <XAxis dataKey="day" />
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip
-                      content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                              <p className="font-medium">{label}</p>
-                              {payload.map((entry, index) => (
-                                <p 
-                                  key={index} 
-                                  className="text-sm"
-                                  style={{ color: entry.color }}
-                                >
-                                  {entry.name}: {entry.value} trades
-                                </p>
-                              ))}
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Bar dataKey="obReclaim" name="OB Reclaim" stackId="a" fill="#3b82f6" />
-                    <Bar dataKey="vwap" name="VWAP" stackId="a" fill="#10b981" />
-                    <Bar dataKey="breakout" name="Breakout" stackId="a" fill="#f59e0b" />
-                    <Bar dataKey="smc" name="SMC" stackId="a" fill="#8b5cf6" />
-                    <Bar dataKey="fib" name="Fib" stackId="a" fill="#6366f1" />
-                  </RechartsBarChart>
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="OB" name="Order Block" stackId="a" fill="#8b5cf6" />
+                    <Bar dataKey="FVG" name="Fair Value Gap" stackId="a" fill="#3b82f6" />
+                    <Bar dataKey="Breakout" name="Breakout" stackId="a" fill="#10b981" />
+                    <Bar dataKey="Range" name="Range Trade" stackId="a" fill="#f59e0b" />
+                  </BarChart>
                 </ResponsiveContainer>
-              </div>
-              <div className="text-center text-sm text-muted-foreground mt-4">
-                <p>OB Reclaim setups are most frequently traded on Thursdays and Mondays</p>
-                <p>Fibonacci setups show highest frequency on Fridays</p>
-              </div>
-            </TabsContent>
+              </ChartContainer>
+            </div>
             
-            {/* Confidence Correlation Tab */}
-            <TabsContent value="confidence" className="pt-2">
-              <div className="h-[400px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-3 bg-muted rounded-md">
+                <div className="flex items-start gap-2">
+                  <Info className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium mb-1">Timeframe Insights</h4>
+                    <p className="text-sm text-muted-foreground">
+                      M15 is your most active timeframe with 75 total trades. Order Block setups perform best on this timeframe.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="p-3 bg-muted rounded-md">
+                <div className="flex items-start gap-2">
+                  <Info className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium mb-1">Strategy Alignment</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Range Trade strategy performs best on higher timeframes (H1, H4), while Breakout performs best on lower timeframes (M1, M5).
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="matrix" className="mt-0 space-y-4">
+            <div className="h-80 w-full">
+              <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart
-                    margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                    margin={{
+                      top: 20,
+                      right: 20,
+                      bottom: 10,
+                      left: 10,
+                    }}
                   >
-                    <CartesianGrid opacity={0.1} />
+                    <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
                       type="number" 
-                      dataKey="confidence" 
-                      name="Confidence" 
-                      domain={[5, 10]} 
-                      label={{ 
-                        value: 'Confidence Score', 
-                        position: 'bottom',
-                        style: { fill: '#64748b', fontSize: '12px' }
-                      }}
+                      dataKey="x" 
+                      name="Win Rate" 
+                      unit="%" 
+                      domain={[45, 75]} 
                     />
                     <YAxis 
                       type="number" 
-                      dataKey="winRate" 
-                      name="Win Rate" 
-                      domain={[50, 80]}
-                      label={{ 
-                        value: 'Win Rate (%)', 
-                        angle: -90, 
-                        position: 'left',
-                        style: { fill: '#64748b', fontSize: '12px' }
-                      }}
+                      dataKey="y" 
+                      name="Avg RR" 
+                      unit="R" 
+                      domain={[1, 3.5]} 
                     />
                     <ZAxis 
-                      type="number"
-                      dataKey="size"
-                      range={[50, 400]}
-                      name="Trade Count"
+                      type="number" 
+                      dataKey="z" 
+                      range={[50, 400]} 
+                      name="Trades" 
                     />
-                    <Tooltip
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          const data = payload[0].payload;
-                          return (
-                            <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                              <p className="font-medium">{data.name}</p>
-                              <p className="text-sm">Confidence: {data.confidence}/10</p>
-                              <p className="text-sm">Win Rate: {data.winRate}%</p>
-                              <p className="text-sm">Trades: {data.size}</p>
-                            </div>
-                          );
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<ChartTooltipContent />} />
+                    <Scatter name="Strategies" data={scatterData} fill="#8884d8">
+                      {scatterData.map((entry, index) => {
+                        let color = '#8884d8';
+                        switch(entry.name) {
+                          case 'Order Block': color = '#8b5cf6'; break;
+                          case 'Fair Value Gap': color = '#3b82f6'; break;
+                          case 'Breakout': color = '#10b981'; break;
+                          case 'Range Trade': color = '#f59e0b'; break;
+                          case 'Pullback': color = '#ef4444'; break;
+                          default: color = '#8884d8';
                         }
-                        return null;
-                      }}
-                    />
-                    <Scatter 
-                      data={confidenceData} 
-                      fill="#3b82f6"
-                    >
-                      {confidenceData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={
-                            entry.winRate >= 75 ? '#10b981' : 
-                            entry.winRate >= 65 ? '#3b82f6' : 
-                            entry.winRate >= 55 ? '#f59e0b' : '#ef4444'
-                          }
-                        />
-                      ))}
+                        return <Cell key={`cell-${index}`} fill={color} />;
+                      })}
                     </Scatter>
                   </ScatterChart>
                 </ResponsiveContainer>
-              </div>
-              <div className="text-center text-sm text-muted-foreground mt-4">
-                <p>Strong positive correlation (R² = 0.82) between confidence score and win rate</p>
-                <p>Trades with confidence ≥ 8.0 have 74% average win rate</p>
-              </div>
-            </TabsContent>
+              </ChartContainer>
+            </div>
             
-            {/* Smart Suggestions Tab */}
-            <TabsContent value="suggestions" className="pt-2">
-              <div className="space-y-4">
-                <div className="p-4 rounded-lg border border-border/50 bg-background/50">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
-                      <Lightbulb size={20} />
-                    </div>
-                    <h3 className="font-medium">OB Reclaim Performance Insight</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    OB Reclaim shows 82% win rate on Tuesday mornings (9:30-11:00 AM).
-                    Consider increasing position sizing during this window.
+            <div className="p-3 bg-muted rounded-md">
+              <div className="flex items-start gap-2">
+                <Info className="h-5 w-5 text-blue-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium mb-1">Matrix Analysis</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Optimal strategies appear in the top-right quadrant (high win rate, high RR). Breakout has highest win rate but lowest RR, while Fair Value Gap has highest RR but lower win rate.
                   </p>
-                  <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-800">
-                    High Confidence: 94%
-                  </Badge>
-                </div>
-                
-                <div className="p-4 rounded-lg border border-border/50 bg-background/50">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-                      <Lightbulb size={20} />
-                    </div>
-                    <h3 className="font-medium">SMC + FVG Confluence</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    SMC strategy with additional FVG confluence filter improves win rate by 18%
-                    and RR by 0.4. Add this filter to your SMC strategy rules.
-                  </p>
-                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-800">
-                    High Impact: +18% Win Rate
-                  </Badge>
-                </div>
-                
-                <div className="p-4 rounded-lg border border-border/50 bg-background/50">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
-                      <Lightbulb size={20} />
-                    </div>
-                    <h3 className="font-medium">Fibonacci Retracement Timing</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Fibonacci Retracement setups perform significantly better on Fridays (72% win rate vs. 58% average).
-                    Consider focusing on this setup at week's end.
-                  </p>
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-800">
-                    Medium Confidence: 82%
-                  </Badge>
                 </div>
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </TabsContent>
         </CardContent>
-      </Card>
-    </div>
+      </Tabs>
+      
+      <CardFooter className="flex justify-between border-t p-6">
+        <Button variant="outline" size="sm">
+          View Historical Data
+        </Button>
+        <Button size="sm">
+          Export Analytics
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

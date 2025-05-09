@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Journal from "./pages/Journal";
 import Performance from "./pages/Performance";
+import Playbook from "./pages/Playbook";
 import Replay from "./pages/Replay";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
           <Route path="/journal" element={<Layout><Journal /></Layout>} />
           <Route path="/performance" element={<Layout><Performance /></Layout>} />
+          <Route path="/playbook" element={<Layout><Playbook /></Layout>} />
           <Route path="/replay" element={<Layout><Replay /></Layout>} />
           <Route path="/reports" element={<Layout><Reports /></Layout>} />
           <Route path="/settings" element={<Layout><Settings /></Layout>} />

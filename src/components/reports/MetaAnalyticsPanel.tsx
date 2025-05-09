@@ -1,1108 +1,918 @@
 
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription,
-  CardFooter
-} from "@/components/ui/card";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  AreaChart,
-  Area,
-  ScatterChart,
-  Scatter
-} from "recharts";
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
 import { 
-  TrendingUp, 
-  Clock, 
-  Activity,
-  BarChart as BarChartIcon, 
-  CalendarDays,
-  ChartBar,
-  ChartLine,
-  ThermometerSnowflake,
-  Check,
-  X,
-  Circle,
-  HelpCircle,
-  Settings,
+  BarChart, 
+  LineChart,
+  Line,
+  Bar,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
+import {
+  ArrowUp,
+  ArrowDown,
+  CircleAlert,
+  TrendingUp,
+  TrendingDown,
   AlertTriangle,
-  Info
+  Clock,
+  Scale,
+  FileText,
+  BarChart2,
+  Calendar,
+  Brain,
+  Target,
+  ThumbsUp,
 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useState } from "react";
 
-interface MetaAnalyticsPanelProps {
-  timeframe?: string;
-}
+// Mock data
+const alphaConsistencyData = [
+  { day: '1', value: 0.87 },
+  { day: '5', value: 0.92 },
+  { day: '10', value: 0.75 },
+  { day: '15', value: 0.83 },
+  { day: '20', value: 0.92 },
+  { day: '25', value: 0.89 },
+  { day: '30', value: 0.94 },
+];
 
-export function MetaAnalyticsPanel({ timeframe = "30d" }: MetaAnalyticsPanelProps) {
-  const [activeSection, setActiveSection] = useState<number | null>(null);
-  const [replayFilter, setReplayFilter] = useState("all");
-  const [setupTypeFilter, setSetupTypeFilter] = useState("all");
+const planDeviationData = {
+  overshoot: 11,
+  undershoot: 18,
+};
 
-  // Alpha Consistency Index data
-  const alphaConsistencyData = [
-    { date: "Feb 01", value: 1.23, upper: 1.5, lower: 1.0 },
-    { date: "Feb 08", value: 1.31, upper: 1.6, lower: 1.0 },
-    { date: "Feb 15", value: 1.28, upper: 1.5, lower: 1.1 },
-    { date: "Feb 22", value: 1.42, upper: 1.7, lower: 1.2 },
-    { date: "Mar 01", value: 1.35, upper: 1.6, lower: 1.1 },
-    { date: "Mar 08", value: 1.47, upper: 1.7, lower: 1.2 },
-    { date: "Mar 15", value: 1.56, upper: 1.8, lower: 1.3 },
-    { date: "Mar 22", value: 1.49, upper: 1.7, lower: 1.2 },
-    { date: "Mar 29", value: 1.62, upper: 1.9, lower: 1.4 },
-    { date: "Apr 05", value: 1.71, upper: 2.0, lower: 1.4 },
-    { date: "Apr 12", value: 1.64, upper: 1.9, lower: 1.3 },
-    { date: "Apr 19", value: 1.77, upper: 2.1, lower: 1.5 }
-  ];
+const executionSpeedData = [
+  { seconds: '2', successRate: 72 },
+  { seconds: '4', successRate: 68 },
+  { seconds: '6', successRate: 63 },
+  { seconds: '8', successRate: 51 },
+  { seconds: '10', successRate: 46 },
+  { seconds: '15', successRate: 38 },
+  { seconds: '20', successRate: 32 },
+];
 
-  // Plan Deviation Delta data
-  const planDeviationData = [
-    { name: "Entries", planned: 100, actual: 92, deviation: -8 },
-    { name: "Exits", planned: 100, actual: 82, deviation: -18 },
-    { name: "Stop Placement", planned: 100, actual: 96, deviation: -4 },
-    { name: "Size", planned: 100, actual: 105, deviation: 5 }
-  ];
+const setupLongevityData = [
+  { name: 'OB Sweep', months: 8, status: 'strengthening' },
+  { name: 'FVG Tap', months: 5, status: 'neutral' },
+  { name: 'VWAP Bounce', months: 3, status: 'weakening' },
+  { name: 'BOS Retest', months: 6, status: 'neutral' },
+];
 
-  // Execution Speed Sync data
-  const executionSpeedData = [
-    { seconds: "< 3s", winRate: 72, count: 34 },
-    { seconds: "3-6s", winRate: 63, count: 57 },
-    { seconds: "6-10s", winRate: 51, count: 42 },
-    { seconds: "10-20s", winRate: 44, count: 28 },
-    { seconds: "> 20s", winRate: 32, count: 19 }
-  ];
+const replayEfficiencyData = [
+  { name: 'With Replay', rr: 2.4 },
+  { name: 'Without Replay', rr: 1.7 },
+];
 
-  // Setup Longevity Score data
-  const setupLongevityData = [
-    { name: "OB Reclaim", months: 7, status: "strengthening", trend: 12 },
-    { name: "VWAP Bounce", months: 5, status: "weakening", trend: -20 },
-    { name: "Breakout", months: 4, status: "neutral", trend: 2 },
-    { name: "SMC", months: 8, status: "strengthening", trend: 15 },
-    { name: "Fib Retracement", months: 3, status: "weakening", trend: -8 }
-  ];
+const cognitiveDataByTime = [
+  { time: '9AM', accuracy: 92 },
+  { time: '10AM', accuracy: 88 },
+  { time: '11AM', accuracy: 90 },
+  { time: '12PM', accuracy: 83 },
+  { time: '1PM', accuracy: 78 },
+  { time: '2PM', accuracy: 72 },
+  { time: '3PM', accuracy: 61 },
+  { time: '4PM', accuracy: 58 },
+];
 
-  // Replay Efficiency data
-  const replayEfficiencyData = [
-    { setup: "OB Reclaim", withReplay: 2.7, withoutReplay: 1.9 },
-    { setup: "VWAP Bounce", withReplay: 2.4, withoutReplay: 1.7 },
-    { setup: "Breakout", withReplay: 2.2, withoutReplay: 1.8 },
-    { setup: "SMC", withReplay: 2.8, withoutReplay: 2.1 },
-    { setup: "Fib Retracement", withReplay: 2.0, withoutReplay: 1.5 }
-  ];
+const metaAdherenceScore = {
+  strategyAlignment: 82,
+  morningBiasSync: 67,
+  executionMatch: 88,
+  grade: 'B',
+  emoji: '🤔',
+};
 
-  // Strategic Drift Detector data
-  const strategicDriftData = [
-    { month: "Jan", ob: 54, breakout: 28, vwap: 18 },
-    { month: "Feb", ob: 48, breakout: 32, vwap: 20 },
-    { month: "Mar", ob: 42, breakout: 38, vwap: 20 },
-    { month: "Apr", ob: 35, breakout: 45, vwap: 20 }
-  ];
+// Seasonality heatmap data (simplified for demo)
+const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const timeBlocks = ['9-10AM', '10-11AM', '11-12PM', '12-1PM', '1-2PM', '2-3PM', '3-4PM'];
 
-  // Trade-to-Bias Alignment data
-  const biasAlignmentData = [
-    { type: "Aligned", count: 72, rr: 2.4 },
-    { type: "Counter", count: 28, rr: 1.3 }
-  ];
+const seasonalityHeatmap = dayNames.map((day) => {
+  const data: Record<string, number> = { day };
+  timeBlocks.forEach((time) => {
+    data[time] = Math.floor(Math.random() * 100);
+  });
+  return data;
+});
 
-  // Execution Integrity Index data
-  const executionIntegrityScores = {
-    entryAccuracy: 86,
-    rrPrecision: 78,
-    sizingPrecision: 92,
-    compositeScore: 85
-  };
+const chartConfig = {
+  positive: { color: "#22c55e" },
+  negative: { color: "#ef4444" },
+  neutral: { color: "#3b82f6" },
+  primary: { color: "#8b5cf6" },
+};
 
-  // Cognitive Fatigue Tracker data
-  const cognitiveFatigueData = [
-    { time: "9:30-11:00", winRate: 68, rr: 2.2, trades: 42 },
-    { time: "11:00-12:30", winRate: 62, rr: 1.9, trades: 38 },
-    { time: "12:30-14:00", winRate: 58, rr: 1.7, trades: 29 },
-    { time: "14:00-15:30", winRate: 42, rr: 1.2, trades: 24 },
-    { time: "15:30-16:00", winRate: 38, rr: 1.0, trades: 15 }
-  ];
-
-  // Micro-Pattern Feedback Loop data
-  const microPatternData = [
-    { pattern: "Early Scaling", occurrence: 14, rrImpact: -11 },
-    { pattern: "Revenge Re-entry", occurrence: 8, rrImpact: -15 },
-    { pattern: "Missed Confirmation", occurrence: 10, rrImpact: -9 },
-    { pattern: "Extended Holding", occurrence: 7, rrImpact: 8 },
-    { pattern: "Stop Too Tight", occurrence: 12, rrImpact: -7 }
-  ];
-
-  // Strategic Seasonality Heatmap data
-  const seasonalityData = {
-    monday: { morning: 62, midday: 48, afternoon: 51 },
-    tuesday: { morning: 71, midday: 58, afternoon: 47 },
-    wednesday: { morning: 65, midday: 63, afternoon: 54 },
-    thursday: { morning: 73, midday: 61, afternoon: 49 },
-    friday: { morning: 58, midday: 52, afternoon: 42 }
-  };
-
-  // Meta-Adherence Breakdown data
-  const metaAdherenceScores = {
-    strategyAlignment: 82,
-    biasSync: 74,
-    executionMatch: 88,
-    compositeScore: 81
-  };
-
-  const getMetaAdherenceGrade = (score: number) => {
-    if (score >= 80) return { grade: "A", emoji: "🔥" };
-    if (score >= 70) return { grade: "B", emoji: "🤔" };
-    return { grade: "C", emoji: "❄️" };
-  };
-
-  const getExecutionIntegrityGrade = (score: number) => {
-    if (score >= 90) return "A+";
-    if (score >= 80) return "A";
-    if (score >= 70) return "B";
-    if (score >= 60) return "C";
-    return "D";
-  };
-
+export function MetaAnalyticsPanel() {
+  const [activeTab, setActiveTab] = useState("consistency");
+  
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Alpha Consistency Index */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <ChartLine size={18} className="mr-2" />
-              Alpha Consistency Index
+    <Card className="w-full">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-xl flex items-center">
+              <Brain className="mr-2 h-5 w-5" />
+              Meta-Analytics
             </CardTitle>
             <CardDescription>
-              Rolling 30-day Sharpe-adjusted RR Ratio
+              Advanced analytics of your trading patterns, behaviors, and cognitive factors
             </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={alphaConsistencyData}>
-                  <defs>
-                    <linearGradient id="colorUpper" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="colorLower" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1} />
-                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                  <XAxis dataKey="date" />
-                  <YAxis domain={[0.8, 'auto']} />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.date}</p>
-                            <p className="text-sm">Consistency Index: {data.value.toFixed(2)}</p>
-                            <p className="text-sm text-emerald-400">Upper Band: {data.upper.toFixed(2)}</p>
-                            <p className="text-sm text-red-400">Lower Band: {data.lower.toFixed(2)}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Tracks consistency of edge execution over time, adjusted for risk
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="upper" 
-                    stroke="#10b981" 
-                    strokeWidth={1}
-                    fillOpacity={1} 
-                    fill="url(#colorUpper)" 
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="lower" 
-                    stroke="#ef4444" 
-                    strokeWidth={1}
-                    fillOpacity={1} 
-                    fill="url(#colorLower)" 
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="value" 
-                    stroke="#3b82f6" 
-                    strokeWidth={2}
-                    dot={{ stroke: '#3b82f6', strokeWidth: 2, r: 4, fill: '#1e293b' }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-2 text-sm text-center text-muted-foreground">
-              <p>Your consistency has improved 29% over the past 60 days</p>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Plan Deviation Delta */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Settings size={18} className="mr-2" />
-              Plan Deviation Delta
-            </CardTitle>
-            <CardDescription>
-              % deviation between pre-planned and actual execution
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={planDeviationData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                  <XAxis dataKey="name" />
-                  <YAxis domain={[-25, 25]} />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.name}</p>
-                            <p className="text-sm">Planned: 100%</p>
-                            <p className="text-sm">Actual: {data.actual}%</p>
-                            <p className="text-sm font-medium">
-                              Deviation: {data.deviation > 0 ? "+" : ""}{data.deviation}%
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar 
-                    dataKey="deviation" 
-                    radius={[4, 4, 0, 0]}
-                  >
-                    {planDeviationData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`}
-                        fill={entry.deviation >= 0 ? '#10b981' : '#ef4444'}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg text-sm mt-2">
-              <div className="flex items-start gap-2">
-                <AlertTriangle size={16} className="text-amber-400 mt-1" />
-                <div>
-                  <span className="font-medium text-amber-400">Smart Highlight:</span>
-                  <p className="text-muted-foreground">You consistently take profits 18% before target</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+          <Badge variant="outline" className="px-3 py-1">2025+ Elite</Badge>
+        </div>
+      </CardHeader>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Execution Speed Sync */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Clock size={18} className="mr-2" />
-              Execution Speed Sync
-            </CardTitle>
-            <CardDescription>
-              Entry reaction time vs. success rate
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={executionSpeedData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                  <XAxis dataKey="seconds" />
-                  <YAxis />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.seconds} Reaction Time</p>
-                            <p className="text-sm">Win Rate: {data.winRate}%</p>
-                            <p className="text-sm">Trade Count: {data.count}</p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar 
-                    dataKey="winRate" 
-                    fill="#3b82f6" 
-                    radius={[4, 4, 0, 0]}
-                  >
-                    {executionSpeedData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`}
-                        fill={
-                          entry.winRate >= 60 ? '#10b981' : 
-                          entry.winRate >= 50 ? '#f59e0b' : '#ef4444'
-                        }
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+      <Tabs defaultValue="consistency" className="w-full" onValueChange={setActiveTab}>
+        <div className="px-6">
+          <TabsList className="w-full h-auto justify-start flex-wrap">
+            <TabsTrigger value="consistency" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Alpha Consistency
+            </TabsTrigger>
+            <TabsTrigger value="deviation" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Plan Deviation
+            </TabsTrigger>
+            <TabsTrigger value="execution" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Execution Speed
+            </TabsTrigger>
+            <TabsTrigger value="longevity" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Setup Longevity
+            </TabsTrigger>
+            <TabsTrigger value="replay" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Replay Efficiency
+            </TabsTrigger>
+            <TabsTrigger value="drift" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Strategic Drift
+            </TabsTrigger>
+            <TabsTrigger value="alignment" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Bias Alignment
+            </TabsTrigger>
+            <TabsTrigger value="integrity" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Execution Integrity
+            </TabsTrigger>
+            <TabsTrigger value="fatigue" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Cognitive Fatigue
+            </TabsTrigger>
+            <TabsTrigger value="patterns" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Micro-Patterns
+            </TabsTrigger>
+            <TabsTrigger value="seasonality" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Seasonality
+            </TabsTrigger>
+            <TabsTrigger value="adherence" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Meta-Adherence
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <CardContent className="p-6">
+          <TabsContent value="consistency" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Alpha Consistency Index</h3>
+                <p className="text-sm text-muted-foreground">
+                  Rolling 30-day Sharpe-adjusted RR Ratio
+                </p>
+              </div>
+              <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+                <TrendingUp className="mr-1 h-3.5 w-3.5" />
+                Improving
+              </Badge>
             </div>
-            <div className="p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg text-sm mt-2">
+            
+            <div className="h-80 w-full">
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={alphaConsistencyData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#8b5cf6" 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }} 
+                      activeDot={{ r: 8 }} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
               <div className="flex items-start gap-2">
-                <Info size={16} className="text-blue-400 mt-1" />
+                <div className="mt-0.5 bg-blue-100 rounded-full p-1.5">
+                  <AlertTriangle className="h-4 w-4 text-blue-700" />
+                </div>
                 <div>
-                  <span className="font-medium text-blue-400">Insight:</span>
-                  <p className="text-muted-foreground">Entries {'<'} 6s after trigger = 63% win rate</p>
+                  <h4 className="font-medium">AI Insight:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Your consistency has improved by 18% in the last 10 days, which correlates with your recent focus on morning bias alignment.
+                  </p>
                 </div>
               </div>
             </div>
-          </CardContent>
-          <CardFooter className="pt-0 pb-2">
-            <Tabs defaultValue="all" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="ob">OB</TabsTrigger>
-                <TabsTrigger value="breakout">Breakout</TabsTrigger>
-                <TabsTrigger value="reclaim">Reclaim</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardFooter>
-        </Card>
-        
-        {/* Setup Longevity Score */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <CalendarDays size={18} className="mr-2" />
-              Setup Longevity Score
-            </CardTitle>
-            <CardDescription>
-              How long each setup has remained profitable
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4 pt-2">
-              {setupLongevityData.map((setup, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium">{setup.name}</span>
-                    <Badge 
-                      className={`${
-                        setup.status === 'strengthening' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-800' :
-                        setup.status === 'neutral' ? 'bg-amber-500/20 text-amber-400 border-amber-800' :
-                        'bg-red-500/20 text-red-400 border-red-800'
-                      }`}
-                    >
-                      {setup.status === 'strengthening' ? '📈' : setup.status === 'neutral' ? '🟡' : '🔻'} {setup.months} months
-                    </Badge>
+          </TabsContent>
+          
+          <TabsContent value="deviation" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Plan Deviation Delta</h3>
+                <p className="text-sm text-muted-foreground">
+                  Average % deviation between pre-planned RR and actual RR
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-card rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Average Overshoot %</h4>
+                  <span className="text-green-500 font-semibold">{planDeviationData.overshoot}%</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  You exceeded your planned R target by an average of 11%
+                </p>
+                <Progress className="h-2 mt-2" value={planDeviationData.overshoot} />
+              </div>
+              
+              <div className="bg-card rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium">Average Undershoot %</h4>
+                  <span className="text-amber-500 font-semibold">{planDeviationData.undershoot}%</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  You fell short of your planned R target by an average of 18%
+                </p>
+                <Progress className="h-2 mt-2" value={planDeviationData.undershoot} />
+              </div>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-yellow-100 rounded-full p-1.5">
+                  <AlertTriangle className="h-4 w-4 text-yellow-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">Smart Highlight:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    You consistently take profits 18% before your target. Consider setting more conservative targets or implementing partial profit-taking strategies.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="execution" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Execution Speed Sync</h3>
+                <p className="text-sm text-muted-foreground">
+                  Entry Reaction Time (in seconds) vs Success Rate
+                </p>
+              </div>
+            </div>
+            
+            <div className="h-80 w-full">
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={executionSpeedData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="seconds" />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="successRate" 
+                      stroke="#8b5cf6" 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }} 
+                      activeDot={{ r: 8 }} 
+                      name="Success Rate (%)"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-blue-100 rounded-full p-1.5">
+                  <Clock className="h-4 w-4 text-blue-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">Insight Tag:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Entries {'<'} 6s after trigger = 63% win rate. Speed matters, but be cautious about rushing entries beyond this threshold.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="longevity" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Setup Longevity Score</h3>
+                <p className="text-sm text-muted-foreground">
+                  How long each setup has remained profitable (measured in months)
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              {setupLongevityData.map((setup) => (
+                <div key={setup.name} className="bg-card rounded-lg border p-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">{setup.name}</h4>
+                    <div className="flex items-center">
+                      <span className="text-sm mr-2">{setup.months} months</span>
+                      {setup.status === 'strengthening' && (
+                        <Badge className="bg-green-100 text-green-800">
+                          <TrendingUp className="mr-1 h-3.5 w-3.5" />
+                          Strengthening
+                        </Badge>
+                      )}
+                      {setup.status === 'neutral' && (
+                        <Badge className="bg-amber-100 text-amber-800">
+                          <Scale className="mr-1 h-3.5 w-3.5" />
+                          Neutral
+                        </Badge>
+                      )}
+                      {setup.status === 'weakening' && (
+                        <Badge className="bg-red-100 text-red-800">
+                          <TrendingDown className="mr-1 h-3.5 w-3.5" />
+                          Weakening
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className={`text-sm ${setup.trend > 0 ? 'text-emerald-400' : setup.trend < 0 ? 'text-red-400' : 'text-muted-foreground'}`}>
-                      {setup.trend > 0 ? `+${setup.trend}%` : `${setup.trend}%`}
-                    </span>
-                  </div>
+                  <Progress 
+                    className="h-2 mt-2"
+                    value={setup.months * 10}
+                  />
                 </div>
               ))}
             </div>
-            <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg text-sm mt-4">
+            
+            <div className="bg-muted p-4 rounded-lg">
               <div className="flex items-start gap-2">
-                <HelpCircle size={16} className="text-amber-400 mt-1" />
+                <div className="mt-0.5 bg-red-100 rounded-full p-1.5">
+                  <CircleAlert className="h-4 w-4 text-red-700" />
+                </div>
                 <div>
-                  <span className="font-medium text-amber-400">Smart AI Prompt:</span>
-                  <p className="text-muted-foreground">VWAP Bounce has seen a 20% drop in RR over 3 weeks. Reassess filters.</p>
+                  <h4 className="font-medium">Smart AI Prompt:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    VWAP Bounce has seen a 20% drop in RR over 3 weeks. Reassess filters and consider adjusting your entry criteria to account for changed market conditions.
+                  </p>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Replay Efficiency Curve */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <BarChartIcon size={18} className="mr-2" />
-              Replay Efficiency Curve
-            </CardTitle>
-            <CardDescription>
-              Impact of trade replay on R:R performance
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={replayEfficiencyData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                  <XAxis dataKey="setup" />
-                  <YAxis />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.setup}</p>
-                            <p className="text-sm text-emerald-400">With Replay: {data.withReplay.toFixed(1)}R</p>
-                            <p className="text-sm text-amber-400">Without Replay: {data.withoutReplay.toFixed(1)}R</p>
-                            <p className="text-sm font-medium pt-1">
-                              Improvement: +{((data.withReplay / data.withoutReplay - 1) * 100).toFixed(0)}%
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
+          </TabsContent>
+          
+          <TabsContent value="replay" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Replay Efficiency Curve</h3>
+                <p className="text-sm text-muted-foreground">
+                  Performance comparison: Trades WITH Replay vs Trades WITHOUT
+                </p>
+              </div>
+            </div>
+            
+            <div className="h-80 w-full">
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={replayEfficiencyData}
+                    margin={{
+                      top: 20,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
                     }}
-                  />
-                  <Bar dataKey="withoutReplay" fill="#f59e0b" name="Without Replay" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="withReplay" fill="#10b981" name="With Replay" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg text-sm mt-2">
-              <div className="flex items-start gap-2">
-                <TrendingUp size={16} className="text-emerald-400 mt-1" />
-                <div>
-                  <span className="font-medium text-emerald-400">RR Delta:</span>
-                  <p className="text-muted-foreground">Replay-backed trades improved RR by +31%</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="pt-0 pb-2">
-            <Tabs defaultValue="all" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="all">All Days</TabsTrigger>
-                <TabsTrigger value="by-strategy">By Strategy</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardFooter>
-        </Card>
-        
-        {/* Strategic Drift Detector */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Activity size={18} className="mr-2" />
-              Strategic Drift Detector
-            </CardTitle>
-            <CardDescription>
-              Change in strategy usage over time vs historical alpha
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={strategicDriftData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                  stackOffset="expand"
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                  <XAxis dataKey="month" />
-                  <YAxis tickFormatter={(tick) => `${tick * 100}%`} />
-                  <Tooltip 
-                    content={({ active, payload, label }) => {
-                      if (active && payload && payload.length) {
-                        const total = payload.reduce((sum, entry) => sum + entry.value, 0);
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{label}</p>
-                            {payload.map((entry, index) => (
-                              <p 
-                                key={index} 
-                                className="text-sm"
-                                style={{ color: entry.color }}
-                              >
-                                {entry.name}: {entry.value} trades ({Math.round(entry.value / total * 100)}%)
-                              </p>
-                            ))}
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="ob" 
-                    stackId="1" 
-                    stroke="#3b82f6"
-                    fill="#3b82f6" 
-                    name="OB Reclaim"
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="breakout" 
-                    stackId="1" 
-                    stroke="#f59e0b"
-                    fill="#f59e0b" 
-                    name="Breakout"
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="vwap" 
-                    stackId="1" 
-                    stroke="#10b981"
-                    fill="#10b981" 
-                    name="VWAP"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg text-sm mt-2">
-              <div className="flex items-start gap-2">
-                <AlertTriangle size={16} className="text-amber-400 mt-1" />
-                <div>
-                  <span className="font-medium text-amber-400">Alert:</span>
-                  <p className="text-muted-foreground">You've shifted from OB to Breakout setups. But OB had 2.1x RR vs 1.4x Breakouts.</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Trade-to-Bias Alignment */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <ChartBar size={18} className="mr-2" />
-              Trade-to-Bias Alignment
-            </CardTitle>
-            <CardDescription>
-              How trades aligned with morning bias
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={biasAlignmentData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={2}
-                    dataKey="count"
                   >
-                    <Cell fill="#10b981" />
-                    <Cell fill="#ef4444" />
-                  </Pie>
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        const total = biasAlignmentData.reduce((sum, item) => sum + item.count, 0);
-                        const percentage = Math.round(data.count / total * 100);
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="rr" name="Avg. RR" fill="#8b5cf6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-green-100 rounded-full p-1.5">
+                  <TrendingUp className="h-4 w-4 text-green-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">RR Delta:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Replay-backed trades improved RR by +31%. Simulating trades before real execution shows significant improvement in your performance.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="drift" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Strategic Drift Detector</h3>
+                <p className="text-sm text-muted-foreground">
+                  Compares your current most-used strategy vs historical alpha
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-card border rounded-lg p-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium">Historical Alpha Strategy</h4>
+                  <div className="mt-2">
+                    <Badge>Order Block</Badge>
+                    <div className="mt-2 space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Win Rate:</span>
+                        <span className="font-medium">67%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Avg RR:</span>
+                        <span className="font-medium">2.1R</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Usage Period:</span>
+                        <span className="font-medium">Jan - Mar 2025</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-medium">Current Most Used</h4>
+                  <div className="mt-2">
+                    <Badge>Breakout</Badge>
+                    <div className="mt-2 space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Win Rate:</span>
+                        <span className="font-medium">53%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Avg RR:</span>
+                        <span className="font-medium">1.4R</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Usage Period:</span>
+                        <span className="font-medium">Apr - May 2025</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-yellow-100 rounded-full p-1.5">
+                  <AlertTriangle className="h-4 w-4 text-yellow-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">Alert:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    You've shifted from OB to Breakout setups. But OB had 2.1x RR vs 1.4x Breakouts. Consider re-incorporating Order Block strategy into your trading mix.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="fatigue" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Cognitive Fatigue Tracker</h3>
+                <p className="text-sm text-muted-foreground">
+                  Time-based accuracy chart (morning vs afternoon vs evening)
+                </p>
+              </div>
+            </div>
+            
+            <div className="h-80 w-full">
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={cognitiveDataByTime}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="time" />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Line 
+                      type="monotone" 
+                      dataKey="accuracy" 
+                      stroke="#8b5cf6" 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }} 
+                      activeDot={{ r: 8 }} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-red-100 rounded-full p-1.5">
+                  <Clock className="h-4 w-4 text-red-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">AI Suggestion:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Your trades after 1:30PM show 40% drop in precision. Consider avoiding fresh entries post 2PM and instead focus on managing existing positions or reviewing setups for next day.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="adherence" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Meta-Adherence Breakdown</h3>
+                <p className="text-sm text-muted-foreground">
+                  Combined score for your trading plan and execution adherence
+                </p>
+              </div>
+              <div className="flex items-center">
+                <Badge className="bg-yellow-100 text-yellow-800">
+                  Grade: {metaAdherenceScore.grade}
+                </Badge>
+                <span className="text-2xl ml-2">{metaAdherenceScore.emoji}</span>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Strategy Alignment</span>
+                  <span className="text-sm">{metaAdherenceScore.strategyAlignment}%</span>
+                </div>
+                <Progress value={metaAdherenceScore.strategyAlignment} className="h-2" />
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Morning Bias Sync</span>
+                  <span className="text-sm">{metaAdherenceScore.morningBiasSync}%</span>
+                </div>
+                <Progress value={metaAdherenceScore.morningBiasSync} className="h-2" />
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Execution Match</span>
+                  <span className="text-sm">{metaAdherenceScore.executionMatch}%</span>
+                </div>
+                <Progress value={metaAdherenceScore.executionMatch} className="h-2" />
+              </div>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-blue-100 rounded-full p-1.5">
+                  <Target className="h-4 w-4 text-blue-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">Improvement Focus:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Your morning bias adherence is 15% lower than your execution discipline. Consider documenting your morning bias more clearly or adjusting your bias formation process.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="patterns" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Micro-Pattern Feedback Loop</h3>
+                <p className="text-sm text-muted-foreground">
+                  Detects repeating subconscious patterns in your trading
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-card rounded-lg border p-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 bg-red-100 p-2 rounded-full">
+                    <TrendingDown className="h-5 w-5 text-red-700" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium">Scaling Too Early</h4>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Across 7 trades, you scaled at 50% OB instead of 75%. Resulted in 11% lower RR across these setups.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-card rounded-lg border p-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 bg-yellow-100 p-2 rounded-full">
+                    <AlertTriangle className="h-5 w-5 text-yellow-700" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium">Re-entering Failed Setups</h4>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      You tend to re-enter on setups that previously failed — consider waiting for stronger confirmation before re-entering the same setup type.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-card rounded-lg border p-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 bg-green-100 p-2 rounded-full">
+                    <TrendingUp className="h-5 w-5 text-green-700" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium">Extended Hold Periods</h4>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      When you hold winning trades more than 30 minutes, your RR improves by 22% on average. Consider giving winning positions more time to develop.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="seasonality" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Strategic Seasonality Heatmap</h3>
+                <p className="text-sm text-muted-foreground">
+                  Setup performance by weekday and time block
+                </p>
+              </div>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-border">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="p-2 border border-border text-sm font-medium">Time/Day</th>
+                    {dayNames.map((day) => (
+                      <th key={day} className="p-2 border border-border text-sm font-medium">
+                        {day}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {timeBlocks.map((time) => (
+                    <tr key={time}>
+                      <td className="p-2 border border-border bg-muted text-sm font-medium">
+                        {time}
+                      </td>
+                      {dayNames.map((day) => {
+                        const value = seasonalityHeatmap.find(d => d.day === day)?.[time] || 0;
+                        let bgColor = 'bg-muted/20';
+                        
+                        if (value > 80) bgColor = 'bg-green-100 text-green-800';
+                        else if (value > 60) bgColor = 'bg-green-50 text-green-700';
+                        else if (value > 40) bgColor = 'bg-yellow-50 text-yellow-700';
+                        else if (value > 20) bgColor = 'bg-orange-50 text-orange-700';
+                        else bgColor = 'bg-red-50 text-red-700';
                         
                         return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.type} Trades</p>
-                            <p className="text-sm">Count: {data.count} ({percentage}%)</p>
-                            <p className="text-sm">Average RR: {data.rr.toFixed(1)}</p>
-                          </div>
+                          <td 
+                            key={`${day}-${time}`} 
+                            className={`p-2 border border-border text-center ${bgColor}`}
+                          >
+                            {value}%
+                          </td>
                         );
-                      }
-                      return null;
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                <span className="text-sm">Aligned (72%)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <span className="text-sm">Counter (28%)</span>
-              </div>
-            </div>
-            <div className="p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg text-sm mt-3">
-              <p className="text-muted-foreground">
-                <span className="font-medium text-blue-400">AI Tip:</span> You underperform when countering morning structure bias
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Execution Integrity Index */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Check size={18} className="mr-2" />
-              Execution Integrity Index
-            </CardTitle>
-            <CardDescription>
-              Composite execution quality score
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center">
-              <div className="text-center mb-4">
-                <div className="inline-block rounded-full border-8 border-blue-500/20 p-6">
-                  <span className="text-5xl font-bold">{getExecutionIntegrityGrade(executionIntegrityScores.compositeScore)}</span>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="bg-card rounded-lg border p-4">
+                <h4 className="font-medium">Best Performing</h4>
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge variant="outline">Tue</Badge>
+                  <Badge variant="outline">10-11AM</Badge>
+                  <Badge>FVG Tap</Badge>
+                  <Badge className="bg-green-100 text-green-800">85% Win Rate</Badge>
                 </div>
               </div>
-              <div className="w-full space-y-3">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Entry Accuracy</span>
-                    <span className="text-sm font-medium">{executionIntegrityScores.entryAccuracy}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500" 
-                      style={{ width: `${executionIntegrityScores.entryAccuracy}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">R:R Precision</span>
-                    <span className="text-sm font-medium">{executionIntegrityScores.rrPrecision}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500" 
-                      style={{ width: `${executionIntegrityScores.rrPrecision}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Sizing Precision</span>
-                    <span className="text-sm font-medium">{executionIntegrityScores.sizingPrecision}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500" 
-                      style={{ width: `${executionIntegrityScores.sizingPrecision}%` }}
-                    ></div>
-                  </div>
+              
+              <div className="bg-card rounded-lg border p-4">
+                <h4 className="font-medium">Worst Performing</h4>
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge variant="outline">Fri</Badge>
+                  <Badge variant="outline">3-4PM</Badge>
+                  <Badge>Breakout</Badge>
+                  <Badge className="bg-red-100 text-red-800">31% Win Rate</Badge>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        {/* Meta-Adherence Breakdown */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Settings size={18} className="mr-2" />
-              Meta-Adherence Breakdown
-            </CardTitle>
-            <CardDescription>
-              Combined trading system adherence score
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center">
-              <div className="text-center mb-4">
-                <div className="inline-block rounded-full border-8 border-blue-500/20 p-6">
-                  <div className="text-5xl font-bold">
-                    {getMetaAdherenceGrade(metaAdherenceScores.compositeScore).grade}
-                    <span className="ml-1">{getMetaAdherenceGrade(metaAdherenceScores.compositeScore).emoji}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="w-full space-y-3">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Strategy Alignment</span>
-                    <span className="text-sm font-medium">{metaAdherenceScores.strategyAlignment}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500" 
-                      style={{ width: `${metaAdherenceScores.strategyAlignment}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Bias Sync</span>
-                    <span className="text-sm font-medium">{metaAdherenceScores.biasSync}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500" 
-                      style={{ width: `${metaAdherenceScores.biasSync}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Execution Match</span>
-                    <span className="text-sm font-medium">{metaAdherenceScores.executionMatch}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500" 
-                      style={{ width: `${metaAdherenceScores.executionMatch}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </TabsContent>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Cognitive Fatigue Tracker */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <ThermometerSnowflake size={18} className="mr-2" />
-              Cognitive Fatigue Tracker
-            </CardTitle>
-            <CardDescription>
-              Time-based accuracy and performance
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={cognitiveFatigueData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
-                  <XAxis dataKey="time" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.time}</p>
-                            <p className="text-sm">Win Rate: {data.winRate}%</p>
-                            <p className="text-sm">Avg RR: {data.rr}</p>
-                            <p className="text-sm">Trades: {data.trades}</p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="winRate" 
-                    stroke="#10b981" 
-                    strokeWidth={2}
-                    yAxisId="left"
-                    dot={{ stroke: '#10b981', strokeWidth: 2, r: 4, fill: '#1e293b' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="rr" 
-                    stroke="#3b82f6" 
-                    strokeWidth={2}
-                    yAxisId="right"
-                    dot={{ stroke: '#3b82f6', strokeWidth: 2, r: 4, fill: '#1e293b' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+          <TabsContent value="alignment" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Trade-to-Bias Alignment</h3>
+                <p className="text-sm text-muted-foreground">
+                  How well your trades aligned with morning bias plan
+                </p>
+              </div>
+              <Badge>73% Aligned</Badge>
             </div>
-            <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg text-sm mt-2">
-              <div className="flex items-start gap-2">
-                <AlertTriangle size={16} className="text-amber-400 mt-1" />
+            
+            <div className="bg-card rounded-lg border p-4">
+              <h4 className="font-medium mb-2">Alignment Breakdown</h4>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Aligned Trades</span>
+                    <span className="text-sm font-medium">73%</span>
+                  </div>
+                  <Progress value={73} className="h-2" />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Counter-Bias Trades</span>
+                    <span className="text-sm font-medium">21%</span>
+                  </div>
+                  <Progress value={21} className="h-2" />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">No Clear Bias</span>
+                    <span className="text-sm font-medium">6%</span>
+                  </div>
+                  <Progress value={6} className="h-2" />
+                </div>
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className="font-medium text-amber-400">Cognitive Drop:</span>
-                  <p className="text-muted-foreground">Your trades after 1:30PM show 40% drop in precision</p>
+                  <h5 className="text-sm font-medium mb-1">Aligned Performance</h5>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-green-100 text-green-800">68% Win Rate</Badge>
+                    <Badge className="bg-green-100 text-green-800">2.4R Avg</Badge>
+                  </div>
+                </div>
+                
+                <div>
+                  <h5 className="text-sm font-medium mb-1">Counter-Bias Performance</h5>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-red-100 text-red-800">41% Win Rate</Badge>
+                    <Badge className="bg-red-100 text-red-800">1.1R Avg</Badge>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg text-sm mt-2">
+            
+            <div className="bg-muted p-4 rounded-lg">
               <div className="flex items-start gap-2">
-                <Info size={16} className="text-blue-400 mt-1" />
+                <div className="mt-0.5 bg-blue-100 rounded-full p-1.5">
+                  <Target className="h-4 w-4 text-blue-700" />
+                </div>
                 <div>
-                  <span className="font-medium text-blue-400">AI Suggestion:</span>
-                  <p className="text-muted-foreground">Consider avoiding fresh entries post 2PM</p>
+                  <h4 className="font-medium">AI Tip:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    You underperform when countering morning structure bias. If tempted to counter your bias, consider reducing position size by at least 30% to manage risk.
+                  </p>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        {/* Micro-Pattern Feedback Loop */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Activity size={18} className="mr-2" />
-              Micro-Pattern Feedback Loop
-            </CardTitle>
-            <CardDescription>
-              Recurring subconscious trading patterns
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={microPatternData}
-                  layout="vertical"
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.1} />
-                  <XAxis type="number" domain={[-20, 10]} />
-                  <YAxis type="category" dataKey="pattern" width={120} />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
-                            <p className="font-medium">{data.pattern}</p>
-                            <p className="text-sm">Occurrences: {data.occurrence}</p>
-                            <p className="text-sm">R:R Impact: {data.rrImpact > 0 ? '+' : ''}{data.rrImpact}%</p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar 
-                    dataKey="rrImpact" 
-                    radius={4}
-                  >
-                    {microPatternData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`}
-                        fill={entry.rrImpact >= 0 ? '#10b981' : '#ef4444'}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg text-sm mt-2">
-              <div className="flex items-start gap-2">
-                <Info size={16} className="text-blue-400 mt-1" />
-                <div>
-                  <span className="font-medium text-blue-400">AI Summary:</span>
-                  <p className="text-muted-foreground">Across 7 trades, you scaled at 50% OB instead of 75%. Resulted in 11% lower RR</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </TabsContent>
 
-      {/* Strategic Seasonality Heatmap */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <CalendarDays size={18} className="mr-2" />
-            Strategic Seasonality Heatmap
-          </CardTitle>
-          <CardDescription>
-            Setup performance by day and time
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-6 gap-2">
-            <div></div>
-            <div className="text-center text-sm font-medium">Monday</div>
-            <div className="text-center text-sm font-medium">Tuesday</div>
-            <div className="text-center text-sm font-medium">Wednesday</div>
-            <div className="text-center text-sm font-medium">Thursday</div>
-            <div className="text-center text-sm font-medium">Friday</div>
-            
-            <div className="text-right text-sm font-medium py-1">Morning</div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(16, 185, 129, ${seasonalityData.monday.morning / 100})`,
-                color: seasonalityData.monday.morning > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.monday.morning}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(16, 185, 129, ${seasonalityData.tuesday.morning / 100})`,
-                color: seasonalityData.tuesday.morning > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.tuesday.morning}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(16, 185, 129, ${seasonalityData.wednesday.morning / 100})`,
-                color: seasonalityData.wednesday.morning > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.wednesday.morning}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(16, 185, 129, ${seasonalityData.thursday.morning / 100})`,
-                color: seasonalityData.thursday.morning > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.thursday.morning}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(16, 185, 129, ${seasonalityData.friday.morning / 100})`,
-                color: seasonalityData.friday.morning > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.friday.morning}%
+          <TabsContent value="integrity" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Execution Integrity Index</h3>
+                <p className="text-sm text-muted-foreground">
+                  Composite score of planned vs actual execution metrics
+                </p>
+              </div>
+              <div>
+                <Badge className="text-lg px-3 py-1 bg-green-100 text-green-800">A-</Badge>
+              </div>
             </div>
             
-            <div className="text-right text-sm font-medium py-1">Midday</div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(59, 130, 246, ${seasonalityData.monday.midday / 100})`,
-                color: seasonalityData.monday.midday > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.monday.midday}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(59, 130, 246, ${seasonalityData.tuesday.midday / 100})`,
-                color: seasonalityData.tuesday.midday > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.tuesday.midday}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(59, 130, 246, ${seasonalityData.wednesday.midday / 100})`,
-                color: seasonalityData.wednesday.midday > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.wednesday.midday}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(59, 130, 246, ${seasonalityData.thursday.midday / 100})`,
-                color: seasonalityData.thursday.midday > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.thursday.midday}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(59, 130, 246, ${seasonalityData.friday.midday / 100})`,
-                color: seasonalityData.friday.midday > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.friday.midday}%
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-card rounded-lg border p-4">
+                <h4 className="font-medium mb-2">Planned vs Actual Entry</h4>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Accuracy</span>
+                  <Badge>92%</Badge>
+                </div>
+                <Progress value={92} className="h-2 mt-2" />
+                <p className="text-xs text-muted-foreground mt-2">
+                  High precision in executing entries as planned
+                </p>
+              </div>
+              
+              <div className="bg-card rounded-lg border p-4">
+                <h4 className="font-medium mb-2">Planned RR vs Actual</h4>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Accuracy</span>
+                  <Badge>78%</Badge>
+                </div>
+                <Progress value={78} className="h-2 mt-2" />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Good alignment between planned and achieved RR
+                </p>
+              </div>
+              
+              <div className="bg-card rounded-lg border p-4">
+                <h4 className="font-medium mb-2">Sizing Precision</h4>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Accuracy</span>
+                  <Badge>87%</Badge>
+                </div>
+                <Progress value={87} className="h-2 mt-2" />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Consistent position sizing relative to plan
+                </p>
+              </div>
             </div>
             
-            <div className="text-right text-sm font-medium py-1">Afternoon</div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(245, 158, 11, ${seasonalityData.monday.afternoon / 100})`,
-                color: seasonalityData.monday.afternoon > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.monday.afternoon}%
+            <div className="bg-card rounded-lg border p-4">
+              <h4 className="font-medium mb-3">Integrity Breakdown</h4>
+              <div className="flex flex-wrap gap-3">
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="outline" className="h-8 w-8 flex items-center justify-center rounded-full">
+                    A+
+                  </Badge>
+                  <span className="text-sm">Stop Placement</span>
+                </div>
+                
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="outline" className="h-8 w-8 flex items-center justify-center rounded-full">
+                    A
+                  </Badge>
+                  <span className="text-sm">Entry Execution</span>
+                </div>
+                
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="outline" className="h-8 w-8 flex items-center justify-center rounded-full">
+                    B+
+                  </Badge>
+                  <span className="text-sm">Position Sizing</span>
+                </div>
+                
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="outline" className="h-8 w-8 flex items-center justify-center rounded-full">
+                    B
+                  </Badge>
+                  <span className="text-sm">Target Adherence</span>
+                </div>
+                
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="outline" className="h-8 w-8 flex items-center justify-center rounded-full">
+                    C+
+                  </Badge>
+                  <span className="text-sm">Scale Out Discipline</span>
+                </div>
+              </div>
             </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(245, 158, 11, ${seasonalityData.tuesday.afternoon / 100})`,
-                color: seasonalityData.tuesday.afternoon > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.tuesday.afternoon}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(245, 158, 11, ${seasonalityData.wednesday.afternoon / 100})`,
-                color: seasonalityData.wednesday.afternoon > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.wednesday.afternoon}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(245, 158, 11, ${seasonalityData.thursday.afternoon / 100})`,
-                color: seasonalityData.thursday.afternoon > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.thursday.afternoon}%
-            </div>
-            <div 
-              className="rounded p-2 text-center"
-              style={{ 
-                backgroundColor: `rgba(245, 158, 11, ${seasonalityData.friday.afternoon / 100})`,
-                color: seasonalityData.friday.afternoon > 60 ? 'white' : 'currentColor'
-              }}
-            >
-              {seasonalityData.friday.afternoon}%
-            </div>
-          </div>
-          <div className="text-sm text-muted-foreground text-center mt-4">
-            <p>FVG Tap setup shows strongest performance on Tuesday & Thursday mornings (71-73% win rate)</p>
-          </div>
+          </TabsContent>
         </CardContent>
-      </Card>
-    </div>
+      </Tabs>
+      
+      <CardFooter className="flex justify-between border-t p-6">
+        <Button variant="outline" size="sm">
+          <FileText className="mr-2 h-4 w-4" />
+          Export Data
+        </Button>
+        <Button size="sm">
+          <Calendar className="mr-2 h-4 w-4" />
+          View Historical
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
