@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, BarChart2, Star, Paperclip, Circle, CircleCheck, CircleX, Replay } from "lucide-react";
+import { ChevronDown, ChevronUp, BarChart2, Star, Paperclip, Circle, CircleCheck, CircleX, Reply } from "lucide-react";
 
 // Mock data for development
 const strategies = [
@@ -244,7 +244,7 @@ export const StrategyGrid: React.FC<StrategyGridProps> = ({
                   </div>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline">
-                      <Replay className="h-4 w-4 mr-1" />
+                      <Reply className="h-4 w-4 mr-1" />
                       Replay
                     </Button>
                     <Button size="sm">

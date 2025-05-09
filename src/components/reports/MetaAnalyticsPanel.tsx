@@ -98,7 +98,7 @@ const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const timeBlocks = ['9-10AM', '10-11AM', '11-12PM', '12-1PM', '1-2PM', '2-3PM', '3-4PM'];
 
 const seasonalityHeatmap = dayNames.map((day) => {
-  const data: Record<string, number> = { day };
+  const data: Record<string, number | string> = { day };
   timeBlocks.forEach((time) => {
     data[time] = Math.floor(Math.random() * 100);
   });
@@ -687,7 +687,12 @@ export function MetaAnalyticsPanel() {
                         {time}
                       </td>
                       {dayNames.map((day) => {
-                        const value = seasonalityHeatmap.find(d => d.day === day)?.[time] || 0;
+                        const seasonality = seasonalityHeatmap.find(d => d.day === day);
+                        // Type assertion to handle potential undefined
+                        const value = seasonality && typeof seasonality[time] === 'number' 
+                          ? seasonality[time] as number
+                          : 0;
+                        
                         let bgColor = 'bg-muted/20';
                         
                         if (value > 80) bgColor = 'bg-green-100 text-green-800';
