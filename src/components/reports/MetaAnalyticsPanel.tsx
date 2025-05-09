@@ -19,7 +19,8 @@ import {
   Dna,
   Fingerprint,
   Heart,
-  LineChart,
+  // Rename LineChart from lucide-react to LineChartIcon to avoid conflicts
+  LineChart as LineChartIcon,
   BarChart as BarChartIcon,
   Lightbulb,
   Lock,
@@ -42,7 +43,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
+  LineChart, // Keep LineChart from recharts
   Line,
   PieChart,
   Pie,
@@ -553,7 +554,7 @@ export function MetaAnalyticsPanel() {
                   <Tooltip content={<CustomTooltip />} />
                   <Bar
                     dataKey="outcome"
-                    fill={(data) => {
+                    fill={(data: any) => {
                       return data.outcome > 0 ? "#10b981" : "#ef4444";
                     }}
                   />
@@ -577,7 +578,7 @@ export function MetaAnalyticsPanel() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg flex items-center">
-                <LineChart className="h-5 w-5 mr-2" />
+                <LineChartIcon className="h-5 w-5 mr-2" />
                 Edge Amplifier Grid
               </CardTitle>
               <Button variant="ghost" size="sm">
