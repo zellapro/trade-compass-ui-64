@@ -1,1047 +1,1166 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import {
-  Brain,
-  ChevronRight,
-  Clock,
-  Code,
-  Dna,
-  Fingerprint,
-  Heart,
-  // Rename LineChart from lucide-react to LineChartIcon to avoid conflicts
-  LineChart as LineChartIcon,
-  BarChart as BarChartIcon,
-  Lightbulb,
-  Lock,
-  PlayCircle,
-  RefreshCw,
-  Search,
-  Settings,
-  Sigma,
-  Sliders,
-  TrendingUp,
-  ZoomIn,
-} from 'lucide-react';
-
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   BarChart,
+  LineChart,
+  Line,
   Bar,
+  ResponsiveContainer,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-  LineChart, // Keep LineChart from recharts
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  ScatterChart,
-  Scatter,
-} from 'recharts';
+} from "recharts";
+import {
+  ArrowRight,
+  ArrowUp,
+  ArrowDown,
+  Brain,
+  AlertTriangle,
+  Clock,
+  FileText,
+  Calendar,
+  Target,
+  LineChart as LineChartIcon,
+  BarChart2,
+  Lightbulb,
+  Dna,
+  Network,
+  Microscope,
+  BookOpen,
+  RefreshCcw,
+  Search,
+  MessageSquare,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  FlaskConical,
+  Shield,
+} from "lucide-react";
+
+// Mock data for AI Edge Timeline
+const timelineData = [
+  { 
+    week: "Week 12", 
+    date: "May 3-7", 
+    entry: "OB strategy win rate consistently above 70%",
+    type: "positive",
+    details: "Execution was precise with proper risk management across all sessions"
+  },
+  { 
+    week: "Week 13", 
+    date: "May 10-14", 
+    entry: "Introduced FVG strategy with mixed results",
+    type: "neutral",
+    details: "Initial tests show promise during London session but underperform in NY"
+  },
+  { 
+    week: "Week 14", 
+    date: "May 17-21", 
+    entry: "OB setup win rate dropped post-loss streak",
+    type: "negative",
+    details: "Psychological impact from Monday losses affected decision-making all week"
+  },
+  { 
+    week: "Week 15", 
+    date: "May 24-28", 
+    entry: "Strategy tweaked → improved RR",
+    type: "positive",
+    details: "Added EQH confluence filter to OB setup, RR improved from 1.7 to 2.3"
+  },
+  { 
+    week: "Week 16", 
+    date: "May 31-Jun 4", 
+    entry: "Checklist discipline: 4/5 trades executed with plan",
+    type: "positive",
+    details: "Pre-session ritual implementation showing positive correlation with trade quality"
+  },
+];
+
+// Mock data for Trader DNA Map
+const traderDnaData = {
+  preferredSetups: [
+    { name: "OB Sweep", strength: 87, evolution: "improving" },
+    { name: "Breaker Blocks", strength: 76, evolution: "stable" },
+    { name: "FVG Tap", strength: 62, evolution: "declining" },
+  ],
+  strengthZones: [
+    "High patience during volatility",
+    "Rule-based entry execution",
+    "Morning preparation ritual",
+    "Risk management discipline"
+  ],
+  weakSpots: [
+    "Exit too early on winners",
+    "FOMO on news days",
+    "Overtrading past 2PM",
+    "Position sizing inconsistency"
+  ],
+  styleShift: {
+    from: "Swing",
+    to: "Tactical Scalper",
+    timeframe: "Last 3 months"
+  },
+  aiTraits: [
+    "Best sessions after 3-step premarket ritual",
+    "Most profitable on Tuesday/Wednesday",
+    "Strong performance with under 5 trades/day",
+    "Risk tolerance increases after 3 consecutive wins"
+  ]
+};
+
+// Mock data for AI Behavioral Correlator
+const behaviorCorrelationData = [
+  { behavior: "Hesitation", outcome: -63, trades: 27, impact: "Missed optimal entries" },
+  { behavior: "Journaling", outcome: 22, trades: 45, impact: "Improved pattern recognition" },
+  { behavior: "Post-loss trading", outcome: -71, trades: 18, impact: "Violated trading rules" },
+  { behavior: "Morning meditation", outcome: 31, trades: 34, impact: "Reduced impulsivity" },
+  { behavior: "Screen time > 6hrs", outcome: -28, trades: 22, impact: "Decision fatigue" },
+  { behavior: "Weekend review", outcome: 42, trades: 38, impact: "Better preparation" },
+];
+
+// Mock data for Edge Amplifier Grid
+const edgeAmplifierData = [
+  { 
+    strategy: "OB Strategy", 
+    winRate: 73, 
+    avgRR: 2.1, 
+    trend: "strong", 
+    status: "refined",
+    suggestion: "Consider increasing position size by 15% on this high-probability setup"
+  },
+  { 
+    strategy: "FVG", 
+    winRate: 58, 
+    avgRR: 1.7, 
+    trend: "declining", 
+    status: "overused",
+    suggestion: "Trading frequency exceeds optimal threshold, reduce by 30%"
+  },
+  { 
+    strategy: "Breaker", 
+    winRate: 65, 
+    avgRR: 1.9, 
+    trend: "conditional", 
+    status: "situational",
+    suggestion: "Profitable only during London session, restrict to 2AM-5AM EST"
+  },
+  { 
+    strategy: "Liquidity Sweep", 
+    winRate: 51, 
+    avgRR: 2.4, 
+    trend: "neutral", 
+    status: "experimental",
+    suggestion: "High RR but inconsistent, add SMC confluence filter"
+  },
+  { 
+    strategy: "EQH Reversal", 
+    winRate: 42, 
+    avgRR: 1.3, 
+    trend: "weak", 
+    status: "broken",
+    suggestion: "Logic fundamentally flawed, recommend abandoning this setup"
+  },
+];
+
+// Mock data for Mistake Intelligence
+const mistakeData = {
+  categories: [
+    { name: "Early Entries", count: 12, impact: -1.8 },
+    { name: "Late Exits", count: 9, impact: -2.2 },
+    { name: "Position Sizing", count: 7, impact: -1.5 },
+    { name: "Stop Placement", count: 5, impact: -2.7 },
+    { name: "FOMO Entries", count: 4, impact: -3.1 },
+  ],
+  rootCauses: [
+    "Overconfidence after winning streak",
+    "Trading during emotional tilt",
+    "Morning rush without proper analysis",
+    "Deviation from trading plan"
+  ],
+  mitigationSteps: [
+    "Implement mandatory 2-minute entry validation",
+    "Use checklist-based confirmation process",
+    "Add time-buffer between signal and execution",
+    "Review journal before each session"
+  ]
+};
+
+// Mock data for AI Forecast
+const forecastData = [
+  { 
+    metric: "Projected Monthly R", 
+    value: "6.5R", 
+    condition: "If current edge maintains with OB strategy", 
+    confidence: 78
+  },
+  { 
+    metric: "Win Rate Projection", 
+    value: "68%", 
+    condition: "Based on trailing 30-day execution quality", 
+    confidence: 82
+  },
+  { 
+    metric: "Rule Violation Impact", 
+    value: "+2.3R/week", 
+    condition: "If violations reduced by 15%", 
+    confidence: 71
+  },
+  { 
+    metric: "Optimal Daily Trades", 
+    value: "3-5", 
+    condition: "For maximum Sharpe ratio", 
+    confidence: 88
+  }
+];
+
+// Mock setup feedback loop data
+const setupFeedbackData = [
+  {
+    setupName: "OB Strategy",
+    changes: [
+      { 
+        date: "Apr 15", 
+        change: "Added EQH confluence", 
+        impact: { winRate: { before: 61, after: 74 }, rr: { before: 1.8, after: 2.2 } } 
+      },
+      { 
+        date: "May 2", 
+        change: "Refined stop placement", 
+        impact: { winRate: { before: 74, after: 71 }, rr: { before: 2.2, after: 2.6 } } 
+      }
+    ]
+  },
+  {
+    setupName: "Breaker Strategy",
+    changes: [
+      { 
+        date: "Mar 28", 
+        change: "Added session filter", 
+        impact: { winRate: { before: 52, after: 67 }, rr: { before: 1.6, after: 1.8 } } 
+      }
+    ]
+  }
+];
+
+// AI Therapist suggestions
+const therapistSuggestions = [
+  "You're consistently more profitable after morning meditation",
+  "Friday sessions show higher anxiety - consider reducing position size or skipping",
+  "Adding pre-session affirmations improved decision quality by 22%",
+  "Recovery after losses takes approximately 2.3 trades - implement mental reset protocol",
+  "Journal entries mentioning 'patience' correlate with 31% higher win rate",
+  "Screen breaks every 90 minutes improved late-day performance by 18%"
+];
 
 export function MetaAnalyticsPanel() {
-  const [aiMode, setAiMode] = useState('tactical');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('3m');
-
-  // Sample data for AI Edge Timeline
-  const edgeTimelineData = [
-    {
-      week: 'Week 12',
-      title: 'OB Setup Discovered',
-      description: 'First identified Order Block pattern',
-      winRate: 56,
-      rr: 1.2,
-      trades: 12,
-    },
-    {
-      week: 'Week 13',
-      title: 'Added ATR for Stop Loss',
-      description: 'Improved risk management with ATR',
-      winRate: 62,
-      rr: 1.5,
-      trades: 15,
-    },
-    {
-      week: 'Week 14',
-      title: 'OB Win Rate Drop',
-      description: 'Post-loss streak performance decreased',
-      winRate: 43,
-      rr: 0.9,
-      trades: 14,
-      alert: true,
-    },
-    {
-      week: 'Week 15',
-      title: 'Strategy Tweaked',
-      description: 'Added confirmation indicators',
-      winRate: 67,
-      rr: 1.8,
-      trades: 18,
-      improvement: true,
-    },
-    {
-      week: 'Week 16',
-      title: 'Checklist Discipline',
-      description: '4/5 trades executed with plan',
-      winRate: 71,
-      rr: 2.1,
-      trades: 14,
-      improvement: true,
-    },
-  ];
-
-  // Sample data for Trader DNA Map
-  const traderDnaData = [
-    { name: 'Patience', value: 76 },
-    { name: 'Discipline', value: 64 },
-    { name: 'Risk Mgmt', value: 82 },
-    { name: 'Adaptability', value: 58 },
-    { name: 'Analysis', value: 79 },
-    { name: 'Emotion Ctrl', value: 45 },
-    { name: 'Consistency', value: 67 },
-    { name: 'Planning', value: 73 },
-  ];
-
-  // Sample data for AI Behavioral Correlator
-  const behaviorData = [
-    {
-      behavior: 'Hesitation',
-      outcome: -63,
-      impact: 'significant negative',
-      trades: 28,
-      recommendation: 'Use preset orders before session start',
-    },
-    {
-      behavior: 'Journaling',
-      outcome: 22,
-      impact: 'positive',
-      trades: 45,
-      recommendation: 'Continue daily trade reviews',
-    },
-    {
-      behavior: 'Post-loss Trading',
-      outcome: -71,
-      impact: 'severe negative',
-      trades: 17,
-      recommendation: 'Implement mandatory cool-down period',
-    },
-    {
-      behavior: 'Meditation',
-      outcome: 15,
-      impact: 'positive',
-      trades: 32,
-      recommendation: 'Extend pre-session routine by 5 minutes',
-    },
-    {
-      behavior: 'Overtrading',
-      outcome: -51,
-      impact: 'significant negative',
-      trades: 41,
-      recommendation: 'Set daily max trade limit with alerts',
-    },
-  ];
-
-  // Sample data for Edge Amplifier Grid
-  const strategyEdgeData = [
-    {
-      strategy: 'OB Strategy',
-      winRate: 73,
-      avgRR: 2.1,
-      totalTrades: 48,
-      status: 'strong',
-      trend: 'up',
-      note: 'Most consistent in morning sessions',
-    },
-    {
-      strategy: 'FVG',
-      winRate: 64,
-      avgRR: 1.7,
-      totalTrades: 67,
-      status: 'overused',
-      trend: 'down',
-      note: 'Signs of overtrading recently',
-    },
-    {
-      strategy: 'Breaker',
-      winRate: 69,
-      avgRR: 1.9,
-      totalTrades: 35,
-      status: 'selective',
-      trend: 'stable',
-      note: 'Only profitable during London session',
-    },
-    {
-      strategy: 'SMT',
-      winRate: 54,
-      avgRR: 1.4,
-      totalTrades: 22,
-      status: 'experimental',
-      trend: 'unstable',
-      note: 'Still refining entries and exits',
-    },
-    {
-      strategy: 'BOS Retest',
-      winRate: 79,
-      avgRR: 2.4,
-      totalTrades: 19,
-      status: 'strong',
-      trend: 'up',
-      note: 'Emerging strength pattern',
-    },
-  ];
-
-  // Sample data for Mistake Intelligence Dashboard
-  const mistakeData = [
-    { name: 'Early Entries', value: 12, fill: '#FF6B6B' },
-    { name: 'Late Exits', value: 9, fill: '#FF9E7A' },
-    { name: 'FVG Mistakes', value: 3, fill: '#FFC759' },
-    { name: 'Stop Too Tight', value: 8, fill: '#E1BB80' },
-    { name: 'Overtrading', value: 11, fill: '#5FA8D3' },
-    { name: 'FOMO', value: 7, fill: '#62B6CB' },
-  ];
-
-  // Sample data for Setup Feedback Loop Engine
-  const feedbackLoopData = [
-    {
-      setup: 'OB Strategy',
-      before: 61,
-      after: 74,
-      change: 'Added EQH confluence',
-      impact: 13,
-      trades: 24,
-      status: 'accepted',
-    },
-    {
-      setup: 'BOS Retest',
-      before: 56,
-      after: 79,
-      change: 'Wait for volume confirmation',
-      impact: 23,
-      trades: 19,
-      status: 'accepted',
-    },
-    {
-      setup: 'Double Top',
-      before: 48,
-      after: 54,
-      change: 'Added RSI filter',
-      impact: 6,
-      trades: 15,
-      status: 'testing',
-    },
-    {
-      setup: 'SMC',
-      before: 67,
-      after: 63,
-      change: 'Tighter stops at 1ATR',
-      impact: -4,
-      trades: 22,
-      status: 'rejected',
-    },
-  ];
-
-  // Sample data for win/loss bars
-  const winLossData = [
-    { name: 'Mon', win: 8, loss: 5 },
-    { name: 'Tue', win: 12, loss: 3 },
-    { name: 'Wed', win: 9, loss: 7 },
-    { name: 'Thu', win: 14, loss: 4 },
-    { name: 'Fri', win: 11, loss: 9 },
-  ];
-
-  // Custom tooltip for charts
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-background/95 backdrop-blur-sm border border-border p-3 rounded-md shadow-lg">
-          <p className="font-medium">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {`${entry.name}: ${entry.value}`}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // AI Therapist suggestions
-  const aiTherapistSuggestions = [
-    "You're most consistent after meditation sessions. Consider extending your morning routine.",
-    "Friday sessions show anxiety patterns. Consider reduced position sizing or taking the day off.",
-    "Your emotional control improves when you journal before trading. Make this a daily habit.",
-    "Peak focus occurs between 10am-12pm. Schedule your most important trades during this window.",
-    "Post-loss recovery is strongest when you step away for 30+ minutes. Implement a mandatory break.",
-  ];
-
-  // Function to get status color
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'strong':
-      case 'accepted':
-        return 'bg-green-100 text-green-800';
-      case 'overused':
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
-      case 'experimental':
-      case 'testing':
-        return 'bg-amber-100 text-amber-800';
-      case 'selective':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  // Function to get trend icon
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'up':
-        return <TrendingUp className="h-4 w-4 text-green-600" />;
-      case 'down':
-        return <TrendingUp className="h-4 w-4 text-red-600 rotate-180" />;
-      default:
-        return <TrendingUp className="h-4 w-4 text-blue-600 rotate-90" />;
-    }
-  };
-
+  const [activeTab, setActiveTab] = useState("edge-timeline");
+  const [aiMode, setAiMode] = useState("tactical");
+  
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">AI Analytics</h2>
-          <p className="text-muted-foreground">Advanced intelligence system for trading edge & behavior analysis</p>
+    <Card className="w-full">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-xl flex items-center">
+              <Brain className="mr-2 h-5 w-5" />
+              AI Analytics
+            </CardTitle>
+            <CardDescription>
+              Advanced edge intelligence, behavioral analysis, and performance optimization
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <Select defaultValue={aiMode} onValueChange={setAiMode}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="AI Mode" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tactical">
+                  <div className="flex items-center">
+                    <Target className="mr-2 h-4 w-4" />
+                    <span>Tactical Mode</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="psychological">
+                  <div className="flex items-center">
+                    <Brain className="mr-2 h-4 w-4" />
+                    <span>Psychological Mode</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="macro">
+                  <div className="flex items-center">
+                    <LineChartIcon className="mr-2 h-4 w-4" />
+                    <span>Macro Mode</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="learning">
+                  <div className="flex items-center">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    <span>Learning Mode</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="shadow">
+                  <div className="flex items-center">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Shadow Mode</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <Badge variant="outline" className="px-3 py-1">AI Powered</Badge>
+          </div>
         </div>
-        
-        <div className="flex items-center space-x-2">
-          <Select value={aiMode} onValueChange={setAiMode}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select AI Mode" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="tactical">Tactical Mode</SelectItem>
-              <SelectItem value="psychological">Psychological Mode</SelectItem>
-              <SelectItem value="macro">Macro Mode</SelectItem>
-              <SelectItem value="learning">Learning Mode</SelectItem>
-              <SelectItem value="shadow">Shadow Mode</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-[100px]">
-              <SelectValue placeholder="Timeframe" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1m">1 Month</SelectItem>
-              <SelectItem value="3m">3 Months</SelectItem>
-              <SelectItem value="6m">6 Months</SelectItem>
-              <SelectItem value="1y">1 Year</SelectItem>
-              <SelectItem value="all">All Time</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button variant="outline" size="icon">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      </CardHeader>
       
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* AI Edge Timeline */}
-        <Card className="xl:col-span-2">
-          <CardHeader className="pb-3">
+      <Tabs defaultValue="edge-timeline" className="w-full" onValueChange={setActiveTab}>
+        <div className="px-6">
+          <TabsList className="w-full h-auto justify-start flex-wrap">
+            <TabsTrigger value="edge-timeline" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Clock className="mr-1 h-4 w-4" />
+              Edge Timeline
+            </TabsTrigger>
+            <TabsTrigger value="trader-dna" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Dna className="mr-1 h-4 w-4" />
+              Trader DNA
+            </TabsTrigger>
+            <TabsTrigger value="behavioral" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Network className="mr-1 h-4 w-4" />
+              Behavioral Correlator
+            </TabsTrigger>
+            <TabsTrigger value="edge-amplifier" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Microscope className="mr-1 h-4 w-4" />
+              Edge Amplifier
+            </TabsTrigger>
+            <TabsTrigger value="review-summary" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <FileText className="mr-1 h-4 w-4" />
+              Trade Review
+            </TabsTrigger>
+            <TabsTrigger value="feedback-loop" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <RefreshCcw className="mr-1 h-4 w-4" />
+              Feedback Loop
+            </TabsTrigger>
+            <TabsTrigger value="mistake-intelligence" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Search className="mr-1 h-4 w-4" />
+              Mistake Intelligence
+            </TabsTrigger>
+            <TabsTrigger value="forecast" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <LineChartIcon className="mr-1 h-4 w-4" />
+              AI Forecast
+            </TabsTrigger>
+            <TabsTrigger value="therapist" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <MessageSquare className="mr-1 h-4 w-4" />
+              Trade Therapist
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <CardContent className="p-6">
+          {/* AI Edge Timeline */}
+          <TabsContent value="edge-timeline" className="mt-0 space-y-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <Clock className="h-5 w-5 mr-2" />
-                AI Edge Timeline
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                View Full History
+              <div>
+                <h3 className="text-lg font-semibold">AI Edge Timeline</h3>
+                <p className="text-sm text-muted-foreground">
+                  Performance changes, behavioral patterns, and feedback loops over time
+                </p>
+              </div>
+              <Button variant="outline" size="sm">
+                <Calendar className="mr-2 h-4 w-4" />
+                Filter Period
               </Button>
             </div>
-            <CardDescription>Performance changes, behavior patterns, and feedback loops over time</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <div className="min-w-[800px]">
-                <div className="flex space-x-2 mb-4">
-                  {edgeTimelineData.map((item, i) => (
-                    <div 
-                      key={i} 
-                      className={`flex-1 p-3 border rounded-lg ${
-                        item.alert ? 'border-red-300 bg-red-50/10' : 
-                        item.improvement ? 'border-green-300 bg-green-50/10' : 'border-border'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-muted-foreground">{item.week}</span>
-                        {item.alert && <Badge variant="destructive" className="text-xs">Alert</Badge>}
-                        {item.improvement && <Badge variant="success" className="text-xs bg-green-600">Improved</Badge>}
+            
+            <div className="overflow-x-auto pb-2">
+              <div className="flex gap-4 min-w-max">
+                {timelineData.map((item, index) => (
+                  <Card key={index} className={`w-[300px] flex-shrink-0 border ${
+                    item.type === 'positive' ? 'border-l-4 border-l-green-500' : 
+                    item.type === 'negative' ? 'border-l-4 border-l-red-500' : 
+                    'border-l-4 border-l-yellow-500'
+                  }`}>
+                    <CardHeader className="p-4 pb-2">
+                      <div className="flex justify-between items-center">
+                        <Badge variant="outline">{item.week}</Badge>
+                        <span className="text-xs text-muted-foreground">{item.date}</span>
                       </div>
-                      <h4 className="font-medium mb-1">{item.title}</h4>
-                      <p className="text-xs text-muted-foreground mb-3">{item.description}</p>
-                      <div className="grid grid-cols-3 gap-2 text-center">
-                        <div>
-                          <div className="text-sm font-bold">{item.winRate}%</div>
-                          <div className="text-xs text-muted-foreground">Win Rate</div>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-2">
+                      <p className="font-medium">{item.entry}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{item.details}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-center mt-4">
+              <div className="flex gap-1">
+                {[0, 1, 2, 3, 4].map((dot) => (
+                  <span 
+                    key={dot} 
+                    className={`block rounded-full h-2 w-2 ${dot === 0 ? 'bg-primary' : 'bg-muted'}`} 
+                  />
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-blue-100 rounded-full p-1.5">
+                  <Lightbulb className="h-4 w-4 text-blue-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">AI Pattern Detection:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Strategy adjustments following losing periods have resulted in 23% higher subsequent win rates. Consider formalizing your post-drawdown review process.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          {/* Trader DNA Map */}
+          <TabsContent value="trader-dna" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Trader DNA Map</h3>
+                <p className="text-sm text-muted-foreground">
+                  Dynamic visualization of your psychological and technical identity
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Preferred Setups */}
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-base">Preferred Setups</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="space-y-3">
+                    {traderDnaData.preferredSetups.map((setup, index) => (
+                      <div key={index}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-medium">{setup.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">{setup.strength}%</span>
+                            {setup.evolution === 'improving' && (
+                              <ArrowUp className="h-4 w-4 text-green-500" />
+                            )}
+                            {setup.evolution === 'declining' && (
+                              <ArrowDown className="h-4 w-4 text-red-500" />
+                            )}
+                            {setup.evolution === 'stable' && (
+                              <ArrowRight className="h-4 w-4 text-yellow-500" />
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <div className="text-sm font-bold">{item.rr}R</div>
-                          <div className="text-xs text-muted-foreground">Avg RR</div>
+                        <Progress value={setup.strength} className="h-2" />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Strength Zones */}
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-base">Strength Zones</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <ul className="space-y-2">
+                    {traderDnaData.strengthZones.map((strength, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span>{strength}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+              
+              {/* Weak Spots */}
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-base">Weak Spots</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <ul className="space-y-2">
+                    {traderDnaData.weakSpots.map((weakness, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <XCircle className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+                        <span>{weakness}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+              
+              {/* Style Shift & AI Traits */}
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-base">Style Evolution & AI-Detected Traits</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline">{traderDnaData.styleShift.from}</Badge>
+                      <ArrowRight className="h-4 w-4" />
+                      <Badge>{traderDnaData.styleShift.to}</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Evolving over {traderDnaData.styleShift.timeframe}</p>
+                  </div>
+                  
+                  <Separator className="my-4" />
+                  
+                  <div>
+                    <h4 className="font-medium mb-2">AI-Detected Traits</h4>
+                    <ul className="space-y-2">
+                      {traderDnaData.aiTraits.map((trait, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <AlertCircle className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm">{trait}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-blue-100 rounded-full p-1.5">
+                  <Brain className="h-4 w-4 text-blue-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">AI Identity Analysis:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Your trader DNA shows strong rule-based execution but emotional challenges with exits. Consider implementing mechanical exit rules to offset psychological tendencies.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          {/* Behavioral Correlator */}
+          <TabsContent value="behavioral" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Behavioral Correlator</h3>
+                <p className="text-sm text-muted-foreground">
+                  Mapping behaviors and habits to trading outcomes
+                </p>
+              </div>
+            </div>
+            
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={behaviorCorrelationData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" domain={[-100, 100]} />
+                  <YAxis type="category" dataKey="behavior" width={120} />
+                  <Tooltip 
+                    formatter={(value, name, props) => {
+                      const item = behaviorCorrelationData.find(d => d.behavior === props.payload.behavior);
+                      return [`${value}% impact (${item?.trades} trades)`, item?.behavior];
+                    }} 
+                  />
+                  <Bar 
+                    dataKey="outcome" 
+                    fill={(data) => data.outcome > 0 ? "#10b981" : "#ef4444"} 
+                    radius={[4, 4, 4, 4]} 
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {behaviorCorrelationData.map((item, index) => (
+                <div 
+                  key={index} 
+                  className={`p-3 rounded-md border ${
+                    item.outcome > 0 ? 'border-green-200 bg-green-50 dark:bg-green-900/20' : 
+                    'border-red-200 bg-red-50 dark:bg-red-900/20'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{item.behavior}</span>
+                    <Badge className={item.outcome > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                      {item.outcome > 0 ? '+' : ''}{item.outcome}%
+                    </Badge>
+                  </div>
+                  <p className="text-sm mt-1">{item.impact}</p>
+                </div>
+              ))}
+            </div>
+            
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-amber-100 rounded-full p-1.5">
+                  <AlertTriangle className="h-4 w-4 text-amber-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">Behavioral Warning:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Current behavior patterns mirror your worst trading week from March. Post-loss trading has led to a 71% rule violation rate historically.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          {/* Edge Amplifier */}
+          <TabsContent value="edge-amplifier" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Edge Amplifier Grid</h3>
+                <p className="text-sm text-muted-foreground">
+                  Smart strategy insights based on dynamic performance data
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {edgeAmplifierData.map((item, index) => {
+                let badgeColor = "";
+                let badgeText = "";
+                let badgeIcon = null;
+                
+                switch(item.status) {
+                  case "refined":
+                    badgeColor = "bg-green-100 text-green-800";
+                    badgeText = "Refined Edge";
+                    badgeIcon = <CheckCircle className="h-3.5 w-3.5 mr-1" />;
+                    break;
+                  case "overused":
+                    badgeColor = "bg-amber-100 text-amber-800";
+                    badgeText = "Overused";
+                    badgeIcon = <AlertTriangle className="h-3.5 w-3.5 mr-1" />;
+                    break;
+                  case "broken":
+                    badgeColor = "bg-red-100 text-red-800";
+                    badgeText = "Broken Logic";
+                    badgeIcon = <XCircle className="h-3.5 w-3.5 mr-1" />;
+                    break;
+                  case "experimental":
+                    badgeColor = "bg-purple-100 text-purple-800";
+                    badgeText = "Experimental";
+                    badgeIcon = <FlaskConical className="h-3.5 w-3.5 mr-1" />;
+                    break;
+                  default:
+                    badgeColor = "bg-blue-100 text-blue-800";
+                    badgeText = "Situational";
+                    badgeIcon = <Clock className="h-3.5 w-3.5 mr-1" />;
+                }
+                
+                return (
+                  <Card key={index} className="overflow-hidden">
+                    <CardHeader className="p-4 pb-2">
+                      <div className="flex justify-between items-center">
+                        <CardTitle className="text-base">{item.strategy}</CardTitle>
+                        <Badge className={badgeColor}>
+                          <div className="flex items-center">
+                            {badgeIcon}
+                            {badgeText}
+                          </div>
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        <div className="bg-muted p-2 rounded-md">
+                          <p className="text-xs text-muted-foreground">Win Rate</p>
+                          <p className="text-xl font-semibold">{item.winRate}%</p>
                         </div>
-                        <div>
-                          <div className="text-sm font-bold">{item.trades}</div>
-                          <div className="text-xs text-muted-foreground">Trades</div>
+                        <div className="bg-muted p-2 rounded-md">
+                          <p className="text-xs text-muted-foreground">Avg RR</p>
+                          <p className="text-xl font-semibold">{item.avgRR}R</p>
                         </div>
+                      </div>
+                      
+                      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 rounded-md">
+                        <div className="flex items-start gap-2">
+                          <Lightbulb className="h-4 w-4 text-blue-700 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm">{item.suggestion}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </TabsContent>
+          
+          {/* AI Trade Review Summary */}
+          <TabsContent value="review-summary" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">AI Trade Review Summary</h3>
+                <p className="text-sm text-muted-foreground">
+                  Auto-generated reviews in your own trading voice
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Weekly
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Monthly
+                </Button>
+              </div>
+            </div>
+            
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-base">Week of May 24 - May 28</CardTitle>
+                  <Badge>21 Trades</Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div className="space-y-4">
+                  <p className="italic text-muted-foreground">
+                    "Tuesday's OB trades were top-performing this week with an average RR of 2.3. I saw a pattern of strong execution when I followed my morning ritual and did proper market review. Thursday, however, showed emotional instability in my trading decisions – likely due to the unexpected Fed news. I need to implement my breathwork routine before the session when high-impact news is scheduled."
+                  </p>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                    <div className="bg-muted p-2 rounded-md text-center">
+                      <p className="text-xs text-muted-foreground">Win Rate</p>
+                      <p className="text-lg font-semibold">68%</p>
+                    </div>
+                    <div className="bg-muted p-2 rounded-md text-center">
+                      <p className="text-xs text-muted-foreground">Avg RR</p>
+                      <p className="text-lg font-semibold">1.9R</p>
+                    </div>
+                    <div className="bg-muted p-2 rounded-md text-center">
+                      <p className="text-xs text-muted-foreground">Net</p>
+                      <p className="text-lg font-semibold text-green-600">+12.7R</p>
+                    </div>
+                    <div className="bg-muted p-2 rounded-md text-center">
+                      <p className="text-xs text-muted-foreground">Grade</p>
+                      <p className="text-lg font-semibold">A-</p>
+                    </div>
+                  </div>
+                  
+                  <Separator className="my-4" />
+                  
+                  <div>
+                    <h4 className="font-medium mb-3">Top Mistakes This Week</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-red-50">Early Entry</Badge>
+                        <span className="text-sm text-muted-foreground">4 occurrences</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-red-50">Overtrading</Badge>
+                        <span className="text-sm text-muted-foreground">3 occurrences</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-red-50">Hesitation</Badge>
+                        <span className="text-sm text-muted-foreground">2 occurrences</span>
                       </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-                
-                <div className="h-[80px]">
+              </CardContent>
+            </Card>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-blue-100 rounded-full p-1.5">
+                  <Target className="h-4 w-4 text-blue-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">Weekly Focus Areas:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Based on this week's performance, focus on (1) implementing pre-session routine consistently, (2) reducing overtrading during news events, and (3) reviewing early entries to identify pattern triggers.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          {/* Setup Feedback Loop */}
+          <TabsContent value="feedback-loop" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Setup Feedback Loop Engine</h3>
+                <p className="text-sm text-muted-foreground">
+                  Track strategy tweaks over time and their impact
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-6">
+              {setupFeedbackData.map((setup, setupIndex) => (
+                <Card key={setupIndex}>
+                  <CardHeader className="p-4 pb-3">
+                    <CardTitle className="text-base">{setup.setupName}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <div className="space-y-4">
+                      {setup.changes.map((change, changeIndex) => (
+                        <div key={changeIndex} className="rounded-lg border p-3">
+                          <div className="flex justify-between items-center mb-2">
+                            <Badge variant="outline">{change.date}</Badge>
+                            <span className="text-sm font-medium">{change.change}</span>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4 mt-3">
+                            <div>
+                              <p className="text-sm text-muted-foreground mb-1">Win Rate Impact</p>
+                              <div className="flex items-center">
+                                <span className="text-sm">{change.impact.winRate.before}%</span>
+                                <ArrowRight className="h-4 w-4 mx-2" />
+                                <span className={`text-sm font-medium ${
+                                  change.impact.winRate.after > change.impact.winRate.before 
+                                    ? 'text-green-600' 
+                                    : 'text-red-600'
+                                }`}>
+                                  {change.impact.winRate.after}%
+                                </span>
+                                <span className={`ml-1 text-xs ${
+                                  change.impact.winRate.after > change.impact.winRate.before 
+                                    ? 'text-green-600' 
+                                    : 'text-red-600'
+                                }`}>
+                                  {change.impact.winRate.after > change.impact.winRate.before ? '+' : ''}
+                                  {change.impact.winRate.after - change.impact.winRate.before}%
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <p className="text-sm text-muted-foreground mb-1">RR Impact</p>
+                              <div className="flex items-center">
+                                <span className="text-sm">{change.impact.rr.before}R</span>
+                                <ArrowRight className="h-4 w-4 mx-2" />
+                                <span className={`text-sm font-medium ${
+                                  change.impact.rr.after > change.impact.rr.before 
+                                    ? 'text-green-600' 
+                                    : 'text-red-600'
+                                }`}>
+                                  {change.impact.rr.after}R
+                                </span>
+                                <span className={`ml-1 text-xs ${
+                                  change.impact.rr.after > change.impact.rr.before 
+                                    ? 'text-green-600' 
+                                    : 'text-red-600'
+                                }`}>
+                                  {change.impact.rr.after > change.impact.rr.before ? '+' : ''}
+                                  {(change.impact.rr.after - change.impact.rr.before).toFixed(1)}R
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+                            <div className="flex gap-2">
+                              <Button variant="ghost" size="sm" className="h-7">Accept</Button>
+                              <Button variant="ghost" size="sm" className="h-7">Reject</Button>
+                              <Button variant="ghost" size="sm" className="h-7">A/B Test</Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-green-100 rounded-full p-1.5">
+                  <Lightbulb className="h-4 w-4 text-green-700" />
+                </div>
+                <div>
+                  <h4 className="font-medium">AI Suggestion:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    The EQH confluence filter has significantly improved your OB strategy performance. Consider applying similar structure-based filters to your other setups to achieve comparable improvements.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          {/* Mistake Intelligence */}
+          <TabsContent value="mistake-intelligence" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Mistake Intelligence Dashboard</h3>
+                <p className="text-sm text-muted-foreground">
+                  Auto-cluster and analyze frequent trading mistakes
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              <div className="lg:col-span-3">
+                <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={edgeTimelineData}>
+                    <BarChart data={mistakeData.categories}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="week" />
-                      <YAxis yAxisId="left" orientation="left" domain={[0, 100]} />
-                      <YAxis yAxisId="right" orientation="right" domain={[0, 3]} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Line
-                        yAxisId="left"
-                        type="monotone"
-                        dataKey="winRate"
-                        stroke="#8884d8"
-                        name="Win Rate %"
-                      />
-                      <Line
-                        yAxisId="right"
-                        type="monotone"
-                        dataKey="rr"
-                        stroke="#82ca9d"
-                        name="Avg RR"
-                      />
-                    </LineChart>
+                      <XAxis dataKey="name" />
+                      <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+                      <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                      <Tooltip />
+                      <Legend />
+                      <Bar yAxisId="left" dataKey="count" name="Occurrences" fill="#8884d8" />
+                      <Bar yAxisId="right" dataKey="impact" name="Avg R Impact" fill="#82ca9d" />
+                    </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Trader DNA Map */}
-        <Card className="h-full">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <Dna className="h-5 w-5 mr-2" />
-                Trader DNA Map
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                View Details
-              </Button>
-            </div>
-            <CardDescription>Your psychological and technical trading identity</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={traderDnaData}>
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="name" />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                  <Radar
-                    name="Trader DNA"
-                    dataKey="value"
-                    stroke="#8884d8"
-                    fill="#8884d8"
-                    fillOpacity={0.6}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+              
+              <div className="lg:col-span-2 space-y-4">
+                <Card>
+                  <CardHeader className="p-4 pb-2">
+                    <CardTitle className="text-base">Root Causes</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <ul className="space-y-2">
+                      {mistakeData.rootCauses.map((cause, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <div className="mt-0.5 bg-red-100 rounded-full p-1">
+                            <AlertTriangle className="h-3 w-3 text-red-700" />
+                          </div>
+                          <span className="text-sm">{cause}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="p-4 pb-2">
+                    <CardTitle className="text-base">Mitigation Steps</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <ul className="space-y-2">
+                      {mistakeData.mitigationSteps.map((step, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <div className="mt-0.5 bg-green-100 rounded-full p-1">
+                            <CheckCircle className="h-3 w-3 text-green-700" />
+                          </div>
+                          <span className="text-sm">{step}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
             
-            <div className="mt-4 space-y-3">
-              <div className="flex space-x-4">
-                <div className="flex-1">
-                  <h4 className="text-sm font-medium mb-1">Preferred Setups</h4>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary" className="text-xs">OB Sweep</Badge>
-                    <Badge variant="secondary" className="text-xs">Breaker Blocks</Badge>
-                    <Badge variant="secondary" className="text-xs">SMC</Badge>
-                  </div>
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="mt-0.5 bg-blue-100 rounded-full p-1.5">
+                  <Brain className="h-4 w-4 text-blue-700" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-sm font-medium mb-1">Strength Zones</h4>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-xs bg-green-50/10 text-green-500">High patience</Badge>
-                    <Badge variant="outline" className="text-xs bg-green-50/10 text-green-500">Rule-based entry</Badge>
-                  </div>
+                <div>
+                  <h4 className="font-medium">AI Analysis:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    April entries skewed early by an average of 12.3 seconds compared to optimal entry points. Consider implementing the 2-minute checklist validation before execution to reduce impulsive entries.
+                  </p>
                 </div>
               </div>
-              
-              <div className="flex space-x-4">
-                <div className="flex-1">
-                  <h4 className="text-sm font-medium mb-1">Weak Spots</h4>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-xs bg-red-50/10 text-red-500">Exit too early</Badge>
-                    <Badge variant="outline" className="text-xs bg-red-50/10 text-red-500">FOMO on news days</Badge>
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-sm font-medium mb-1">Style Shift</h4>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs">Swing</span>
-                    <div className="h-[6px] flex-1 bg-gray-200 rounded-full">
-                      <div className="h-full w-3/4 bg-blue-500 rounded-full"></div>
-                    </div>
-                    <span className="text-xs">Tactical Scalper</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-2 p-2 bg-blue-50/10 border border-blue-200 rounded-md">
-                <p className="text-xs text-blue-600 italic">
-                  "Best sessions occur after 3-step premarket ritual. Focus improves with systematic planning."
+            </div>
+          </TabsContent>
+          
+          {/* AI Forecast */}
+          <TabsContent value="forecast" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">AI Forecast & Edge Projection</h3>
+                <p className="text-sm text-muted-foreground">
+                  AI estimates based on current patterns and behavior
                 </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* AI Behavioral Correlator */}
-        <Card className="h-full">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <Fingerprint className="h-5 w-5 mr-2" />
-                AI Behavioral Correlator
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                View All Behaviors
-              </Button>
-            </div>
-            <CardDescription>Correlation between behaviors and trading outcomes</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={behaviorData}
-                  layout="vertical"
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" domain={[-100, 100]} />
-                  <YAxis type="category" dataKey="behavior" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar
-                    dataKey="outcome"
-                    fill={(data: any) => {
-                      return data.outcome > 0 ? "#10b981" : "#ef4444";
-                    }}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+              <Badge variant="outline">
+                <div className="flex items-center gap-1">
+                  <Brain className="h-3.5 w-3.5" />
+                  <span>Predictive Model v2.1</span>
+                </div>
+              </Badge>
             </div>
             
-            <div className="mt-4 border-t pt-4">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-medium">Flash Warning</h4>
-                <Badge variant="destructive" className="text-xs">High Alert</Badge>
-              </div>
-              <p className="text-xs text-muted-foreground">Current behavior mirrors your worst trading week (March 14-18). Detected patterns of overtrading after consecutive losses.</p>
-              <Button size="sm" variant="outline" className="mt-2 w-full">View Recovery Plan</Button>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Edge Amplifier Grid */}
-        <Card className="xl:col-span-2">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <LineChartIcon className="h-5 w-5 mr-2" />
-                Edge Amplifier Grid
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                View All Strategies
-              </Button>
-            </div>
-            <CardDescription>Smart strategy insights based on dynamic performance data</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {strategyEdgeData.map((strategy, i) => (
-                <div key={i} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h4 className="font-medium">{strategy.strategy}</h4>
-                      <Badge className={`mt-1 text-xs ${getStatusColor(strategy.status)}`}>
-                        {strategy.status.charAt(0).toUpperCase() + strategy.status.slice(1)}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {forecastData.map((item, index) => (
+                <Card key={index} className="border-blue-100">
+                  <CardHeader className="p-4 pb-2">
+                    <CardTitle className="text-base">{item.metric}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold">{item.value}</span>
+                      <Badge variant="outline" className="ml-2">
+                        {item.confidence}% confidence
                       </Badge>
                     </div>
-                    {getTrendIcon(strategy.trend)}
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-2 text-center mb-3">
-                    <div>
-                      <div className="text-lg font-bold">{strategy.winRate}%</div>
-                      <div className="text-xs text-muted-foreground">Win Rate</div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {item.condition}
+                    </p>
+                    
+                    <div className="mt-4 flex justify-end">
+                      <Button variant="outline" size="sm" className="text-xs">
+                        <LineChartIcon className="h-3.5 w-3.5 mr-1" />
+                        See Details
+                      </Button>
                     </div>
-                    <div>
-                      <div className="text-lg font-bold">{strategy.avgRR}R</div>
-                      <div className="text-xs text-muted-foreground">Avg RR</div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold">{strategy.totalTrades}</div>
-                      <div className="text-xs text-muted-foreground">Trades</div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-xs text-muted-foreground italic">{strategy.note}</div>
-                  
-                  <div className="mt-2 pt-2 border-t">
-                    <div className="text-xs text-blue-600">AI Suggestion:</div>
-                    <div className="text-xs">
-                      {strategy.status === 'strong' && "Continue using this setup with current parameters."}
-                      {strategy.status === 'overused' && "Take a 5-day break from this setup to reset pattern recognition."}
-                      {strategy.status === 'selective' && "Only use during optimal session times for maximum edge."}
-                      {strategy.status === 'experimental' && "Continue testing with 0.5x normal position sizing."}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Setup Feedback Loop & Mistake Intelligence */}
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <RefreshCw className="h-5 w-5 mr-2" />
-                Setup Feedback Loop Engine
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                View All Changes
-              </Button>
-            </div>
-            <CardDescription>Track strategy tweaks over time and their impact</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {feedbackLoopData.map((item, i) => (
-                <div key={i} className="border rounded-lg p-3">
-                  <div className="flex justify-between items-center mb-2">
-                    <h4 className="font-medium">{item.setup}</h4>
-                    <Badge className={`text-xs ${getStatusColor(item.status)}`}>
-                      {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center space-x-4 mb-3">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">{item.before}%</div>
-                      <div className="text-xs text-muted-foreground">Before</div>
-                    </div>
-                    <div className="flex-1 h-2 bg-gray-200 rounded-full">
-                      <div 
-                        className={`h-full rounded-full ${
-                          item.impact > 0 ? 'bg-green-500' : 'bg-red-500'
-                        }`}
-                        style={{ width: `${Math.abs(item.impact) * 3}%` }}
-                      ></div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">{item.after}%</div>
-                      <div className="text-xs text-muted-foreground">After</div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">Change Applied:</div>
-                    <div className="text-sm">{item.change}</div>
-                  </div>
-                  
-                  <div className="mt-2 flex justify-between items-center">
-                    <div className="text-xs text-muted-foreground">{item.trades} trades analyzed</div>
-                    <div className={`text-xs font-medium ${
-                      item.impact > 0 ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {item.impact > 0 ? '+' : ''}{item.impact}% Win Rate Impact
-                    </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
             
-            <div className="flex justify-center mt-4">
-              <Button size="sm">Add New Strategy Test</Button>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <Search className="h-5 w-5 mr-2" />
-                Mistake Intelligence Dashboard
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                Deep Dive Analysis
-              </Button>
-            </div>
-            <CardDescription>Automatic clustering and analysis of trading mistakes</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[220px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={mistakeData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, value }) => `${name}: ${value}`}
-                  >
-                    {mistakeData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => [`${value} occurrences`, 'Mistakes']} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            
-            <div className="mt-2 border-t pt-3">
-              <h4 className="text-sm font-medium mb-2">Root Causes Analysis:</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
-                    <span className="text-xs">Overconfidence</span>
-                  </div>
-                  <Badge variant="outline" className="text-xs">31% of mistakes</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
-                    <span className="text-xs">Tilt / Emotional Trading</span>
-                  </div>
-                  <Badge variant="outline" className="text-xs">24% of mistakes</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                    <span className="text-xs">Morning Rush / Hasty Analysis</span>
-                  </div>
-                  <Badge variant="outline" className="text-xs">18% of mistakes</Badge>
-                </div>
-              </div>
-              
-              <div className="mt-3 p-2 bg-blue-50/10 border border-blue-200 rounded-md">
-                <div className="text-xs text-blue-600 font-medium mb-1">AI Summary:</div>
-                <p className="text-xs">April entries skewed early with insufficient confirmation. Implement a pre-entry checklist with 3+ conditions before placing orders.</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* AI Forecast & AI Trade Therapist */}
-        <Card className="h-full">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2" />
-                AI Forecast & Edge Projection
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                View Predictions
-              </Button>
-            </div>
-            <CardDescription>AI estimates based on current performance patterns</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={winLossData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="win" fill="#10b981" name="Wins" />
-                  <Bar dataKey="loss" fill="#ef4444" name="Losses" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            
-            <div className="space-y-4 mt-4">
-              <div className="border rounded-lg p-3">
-                <div className="flex items-center">
-                  <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Edge Projection</h4>
-                    <p className="text-xs text-muted-foreground">Based on last 30 days performance</p>
-                  </div>
-                </div>
-                <p className="mt-2 text-sm">If current edge holds, expect 6.5R average next month with 72% win rate across all strategies.</p>
-              </div>
-              
-              <div className="border rounded-lg p-3">
-                <div className="flex items-center">
-                  <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                    <Code className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Behavioral Impact</h4>
-                    <p className="text-xs text-muted-foreground">What-if scenario calculator</p>
-                  </div>
-                </div>
-                <p className="mt-2 text-sm">Cutting rule violations by 15% would result in +2.3R/week improvement (approx. 9.2R monthly).</p>
-              </div>
-              
-              <div className="border rounded-lg p-3">
-                <div className="flex items-center">
-                  <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                    <ZoomIn className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Strategy Focus</h4>
-                    <p className="text-xs text-muted-foreground">Recommended allocation</p>
-                  </div>
-                </div>
-                <p className="mt-2 text-sm">Breaker Block strategy showing 27% edge increase. Consider increasing allocation from 15% to 25% of trades.</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="h-full">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <Brain className="h-5 w-5 mr-2" />
-                AI Trade Therapist
-              </CardTitle>
-              <Button variant="ghost" size="sm">
-                Ask Question
-              </Button>
-            </div>
-            <CardDescription>LLM-based behavioral feedback and insights</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="border-l-4 border-blue-500 pl-3 py-1">
-                <p className="italic text-sm">"Your personalized behavioral insights are based on 143 trades over the last 90 days."</p>
-              </div>
-              
-              <Accordion type="single" collapsible className="w-full">
-                {aiTherapistSuggestions.map((suggestion, i) => (
-                  <AccordionItem key={i} value={`item-${i}`}>
-                    <AccordionTrigger className="text-sm">Insight #{i + 1}</AccordionTrigger>
-                    <AccordionContent>
-                      <p className="text-sm mb-2">{suggestion}</p>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="h-7 text-xs">
-                          <Lightbulb className="h-3 w-3 mr-1" />
-                          Get Tips
-                        </Button>
-                        <Button variant="outline" size="sm" className="h-7 text-xs">
-                          <PlayCircle className="h-3 w-3 mr-1" />
-                          Practice
-                        </Button>
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-base">Strategic Optimization Opportunities</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <div className="space-y-3">
+                  <div className="p-3 rounded-lg border bg-green-50 dark:bg-green-900/20 border-green-100">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5">
+                        <ArrowUp className="h-4 w-4 text-green-600" />
                       </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-              
-              <div className="p-3 border rounded-lg">
-                <h4 className="font-medium mb-2 flex items-center">
-                  <Heart className="h-4 w-4 text-red-500 mr-1" />
-                  Mental Recovery Protocol
-                </h4>
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <Checkbox id="check1" />
-                    <Label htmlFor="check1" className="ml-2 text-sm">5-minute meditation after losses</Label>
+                      <div>
+                        <p className="font-medium">OB Strategy Position Sizing</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Increasing OB strategy allocation by 15% could yield an additional 1.2R per week based on historical performance.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <Checkbox id="check2" />
-                    <Label htmlFor="check2" className="ml-2 text-sm">Journal emotions before next trade</Label>
-                  </div>
-                  <div className="flex items-center">
-                    <Checkbox id="check3" />
-                    <Label htmlFor="check3" className="ml-2 text-sm">Box breathing (4 counts in, hold, out, hold)</Label>
+                  
+                  <div className="p-3 rounded-lg border bg-red-50 dark:bg-red-900/20 border-red-100">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5">
+                        <ArrowDown className="h-4 w-4 text-red-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Reduce Post-News Trading</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Post-news trades have 42% lower win rate. Waiting 30+ minutes after news events could save approximately 1.8R per week.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
-                <Button size="sm" className="w-full mt-3">Generate Personalized Protocol</Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          {/* AI Trade Therapist */}
+          <TabsContent value="therapist" className="mt-0 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">AI Trade Therapist</h3>
+                <p className="text-sm text-muted-foreground">
+                  LLM-based behavioral feedback and psychological insights
+                </p>
               </div>
+              <Badge>Private & Confidential</Badge>
             </div>
             
-            <div className="mt-4">
-              <div className="relative">
-                <Input
-                  placeholder="Ask your AI Trade Therapist a question..."
-                  className="pr-10"
-                />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute right-0 top-0 h-full px-3"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* AI Trade Review Summary */}
-        <Card className="xl:col-span-2">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <BarChartIcon className="h-5 w-5 mr-2" />
-                AI Trade Review Summary
-              </CardTitle>
-              <div className="flex gap-2">
-                <Select defaultValue="week">
-                  <SelectTrigger className="w-[100px]">
-                    <SelectValue placeholder="Period" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="day">Day</SelectItem>
-                    <SelectItem value="week">Week</SelectItem>
-                    <SelectItem value="month">Month</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button variant="ghost" size="sm">
-                  View Full Journal
-                </Button>
-              </div>
-            </div>
-            <CardDescription>Auto-generated reviews in your voice and trading style</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="border rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Weekly Summary: April 22-26, 2025</h3>
-                <Badge variant="outline">24 Trades</Badge>
-              </div>
+            <div className="grid gap-4">
+              <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-100 dark:from-blue-900/20 dark:to-purple-900/20 dark:border-blue-900/30">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center space-y-4">
+                    <Brain className="h-12 w-12 text-blue-600" />
+                    <h3 className="text-xl font-semibold">Trading Psychology Insights</h3>
+                    <p className="text-muted-foreground">
+                      AI-powered behavioral analysis and feedback to enhance your trading psychology
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
               
               <div className="space-y-4">
-                <p className="text-sm">
-                  This week showed significant improvement in my OB execution. Tuesday's trades were particularly strong, with all 5 OB setups hitting targets cleanly. I'm seeing the benefits of waiting for volume confirmation before entry—win rate on these specific setups jumped from 61% to 74%.
-                </p>
-                
-                <p className="text-sm">
-                  Thursday showed some emotional instability after two consecutive losses. I noticed I rushed into the next three trades without proper confirmation, resulting in two more losses. Need to implement the 15-minute cool-down period after consecutive losses as planned.
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                  <div className="border rounded-md p-3">
-                    <h4 className="text-sm font-medium mb-2">Key Metrics</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <div className="text-xs text-muted-foreground">Win Rate</div>
-                        <div className="text-lg font-bold">68%</div>
+                {therapistSuggestions.map((suggestion, index) => (
+                  <Card key={index} className="overflow-hidden">
+                    <div className="flex">
+                      <div className="bg-blue-100 dark:bg-blue-900/30 p-4 flex items-center justify-center">
+                        <MessageSquare className="h-5 w-5 text-blue-600" />
                       </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Total R</div>
-                        <div className="text-lg font-bold">+12.4R</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Avg RR</div>
-                        <div className="text-lg font-bold">1.9R</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Plan Adherence</div>
-                        <div className="text-lg font-bold">83%</div>
-                      </div>
+                      <CardContent className="p-4">
+                        <p>{suggestion}</p>
+                      </CardContent>
                     </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-3">
-                    <h4 className="text-sm font-medium mb-2">Top Mistakes</h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs">Early Entry</span>
-                        <Badge variant="outline" className="text-xs">4 times</Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs">Moving Stop Loss</span>
-                        <Badge variant="outline" className="text-xs">3 times</Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs">Overtrading</span>
-                        <Badge variant="outline" className="text-xs">2 times</Badge>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-3">
-                    <h4 className="text-sm font-medium mb-2">Best Session</h4>
-                    <div className="text-sm mb-1">Tuesday, April 23</div>
-                    <div className="text-xs text-muted-foreground mb-2">London Session</div>
-                    
-                    <div className="grid grid-cols-3 gap-1 text-center">
-                      <div>
-                        <div className="text-lg font-bold">7</div>
-                        <div className="text-xs text-muted-foreground">Trades</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-green-600">86%</div>
-                        <div className="text-xs text-muted-foreground">Win Rate</div>
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold">5.8R</div>
-                        <div className="text-xs text-muted-foreground">Total R</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="pt-2">
-                  <h4 className="text-sm font-medium mb-2">AI Recommendations:</h4>
-                  <ol className="text-sm list-decimal pl-5 space-y-1">
-                    <li>Implement strict 15-minute cooling period after consecutive losses.</li>
-                    <li>Continue using the volume confirmation technique that's boosting OB win rate.</li>
-                    <li>Consider pre-session meditation specifically on Thursdays (pattern of anxiety detected).</li>
-                  </ol>
-                </div>
+                  </Card>
+                ))}
               </div>
+              
+              <Card>
+                <CardHeader className="p-4 pb-0">
+                  <CardTitle className="text-base">Mental Recovery Protocols</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="bg-muted p-3 rounded-lg flex items-start gap-3">
+                      <div className="bg-green-100 rounded-full p-1.5 mt-0.5">
+                        <Clock className="h-4 w-4 text-green-700" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Two-Minute Reset</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          After a losing trade, take 2 minutes away from screens. Practice 4-7-8 breathing (inhale 4s, hold 7s, exhale 8s) to reset your nervous system.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-muted p-3 rounded-lg flex items-start gap-3">
+                      <div className="bg-blue-100 rounded-full p-1.5 mt-0.5">
+                        <FileText className="h-4 w-4 text-blue-700" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Journaling Prompt</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          "What did I learn from today's session that I can apply tomorrow? What pattern am I noticing in my trading that needs attention?"
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-muted p-3 rounded-lg flex items-start gap-3">
+                      <div className="bg-purple-100 rounded-full p-1.5 mt-0.5">
+                        <BarChart2 className="h-4 w-4 text-purple-700" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Performance Visualization</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Spend 5 minutes visualizing perfect execution of your OB strategy, focusing on patience, entry precision, and disciplined exits.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          </TabsContent>
+        </CardContent>
+      </Tabs>
+      
+      <CardFooter className="flex justify-between border-t p-6">
+        <Button variant="outline" size="sm">
+          <FileText className="mr-2 h-4 w-4" />
+          Export Data
+        </Button>
+        <Button size="sm">
+          <Calendar className="mr-2 h-4 w-4" />
+          View Historical
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
