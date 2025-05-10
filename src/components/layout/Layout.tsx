@@ -1,13 +1,21 @@
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
+import { useTheme } from "@/context/ThemeContext";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
+  const { theme } = useTheme();
+
+  // Ensure theme is applied to the entire layout
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />

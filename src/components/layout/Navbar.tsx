@@ -11,14 +11,21 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Sun, Moon, User, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
+import { useToast } from "@/components/ui/use-toast";
 
 export function Navbar() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [notifications, setNotifications] = useState(3);
+  const { theme, toggleTheme } = useTheme();
+  const { toast } = useToast();
 
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-    // In a real app, this would toggle the theme in localStorage or context
+  const handleThemeToggle = () => {
+    toggleTheme();
+    toast({
+      title: `Theme Changed`,
+      description: `${theme === "light" ? "Dark" : "Light"} theme applied`,
+      duration: 2000,
+    });
   };
 
   return (
@@ -28,8 +35,9 @@ export function Navbar() {
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={toggleTheme}
+            onClick={handleThemeToggle}
             className="rounded-full"
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
             {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
           </Button>

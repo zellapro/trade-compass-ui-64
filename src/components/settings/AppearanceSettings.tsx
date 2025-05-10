@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { Sun, Moon, Monitor, RotateCw } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 interface AppearanceSettingsProps {
   onSettingChange: () => void;
@@ -18,32 +19,24 @@ const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
   saveResetButtons
 }) => {
   const { toast } = useToast();
-  const [theme, setTheme] = useState("dark");
+  const { theme, setTheme } = useTheme();
   const [rememberTheme, setRememberTheme] = useState(true);
-  const [previewTheme, setPreviewTheme] = useState("dark");
+  const [previewTheme, setPreviewTheme] = useState(theme);
   const [changesMade, setChangesMade] = useState(false);
   
-  // Load theme from localStorage on mount
+  // Update preview theme when context theme changes
   useEffect(() => {
-    const savedTheme = localStorage.getItem("zella-theme");
-    if (savedTheme) {
-      setTheme(savedTheme);
-      setPreviewTheme(savedTheme);
-      document.documentElement.classList.toggle("dark", savedTheme === "dark");
-    }
-  }, []);
+    setPreviewTheme(theme);
+  }, [theme]);
   
   const handleThemeChange = (value: string) => {
-    setPreviewTheme(value);
+    setPreviewTheme(value as "light" | "dark");
     setChangesMade(value !== theme);
     onSettingChange();
   };
   
   const handleApplyTheme = () => {
-    setTheme(previewTheme);
-    
-    // Update the actual theme in the DOM
-    document.documentElement.classList.toggle("dark", previewTheme === "dark");
+    setTheme(previewTheme as "light" | "dark");
     
     // Save to localStorage if remember is enabled
     if (rememberTheme) {
