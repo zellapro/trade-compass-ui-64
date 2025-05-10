@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ExternalLink, Key, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -22,9 +24,26 @@ interface BrokerCardProps {
   connected: boolean;
   requiresSecret?: boolean;
   docsUrl?: string;
-  onConnect: (id: string, apiKey: string, secretKey?: string) => void;
+  onConnect: (id: string, apiKey: string, apiSecret: string, region: string, connectionType: string, accountLabel?: string) => void;
   onDisconnect: (id: string) => void;
 }
+
+const REGIONS = [
+  { value: "usa", label: "USA" },
+  { value: "eu", label: "EU" },
+  { value: "australia", label: "Australia" },
+  { value: "india", label: "India" },
+  { value: "singapore", label: "Singapore" },
+  { value: "uae", label: "UAE" },
+  { value: "global", label: "Global" }
+];
+
+const CONNECTION_TYPES = [
+  { value: "rest", label: "REST API" },
+  { value: "fix", label: "FIX Protocol" },
+  { value: "websocket", label: "WebSocket" },
+  { value: "custom", label: "Custom Endpoint" }
+];
 
 const BrokerCard: React.FC<BrokerCardProps> = ({
   id,
@@ -39,9 +58,13 @@ const BrokerCard: React.FC<BrokerCardProps> = ({
 }) => {
   const [apiKey, setApiKey] = useState("");
   const [secretKey, setSecretKey] = useState("");
+  const [region, setRegion] = useState("global");
+  const [connectionType, setConnectionType] = useState("rest");
+  const [accountLabel, setAccountLabel] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
   const [showSecretKey, setShowSecretKey] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleConnect = async () => {
     if (!apiKey || (requiresSecret && !secretKey)) {
@@ -51,9 +74,12 @@ const BrokerCard: React.FC<BrokerCardProps> = ({
 
     setIsSubmitting(true);
     try {
-      await onConnect(id, apiKey, secretKey);
+      await onConnect(id, apiKey, secretKey, region, connectionType, accountLabel);
       setApiKey("");
       setSecretKey("");
+      setRegion("global");
+      setConnectionType("rest");
+      setAccountLabel("");
       toast.success(`Connected to ${name} successfully`);
     } catch (error) {
       toast.error(`Failed to connect to ${name}. Please check your credentials.`);
@@ -71,7 +97,7 @@ const BrokerCard: React.FC<BrokerCardProps> = ({
   };
 
   return (
-    <Card>
+    <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -107,6 +133,22 @@ const BrokerCard: React.FC<BrokerCardProps> = ({
 
         {!connected && (
           <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor={`${id}-region`}>Region</Label>
+              <Select value={region} onValueChange={setRegion}>
+                <SelectTrigger id={`${id}-region`} className="w-full">
+                  <SelectValue placeholder="Select region" />
+                </SelectTrigger>
+                <SelectContent>
+                  {REGIONS.map(region => (
+                    <SelectItem key={region.value} value={region.value}>
+                      {region.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="grid gap-2">
               <Label htmlFor={`${id}-api-key`}>API Key</Label>
               <div className="relative">
@@ -152,6 +194,49 @@ const BrokerCard: React.FC<BrokerCardProps> = ({
                 </div>
               </div>
             )}
+            
+            <div className="grid gap-2">
+              <Label htmlFor={`${id}-account-label`}>Account Label (Optional)</Label>
+              <Input
+                id={`${id}-account-label`}
+                value={accountLabel}
+                onChange={(e) => setAccountLabel(e.target.value)}
+                placeholder="E.g. Main Account, Demo Account, etc."
+              />
+            </div>
+
+            <Accordion type="single" collapsible>
+              <AccordionItem value="advanced">
+                <AccordionTrigger className="py-2 text-sm">Advanced Options</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 py-2">
+                    <div className="grid gap-2">
+                      <Label htmlFor={`${id}-connection-type`}>Connection Type</Label>
+                      <Select value={connectionType} onValueChange={setConnectionType}>
+                        <SelectTrigger id={`${id}-connection-type`} className="w-full">
+                          <SelectValue placeholder="Select connection type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CONNECTION_TYPES.map(type => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            
+            <div className="p-3 rounded-md bg-blue-500/10 border border-blue-500/20 text-xs text-blue-500">
+              <div className="flex items-center gap-2 mb-1">
+                <Key className="h-4 w-4" />
+                <span className="font-medium">Security Note</span>
+              </div>
+              Your credentials are end-to-end encrypted using Supabase Vault. You can revoke or rotate them anytime from the panel below.
+            </div>
           </div>
         )}
 
