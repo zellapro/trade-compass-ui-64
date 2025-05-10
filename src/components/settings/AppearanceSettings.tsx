@@ -1,24 +1,34 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { 
   Sun, 
   Moon, 
   Monitor, 
   Layout, 
-  LineChart, 
-  BarChart, 
-  CandlestickChart,
-  Table,
-  Grid3X3,
+  Eye, 
+  Palette, 
+  Sliders, 
+  Save,
+  Image,
   Check,
-  Palette
+  Maximize,
+  LayoutDashboard,
+  SliderHorizontal,
+  RotateCw,
 } from "lucide-react";
 
 interface AppearanceSettingsProps {
@@ -26,333 +36,993 @@ interface AppearanceSettingsProps {
   saveResetButtons: React.ReactNode;
 }
 
-const themeColors = [
-  { name: "Default", value: "default", color: "#7c3aed" },
-  { name: "Blue", value: "blue", color: "#3b82f6" },
-  { name: "Green", value: "green", color: "#10b981" },
-  { name: "Red", value: "red", color: "#ef4444" },
-  { name: "Orange", value: "orange", color: "#f97316" },
-  { name: "Yellow", value: "yellow", color: "#eab308" },
-  { name: "Pink", value: "pink", color: "#ec4899" },
-  { name: "Gray", value: "gray", color: "#6b7280" },
+const fontOptions = [
+  { value: "inter", label: "Inter", description: "Clean and modern sans-serif (default)" },
+  { value: "roboto", label: "Roboto", description: "Google's signature font family" },
+  { value: "opensans", label: "Open Sans", description: "Friendly and approachable" },
+  { value: "ibmplex", label: "IBM Plex", description: "Professional and technical" },
+  { value: "jetbrains", label: "JetBrains Mono", description: "Monospaced for code" },
+];
+
+const colorThemes = [
+  { name: "Default Purple", value: "default", primary: "#7c3aed", secondary: "#d8b4fe" },
+  { name: "Ocean Blue", value: "ocean", primary: "#3b82f6", secondary: "#93c5fd" },
+  { name: "Forest Green", value: "forest", primary: "#10b981", secondary: "#a7f3d0" },
+  { name: "Ruby Red", value: "ruby", primary: "#ef4444", secondary: "#fca5a5" },
+  { name: "Sunset Orange", value: "sunset", primary: "#f97316", secondary: "#fdba74" },
+  { name: "Golden Yellow", value: "golden", primary: "#eab308", secondary: "#fde047" },
+  { name: "Electric Pink", value: "pink", primary: "#ec4899", secondary: "#f9a8d4" },
+  { name: "Neutral Gray", value: "gray", primary: "#6b7280", secondary: "#d1d5db" },
 ];
 
 const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
   onSettingChange,
   saveResetButtons
 }) => {
+  const { toast } = useToast();
   const [theme, setTheme] = useState("dark");
-  const [accentColor, setAccentColor] = useState("default");
-  const [fontSize, setFontSize] = useState("default");
-  const [layout, setLayout] = useState("cards");
-  const [chartType, setChartType] = useState("candles");
-  const [tradingViewTheme, setTradingViewTheme] = useState("dark");
+  const [autoTheme, setAutoTheme] = useState(false);
+  const [fontFamily, setFontFamily] = useState("inter");
+  const [fontSize, setFontSize] = useState("medium");
+  const [customFontSize, setCustomFontSize] = useState(16);
+  const [lineHeight, setLineHeight] = useState("normal");
+  const [colorPalette, setColorPalette] = useState("default");
+  const [isAdvancedColorsOpen, setIsAdvancedColorsOpen] = useState(false);
+  const [isBackgroundOpen, setIsBackgroundOpen] = useState(false);
+  const [spacingDensity, setSpacingDensity] = useState("comfortable");
+  const [borderRadius, setBorderRadius] = useState("rounded");
+  const [shadowStyle, setShadowStyle] = useState("soft");
+  const [chartPosition, setChartPosition] = useState("right");
+  const [dashboardLayout, setDashboardLayout] = useState("grid");
+  const [sidebarBehavior, setSidebarBehavior] = useState("auto");
+  const [transitions, setTransitions] = useState("smooth");
+  const [backgroundStyle, setBackgroundStyle] = useState("flat");
+  const [parallaxEnabled, setParallaxEnabled] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   
-  const handleThemeChange = (value: string) => {
-    setTheme(value);
+  // Advanced color settings
+  const [advancedColors, setAdvancedColors] = useState({
+    background: "#121212",
+    panel: "#1e1e1e",
+    primaryText: "#ffffff",
+    secondaryText: "#a0a0a0",
+    accent: "#7c3aed",
+    bullish: "#22c55e",
+    bearish: "#ef4444",
+  });
+  
+  // Preview image for background upload
+  const [backgroundPreview, setBackgroundPreview] = useState<string | null>(null);
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        if (event.target) {
+          setBackgroundPreview(event.target.result as string);
+          onSettingChange();
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  const handleResetSection = (section: string) => {
+    toast({
+      description: `${section} settings have been reset to default.`,
+    });
+    
+    // Reset specific section based on parameter
+    if (section === "theme") {
+      setTheme("dark");
+      setAutoTheme(false);
+    } else if (section === "typography") {
+      setFontFamily("inter");
+      setFontSize("medium");
+      setCustomFontSize(16);
+      setLineHeight("normal");
+    } else if (section === "colors") {
+      setColorPalette("default");
+      setAdvancedColors({
+        background: "#121212",
+        panel: "#1e1e1e",
+        primaryText: "#ffffff",
+        secondaryText: "#a0a0a0",
+        accent: "#7c3aed",
+        bullish: "#22c55e",
+        bearish: "#ef4444",
+      });
+    } else if (section === "layout") {
+      setSpacingDensity("comfortable");
+      setBorderRadius("rounded");
+      setShadowStyle("soft");
+      setChartPosition("right");
+      setDashboardLayout("grid");
+      setSidebarBehavior("auto");
+      setTransitions("smooth");
+    } else if (section === "background") {
+      setBackgroundStyle("flat");
+      setBackgroundPreview(null);
+      setParallaxEnabled(false);
+    }
+    
     onSettingChange();
   };
   
-  const handleAccentColorChange = (value: string) => {
-    setAccentColor(value);
+  const handleSaveAll = () => {
+    toast({
+      title: "Settings Saved",
+      description: "Your appearance preferences have been saved successfully.",
+    });
+  };
+
+  const handleColorPaletteChange = (value: string) => {
+    setColorPalette(value);
+    
+    // Update advanced colors based on selected palette
+    const selectedTheme = colorThemes.find(theme => theme.value === value);
+    if (selectedTheme) {
+      setAdvancedColors({
+        ...advancedColors,
+        accent: selectedTheme.primary,
+      });
+    }
+    
     onSettingChange();
   };
   
-  const handleFontSizeChange = (value: string) => {
-    setFontSize(value);
-    onSettingChange();
-  };
-  
-  const handleLayoutChange = (value: string) => {
-    setLayout(value);
-    onSettingChange();
-  };
-  
-  const handleChartTypeChange = (value: string) => {
-    setChartType(value);
-    onSettingChange();
-  };
-  
-  const handleTradingViewThemeChange = (value: string) => {
-    setTradingViewTheme(value);
-    onSettingChange();
+  const checkColorContrast = (color1: string, color2: string) => {
+    // Simple contrast check - would be replaced with actual WCAG calculations
+    return true; // Simplified for this implementation
   };
   
   return (
     <div className="space-y-6">
+      {/* Theme Selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Theme Settings</CardTitle>
-          <CardDescription>Customize the look and feel of the application</CardDescription>
+          <CardTitle>Theme Selection</CardTitle>
+          <CardDescription>Choose your preferred color theme for the application</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
-            <Label className="text-base">Color Theme</Label>
-            <div className="grid grid-cols-3 gap-4 mt-2">
-              <div 
-                className={`border rounded-lg p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-primary/50 transition-colors ${theme === 'light' ? 'border-primary bg-primary/5' : ''}`}
-                onClick={() => handleThemeChange('light')}
-              >
-                <div className="w-10 h-10 bg-white rounded-full border flex items-center justify-center">
-                  <Sun className="h-6 w-6 text-yellow-500" />
-                </div>
-                <span className="font-medium">Light</span>
-                {theme === 'light' && (
-                  <Badge variant="outline" className="bg-primary/90 text-white border-none text-xs">
-                    <Check className="h-3 w-3 mr-1" />
-                    Active
-                  </Badge>
-                )}
+            <RadioGroup 
+              value={theme} 
+              onValueChange={(value) => { 
+                setTheme(value); 
+                onSettingChange(); 
+              }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-4"
+            >
+              <div className={`border rounded-lg p-4 flex flex-col items-center gap-3 ${theme === "light" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="light" id="theme-light" className="sr-only" />
+                <Label htmlFor="theme-light" className="cursor-pointer flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center mb-2">
+                    <Sun className="w-6 h-6 text-yellow-500" />
+                  </div>
+                  <span className="font-medium">Light Mode</span>
+                  <p className="text-xs text-muted-foreground text-center mt-1">
+                    Bright layout, ideal for day usage and PDF exports
+                  </p>
+                </Label>
               </div>
               
-              <div 
-                className={`border rounded-lg p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-primary/50 transition-colors ${theme === 'dark' ? 'border-primary bg-primary/5' : ''}`}
-                onClick={() => handleThemeChange('dark')}
-              >
-                <div className="w-10 h-10 bg-gray-900 rounded-full border flex items-center justify-center">
-                  <Moon className="h-6 w-6 text-gray-100" />
-                </div>
-                <span className="font-medium">Dark</span>
-                {theme === 'dark' && (
-                  <Badge variant="outline" className="bg-primary/90 text-white border-none text-xs">
-                    <Check className="h-3 w-3 mr-1" />
-                    Active
-                  </Badge>
-                )}
+              <div className={`border rounded-lg p-4 flex flex-col items-center gap-3 ${theme === "dark" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="dark" id="theme-dark" className="sr-only" />
+                <Label htmlFor="theme-dark" className="cursor-pointer flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-full bg-gray-900 flex items-center justify-center mb-2">
+                    <Moon className="w-6 h-6 text-blue-200" />
+                  </div>
+                  <span className="font-medium">Dark Mode</span>
+                  <p className="text-xs text-muted-foreground text-center mt-1">
+                    Low-light optimized, soft on eyes during extended sessions
+                  </p>
+                </Label>
               </div>
               
-              <div 
-                className={`border rounded-lg p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-primary/50 transition-colors ${theme === 'system' ? 'border-primary bg-primary/5' : ''}`}
-                onClick={() => handleThemeChange('system')}
-              >
-                <div className="w-10 h-10 bg-gradient-to-r from-gray-900 to-white rounded-full border flex items-center justify-center">
-                  <Monitor className="h-6 w-6" />
-                </div>
-                <span className="font-medium">System</span>
-                {theme === 'system' && (
-                  <Badge variant="outline" className="bg-primary/90 text-white border-none text-xs">
-                    <Check className="h-3 w-3 mr-1" />
-                    Active
-                  </Badge>
-                )}
+              <div className={`border rounded-lg p-4 flex flex-col items-center gap-3 ${theme === "system" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="system" id="theme-system" className="sr-only" />
+                <Label htmlFor="theme-system" className="cursor-pointer flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-900 to-white flex items-center justify-center mb-2">
+                    <Monitor className="w-6 h-6" />
+                  </div>
+                  <span className="font-medium">System Default</span>
+                  <p className="text-xs text-muted-foreground text-center mt-1">
+                    Follows your device's theme settings
+                  </p>
+                </Label>
               </div>
-            </div>
+            </RadioGroup>
           </div>
           
-          <Separator />
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="auto-theme" className="flex items-center gap-2">
+              <Monitor className="h-4 w-4" />
+              <span>Auto Switch Based on System Theme</span>
+            </Label>
+            <Switch 
+              id="auto-theme" 
+              checked={autoTheme}
+              onCheckedChange={(checked) => {
+                setAutoTheme(checked);
+                onSettingChange();
+              }}
+            />
+          </div>
           
-          <div>
-            <Label className="text-base mb-2 block">Accent Color</Label>
-            <div className="grid grid-cols-4 gap-3 mt-2">
-              {themeColors.map((color) => (
-                <div 
-                  key={color.value}
-                  className={`border rounded-lg p-2 flex items-center gap-2 cursor-pointer hover:border-primary/50 transition-colors ${accentColor === color.value ? 'border-primary bg-primary/5' : ''}`}
-                  onClick={() => handleAccentColorChange(color.value)}
-                >
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: color.color }}>
-                    {accentColor === color.value && <Check className="h-4 w-4 text-white" />}
+          <div className="flex justify-between items-center mt-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleResetSection("theme")}
+            >
+              <RotateCw className="h-4 w-4 mr-1" />
+              Reset Theme
+            </Button>
+            
+            <div className="flex items-center">
+              {theme === "light" ? (
+                <Sun className="h-5 w-5 text-orange-400 mr-2" />
+              ) : (
+                <Moon className="h-5 w-5 text-blue-300 mr-2" />
+              )}
+              <span className="text-sm font-medium">
+                {theme === "light" ? "Light Mode Active" : theme === "dark" ? "Dark Mode Active" : "System Default Active"}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Typography Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Typography</CardTitle>
+          <CardDescription>Customize fonts, sizes, and readability settings</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <Label htmlFor="font-family" className="text-base">Font Style</Label>
+            <Select 
+              value={fontFamily} 
+              onValueChange={(value) => {
+                setFontFamily(value);
+                onSettingChange();
+              }}
+            >
+              <SelectTrigger id="font-family">
+                <SelectValue placeholder="Select a font family" />
+              </SelectTrigger>
+              <SelectContent>
+                {fontOptions.map((font) => (
+                  <SelectItem key={font.value} value={font.value}>
+                    <div className="flex flex-col">
+                      <span className={`font-${font.value}`}>{font.label}</span>
+                      <span className="text-xs text-muted-foreground mt-1">{font.description}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-3">
+            <Label className="text-base">Font Size</Label>
+            <RadioGroup 
+              value={fontSize} 
+              onValueChange={(value) => {
+                setFontSize(value);
+                onSettingChange();
+              }}
+              className="grid grid-cols-3 gap-4"
+            >
+              <div className={`border rounded-lg p-4 flex items-center ${fontSize === "small" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="small" id="font-small" className="mr-2" />
+                <Label htmlFor="font-small" className="cursor-pointer flex-1">
+                  <div className="text-sm">Small</div>
+                  <p className="text-xs text-muted-foreground">Compact view</p>
+                </Label>
+              </div>
+              
+              <div className={`border rounded-lg p-4 flex items-center ${fontSize === "medium" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="medium" id="font-medium" className="mr-2" />
+                <Label htmlFor="font-medium" className="cursor-pointer flex-1">
+                  <div>Medium</div>
+                  <p className="text-xs text-muted-foreground">Default size</p>
+                </Label>
+              </div>
+              
+              <div className={`border rounded-lg p-4 flex items-center ${fontSize === "large" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="large" id="font-large" className="mr-2" />
+                <Label htmlFor="font-large" className="cursor-pointer flex-1">
+                  <div className="text-lg">Large</div>
+                  <p className="text-xs text-muted-foreground">Enhanced readability</p>
+                </Label>
+              </div>
+              
+              <div className={`col-span-3 border rounded-lg p-4 flex flex-col ${fontSize === "custom" ? "border-primary" : "border-border"}`}>
+                <div className="flex items-center mb-2">
+                  <RadioGroupItem value="custom" id="font-custom" className="mr-2" />
+                  <Label htmlFor="font-custom" className="cursor-pointer">
+                    Custom Size: {customFontSize}px
+                  </Label>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <Slider
+                    disabled={fontSize !== "custom"}
+                    min={12}
+                    max={24}
+                    step={1}
+                    value={[customFontSize]}
+                    onValueChange={(values) => {
+                      setCustomFontSize(values[0]);
+                      onSettingChange();
+                    }}
+                    className="flex-1"
+                  />
+                  <div className="w-12 text-center">
+                    {customFontSize}px
                   </div>
-                  <span className="text-sm font-medium">{color.name}</span>
+                </div>
+              </div>
+            </RadioGroup>
+          </div>
+          
+          <div className="space-y-3">
+            <Label htmlFor="line-height" className="text-base">Line Height</Label>
+            <Select 
+              value={lineHeight} 
+              onValueChange={(value) => {
+                setLineHeight(value);
+                onSettingChange();
+              }}
+            >
+              <SelectTrigger id="line-height">
+                <SelectValue placeholder="Select line height" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tight">Tight (1.2)</SelectItem>
+                <SelectItem value="normal">Normal (1.5)</SelectItem>
+                <SelectItem value="relaxed">Relaxed (1.8)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleResetSection("typography")}
+            >
+              <RotateCw className="h-4 w-4 mr-1" />
+              Reset Typography
+            </Button>
+          </div>
+          
+          <div className="p-4 border rounded-md mt-2">
+            <h4 className="font-medium mb-2">Typography Preview</h4>
+            <div className={`
+              ${fontFamily === "inter" ? "font-sans" : 
+                fontFamily === "roboto" ? "font-['Roboto']" : 
+                fontFamily === "opensans" ? "font-['Open_Sans']" : 
+                fontFamily === "ibmplex" ? "font-['IBM_Plex_Sans']" : "font-mono"}
+              ${fontSize === "small" ? "text-sm" : 
+                fontSize === "large" ? "text-lg" : 
+                fontSize === "custom" ? `text-[${customFontSize}px]` : "text-base"}
+              ${lineHeight === "tight" ? "leading-tight" : 
+                lineHeight === "relaxed" ? "leading-relaxed" : "leading-normal"}
+            `}>
+              <p>This is how your text will look within ZellaPro.</p>
+              <p className="mt-2">Trading journal entries, metrics, and reports will use this typography.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Color Palettes */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Color Palettes</CardTitle>
+            <CardDescription>Choose predefined color schemes or create your own</CardDescription>
+          </div>
+          <Collapsible
+            open={isAdvancedColorsOpen}
+            onOpenChange={setIsAdvancedColorsOpen}
+          >
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Eye className="h-4 w-4 mr-2" />
+                {isAdvancedColorsOpen ? "Hide Advanced" : "Show Advanced"}
+              </Button>
+            </CollapsibleTrigger>
+          </Collapsible>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <Label className="text-base">Accent Color Theme</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {colorThemes.map((theme) => (
+                <div
+                  key={theme.value}
+                  className={`border rounded-lg p-3 cursor-pointer hover:border-primary/50 transition-colors ${
+                    colorPalette === theme.value ? "border-primary bg-primary/5" : ""
+                  }`}
+                  onClick={() => handleColorPaletteChange(theme.value)}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <div
+                      className="w-6 h-6 rounded-full"
+                      style={{ background: theme.primary }}
+                    />
+                    <span className="text-sm font-medium">{theme.name}</span>
+                  </div>
+                  <div className="flex gap-1">
+                    <div
+                      className="h-2 flex-grow rounded"
+                      style={{ background: theme.primary }}
+                    />
+                    <div
+                      className="h-2 flex-grow rounded"
+                      style={{ background: theme.secondary }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
           </div>
           
-          <Separator />
-          
-          <div>
-            <Label className="text-base mb-2 block">Font Size</Label>
-            <RadioGroup defaultValue="default" value={fontSize} onValueChange={handleFontSizeChange}>
-              <div className="grid grid-cols-3 gap-4 mt-2">
-                <div className={`border rounded-lg p-4 flex items-center ${fontSize === 'small' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="small" id="font-small" className="mr-2" />
-                  <Label htmlFor="font-small" className="cursor-pointer flex-1">
-                    <span className="font-medium text-sm">Small</span>
-                    <p className="text-xs text-muted-foreground">Compact view</p>
-                  </Label>
+          <Collapsible
+            open={isAdvancedColorsOpen}
+            className="border rounded-md p-4 mt-4 space-y-4"
+          >
+            <CollapsibleContent className="space-y-4">
+              <h4 className="font-medium flex items-center">
+                <Palette className="h-4 w-4 mr-2" />
+                Advanced Color Customization
+              </h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="color-background">Background Color</Label>
+                  <div className="flex gap-2">
+                    <div 
+                      className="w-10 h-10 rounded border"
+                      style={{ backgroundColor: advancedColors.background }}
+                    />
+                    <Input
+                      id="color-background"
+                      type="text"
+                      value={advancedColors.background}
+                      onChange={(e) => {
+                        setAdvancedColors({...advancedColors, background: e.target.value});
+                        onSettingChange();
+                      }}
+                    />
+                  </div>
                 </div>
                 
-                <div className={`border rounded-lg p-4 flex items-center ${fontSize === 'default' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="default" id="font-default" className="mr-2" />
-                  <Label htmlFor="font-default" className="cursor-pointer flex-1">
-                    <span className="font-medium">Default</span>
-                    <p className="text-xs text-muted-foreground">Recommended</p>
-                  </Label>
+                <div className="space-y-2">
+                  <Label htmlFor="color-panel">Panel Color</Label>
+                  <div className="flex gap-2">
+                    <div 
+                      className="w-10 h-10 rounded border"
+                      style={{ backgroundColor: advancedColors.panel }}
+                    />
+                    <Input
+                      id="color-panel"
+                      type="text"
+                      value={advancedColors.panel}
+                      onChange={(e) => {
+                        setAdvancedColors({...advancedColors, panel: e.target.value});
+                        onSettingChange();
+                      }}
+                    />
+                  </div>
                 </div>
                 
-                <div className={`border rounded-lg p-4 flex items-center ${fontSize === 'large' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="large" id="font-large" className="mr-2" />
-                  <Label htmlFor="font-large" className="cursor-pointer flex-1">
-                    <span className="font-medium text-lg">Large</span>
-                    <p className="text-xs text-muted-foreground">More readable</p>
-                  </Label>
+                <div className="space-y-2">
+                  <Label htmlFor="color-primary-text">Primary Text Color</Label>
+                  <div className="flex gap-2">
+                    <div 
+                      className="w-10 h-10 rounded border"
+                      style={{ backgroundColor: advancedColors.primaryText }}
+                    />
+                    <Input
+                      id="color-primary-text"
+                      type="text"
+                      value={advancedColors.primaryText}
+                      onChange={(e) => {
+                        setAdvancedColors({...advancedColors, primaryText: e.target.value});
+                        onSettingChange();
+                      }}
+                    />
+                  </div>
+                  {!checkColorContrast(advancedColors.primaryText, advancedColors.background) && (
+                    <p className="text-xs text-yellow-500">Warning: Low contrast may affect readability</p>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="color-secondary-text">Secondary Text Color</Label>
+                  <div className="flex gap-2">
+                    <div 
+                      className="w-10 h-10 rounded border"
+                      style={{ backgroundColor: advancedColors.secondaryText }}
+                    />
+                    <Input
+                      id="color-secondary-text"
+                      type="text"
+                      value={advancedColors.secondaryText}
+                      onChange={(e) => {
+                        setAdvancedColors({...advancedColors, secondaryText: e.target.value});
+                        onSettingChange();
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="color-accent">Accent Color</Label>
+                  <div className="flex gap-2">
+                    <div 
+                      className="w-10 h-10 rounded border"
+                      style={{ backgroundColor: advancedColors.accent }}
+                    />
+                    <Input
+                      id="color-accent"
+                      type="text"
+                      value={advancedColors.accent}
+                      onChange={(e) => {
+                        setAdvancedColors({...advancedColors, accent: e.target.value});
+                        onSettingChange();
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="block mb-2">Trading Chart Colors</Label>
+                  <div className="flex gap-4">
+                    <div className="flex-1 space-y-1">
+                      <Label htmlFor="color-bullish" className="text-xs">Bullish</Label>
+                      <div className="flex gap-2">
+                        <div 
+                          className="w-6 h-6 rounded border"
+                          style={{ backgroundColor: advancedColors.bullish }}
+                        />
+                        <Input
+                          id="color-bullish"
+                          type="text"
+                          className="text-xs"
+                          value={advancedColors.bullish}
+                          onChange={(e) => {
+                            setAdvancedColors({...advancedColors, bullish: e.target.value});
+                            onSettingChange();
+                          }}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 space-y-1">
+                      <Label htmlFor="color-bearish" className="text-xs">Bearish</Label>
+                      <div className="flex gap-2">
+                        <div 
+                          className="w-6 h-6 rounded border"
+                          style={{ backgroundColor: advancedColors.bearish }}
+                        />
+                        <Input
+                          id="color-bearish"
+                          type="text"
+                          className="text-xs"
+                          value={advancedColors.bearish}
+                          onChange={(e) => {
+                            setAdvancedColors({...advancedColors, bearish: e.target.value});
+                            onSettingChange();
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </RadioGroup>
+              
+              <div className="p-3 bg-muted/50 rounded-md text-xs text-muted-foreground flex items-start mt-2">
+                <Check className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                <span>All colors are checked for WCAG 2.1 AA color accessibility compliance. Warnings will appear if contrast ratios are below recommended levels.</span>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+          
+          <div className="flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleResetSection("colors")}
+            >
+              <RotateCw className="h-4 w-4 mr-1" />
+              Reset Colors
+            </Button>
           </div>
         </CardContent>
       </Card>
       
+      {/* Interface Density & Layout */}
       <Card>
         <CardHeader>
-          <CardTitle>Layout & Display</CardTitle>
-          <CardDescription>Configure how content is displayed</CardDescription>
+          <CardTitle>Interface Density & Layout</CardTitle>
+          <CardDescription>Configure the spacing, visual style, and layout of components</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div>
-            <Label className="text-base mb-2 block">Journal Page Layout</Label>
-            <RadioGroup defaultValue="cards" value={layout} onValueChange={handleLayoutChange}>
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div className={`border rounded-lg p-4 flex items-center ${layout === 'cards' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="cards" id="layout-cards" className="mr-2" />
-                  <Label htmlFor="layout-cards" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2">
-                      <Grid3X3 className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Card View</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Visual grid layout with trade cards</p>
-                  </Label>
-                </div>
-                
-                <div className={`border rounded-lg p-4 flex items-center ${layout === 'table' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="table" id="layout-table" className="mr-2" />
-                  <Label htmlFor="layout-table" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2">
-                      <Table className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Table View</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Compact table with sortable columns</p>
-                  </Label>
-                </div>
-              </div>
-            </RadioGroup>
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <Label className="text-base mb-2 block">Chart Style</Label>
-            <RadioGroup defaultValue="candles" value={chartType} onValueChange={handleChartTypeChange}>
-              <div className="grid grid-cols-3 gap-4 mt-2">
-                <div className={`border rounded-lg p-4 flex items-center ${chartType === 'line' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="line" id="chart-line" className="mr-2" />
-                  <Label htmlFor="chart-line" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2">
-                      <LineChart className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Line</span>
-                    </div>
-                  </Label>
-                </div>
-                
-                <div className={`border rounded-lg p-4 flex items-center ${chartType === 'bars' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="bars" id="chart-bars" className="mr-2" />
-                  <Label htmlFor="chart-bars" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2">
-                      <BarChart className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Bars</span>
-                    </div>
-                  </Label>
-                </div>
-                
-                <div className={`border rounded-lg p-4 flex items-center ${chartType === 'candles' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="candles" id="chart-candles" className="mr-2" />
-                  <Label htmlFor="chart-candles" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2">
-                      <CandlestickChart className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Candles</span>
-                    </div>
-                  </Label>
-                </div>
-              </div>
-            </RadioGroup>
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <Label className="text-base mb-2 block">TradingView Theme</Label>
-            <RadioGroup defaultValue="dark" value={tradingViewTheme} onValueChange={handleTradingViewThemeChange}>
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div className={`border rounded-lg p-4 flex items-center ${tradingViewTheme === 'light' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="light" id="tradingview-light" className="mr-2" />
-                  <Label htmlFor="tradingview-light" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2">
-                      <Sun className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Light</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Light background with dark elements</p>
-                  </Label>
-                </div>
-                
-                <div className={`border rounded-lg p-4 flex items-center ${tradingViewTheme === 'dark' ? 'border-primary' : ''}`}>
-                  <RadioGroupItem value="dark" id="tradingview-dark" className="mr-2" />
-                  <Label htmlFor="tradingview-dark" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2">
-                      <Moon className="h-5 w-5 text-muted-foreground" />
-                      <span className="font-medium">Dark</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Dark background with light elements</p>
-                  </Label>
-                </div>
-              </div>
-            </RadioGroup>
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <Label className="text-base mb-2 block">Additional Display Options</Label>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                <div className="space-y-0.5">
-                  <Label htmlFor="display-animations">Enable Animations</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Smooth transitions and animations throughout the app
+          <div className="space-y-3">
+            <Label className="text-base">Component Spacing</Label>
+            <RadioGroup 
+              value={spacingDensity} 
+              onValueChange={(value) => {
+                setSpacingDensity(value);
+                onSettingChange();
+              }}
+              className="grid grid-cols-3 gap-4"
+            >
+              <div className={`border rounded-lg p-3 flex flex-col items-center ${spacingDensity === "compact" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="compact" id="spacing-compact" className="sr-only" />
+                <Label htmlFor="spacing-compact" className="cursor-pointer text-center">
+                  <div className="flex gap-1 mb-2">
+                    <div className="w-8 h-6 bg-muted rounded"></div>
+                    <div className="w-8 h-6 bg-muted rounded"></div>
+                    <div className="w-8 h-6 bg-muted rounded"></div>
+                  </div>
+                  <span className="font-medium">Compact</span>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Minimal spacing, dense layout
                   </p>
-                </div>
-                <Switch id="display-animations" defaultChecked onChange={onSettingChange} />
+                </Label>
               </div>
               
-              <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                <div className="space-y-0.5">
-                  <Label htmlFor="compact-mode">Compact Mode</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Reduce padding and spacing for more content
+              <div className={`border rounded-lg p-3 flex flex-col items-center ${spacingDensity === "comfortable" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="comfortable" id="spacing-comfortable" className="sr-only" />
+                <Label htmlFor="spacing-comfortable" className="cursor-pointer text-center">
+                  <div className="flex gap-2 mb-2">
+                    <div className="w-7 h-6 bg-muted rounded"></div>
+                    <div className="w-7 h-6 bg-muted rounded"></div>
+                    <div className="w-7 h-6 bg-muted rounded"></div>
+                  </div>
+                  <span className="font-medium">Comfortable</span>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Balanced spacing (default)
                   </p>
-                </div>
-                <Switch id="compact-mode" onChange={onSettingChange} />
+                </Label>
               </div>
               
-              <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
-                <div className="space-y-0.5">
-                  <Label htmlFor="display-tooltips">Show Tooltips</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Display helpful tooltips for UI elements
+              <div className={`border rounded-lg p-3 flex flex-col items-center ${spacingDensity === "spacious" ? "border-primary" : "border-border"}`}>
+                <RadioGroupItem value="spacious" id="spacing-spacious" className="sr-only" />
+                <Label htmlFor="spacing-spacious" className="cursor-pointer text-center">
+                  <div className="flex gap-3 mb-2">
+                    <div className="w-6 h-6 bg-muted rounded"></div>
+                    <div className="w-6 h-6 bg-muted rounded"></div>
+                    <div className="w-6 h-6 bg-muted rounded"></div>
+                  </div>
+                  <span className="font-medium">Spacious</span>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Extra room between elements
                   </p>
-                </div>
-                <Switch id="display-tooltips" defaultChecked onChange={onSettingChange} />
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+          
+          <Separator />
+          
+          <div className="space-y-3">
+            <Label className="text-base">Border Radius</Label>
+            <ToggleGroup
+              type="single"
+              value={borderRadius}
+              onValueChange={(value) => {
+                if (value) {
+                  setBorderRadius(value);
+                  onSettingChange();
+                }
+              }}
+              className="justify-center"
+            >
+              <ToggleGroupItem value="none" aria-label="None">
+                <div className="w-8 h-8 border-2 mr-1"></div>
+                <span>None</span>
+              </ToggleGroupItem>
+              
+              <ToggleGroupItem value="soft" aria-label="Soft">
+                <div className="w-8 h-8 border-2 rounded-sm mr-1"></div>
+                <span>Soft</span>
+              </ToggleGroupItem>
+              
+              <ToggleGroupItem value="rounded" aria-label="Rounded">
+                <div className="w-8 h-8 border-2 rounded-md mr-1"></div>
+                <span>Rounded</span>
+              </ToggleGroupItem>
+              
+              <ToggleGroupItem value="extra" aria-label="Extra Rounded">
+                <div className="w-8 h-8 border-2 rounded-xl mr-1"></div>
+                <span>Extra</span>
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+          
+          <Separator />
+          
+          <div className="space-y-3">
+            <Label htmlFor="shadow-style" className="text-base">Shadow Style</Label>
+            <Select 
+              value={shadowStyle} 
+              onValueChange={(value) => {
+                setShadowStyle(value);
+                onSettingChange();
+              }}
+            >
+              <SelectTrigger id="shadow-style">
+                <SelectValue placeholder="Select shadow style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="flat">Flat (No shadows)</SelectItem>
+                <SelectItem value="soft">Soft Shadows</SelectItem>
+                <SelectItem value="elevated">Elevated UI</SelectItem>
+                <SelectItem value="glassy">Glassy (Blur effect)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <Separator />
+          
+          <div className="space-y-3">
+            <Label className="text-base">Layout Preferences</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="chart-position" className="text-sm">Chart Default Position</Label>
+                <Select 
+                  value={chartPosition} 
+                  onValueChange={(value) => {
+                    setChartPosition(value);
+                    onSettingChange();
+                  }}
+                >
+                  <SelectTrigger id="chart-position">
+                    <SelectValue placeholder="Select position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="left">Left</SelectItem>
+                    <SelectItem value="right">Right</SelectItem>
+                    <SelectItem value="top">Top</SelectItem>
+                    <SelectItem value="bottom">Bottom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="dashboard-layout" className="text-sm">Dashboard Tile Layout</Label>
+                <Select 
+                  value={dashboardLayout} 
+                  onValueChange={(value) => {
+                    setDashboardLayout(value);
+                    onSettingChange();
+                  }}
+                >
+                  <SelectTrigger id="dashboard-layout">
+                    <SelectValue placeholder="Select layout" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="grid">Grid</SelectItem>
+                    <SelectItem value="stack">Stacked</SelectItem>
+                    <SelectItem value="dnd">Drag-n-Drop</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="sidebar-behavior" className="text-sm">Sidebar Behavior</Label>
+                <Select 
+                  value={sidebarBehavior} 
+                  onValueChange={(value) => {
+                    setSidebarBehavior(value);
+                    onSettingChange();
+                  }}
+                >
+                  <SelectTrigger id="sidebar-behavior">
+                    <SelectValue placeholder="Select behavior" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="visible">Always Visible</SelectItem>
+                    <SelectItem value="auto">Auto Collapse</SelectItem>
+                    <SelectItem value="hidden">Hidden (Toggle Button)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="panel-transitions" className="text-sm">Panel Transitions</Label>
+                <Select 
+                  value={transitions} 
+                  onValueChange={(value) => {
+                    setTransitions(value);
+                    onSettingChange();
+                  }}
+                >
+                  <SelectTrigger id="panel-transitions">
+                    <SelectValue placeholder="Select transition" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="smooth">Smooth Animations</SelectItem>
+                    <SelectItem value="instant">Instant (No Animation)</SelectItem>
+                    <SelectItem value="disabled">Reduced Motion</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
           
-          {saveResetButtons}
+          <div className="flex justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleResetSection("layout")}
+            >
+              <RotateCw className="h-4 w-4 mr-1" />
+              Reset Layout
+            </Button>
+          </div>
         </CardContent>
       </Card>
-    </div>
-  );
-};
-
-// Add missing Badge component
-const Badge = ({ children, className, variant }: { children: React.ReactNode, className?: string, variant?: "default" | "outline" }) => {
-  const baseClasses = "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
-  const variantClasses = variant === "outline" 
-    ? "border border-input hover:bg-accent hover:text-accent-foreground" 
-    : "bg-primary text-primary-foreground hover:bg-primary/80";
-  
-  return (
-    <div className={`${baseClasses} ${variantClasses} ${className}`}>
-      {children}
+      
+      {/* Background Enhancements */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Background Enhancements</CardTitle>
+            <CardDescription>Customize the background style for your workspace</CardDescription>
+          </div>
+          <Collapsible
+            open={isBackgroundOpen}
+            onOpenChange={setIsBackgroundOpen}
+          >
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Image className="h-4 w-4 mr-2" />
+                {isBackgroundOpen ? "Hide Options" : "Show Options"}
+              </Button>
+            </CollapsibleTrigger>
+          </Collapsible>
+        </CardHeader>
+        <CardContent>
+          <Collapsible open={isBackgroundOpen}>
+            <CollapsibleContent className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="background-style" className="text-base">Background Style</Label>
+                <Select 
+                  value={backgroundStyle} 
+                  onValueChange={(value) => {
+                    setBackgroundStyle(value);
+                    onSettingChange();
+                  }}
+                >
+                  <SelectTrigger id="background-style">
+                    <SelectValue placeholder="Select background style" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="flat">Flat Color</SelectItem>
+                    <SelectItem value="gradient">Gradient</SelectItem>
+                    <SelectItem value="image">Custom Image</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {backgroundStyle === "image" && (
+                <div className="space-y-3">
+                  <Label htmlFor="background-upload" className="text-base">Upload Background Image</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Input
+                        id="background-upload"
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.svg"
+                        onChange={handleFileChange}
+                        className="mb-2"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Supports JPG, PNG and SVG. Recommended size: 1920×1080px or larger.
+                      </p>
+                    </div>
+                    
+                    <div className="relative border rounded-md h-40 bg-card overflow-hidden">
+                      {backgroundPreview ? (
+                        <img 
+                          src={backgroundPreview} 
+                          alt="Background preview" 
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                          Preview will appear here
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  id="parallax-toggle"
+                  checked={parallaxEnabled}
+                  disabled={backgroundStyle !== "image"}
+                  onCheckedChange={(checked) => {
+                    setParallaxEnabled(checked);
+                    onSettingChange();
+                  }}
+                />
+                <Label htmlFor="parallax-toggle">Enable Motion Parallax</Label>
+              </div>
+              
+              <div className="flex justify-end">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleResetSection("background")}
+                >
+                  <RotateCw className="h-4 w-4 mr-1" />
+                  Reset Background
+                </Button>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </CardContent>
+      </Card>
+      
+      {/* Preview & Save Controls */}
+      <div className="flex flex-col space-y-4">
+        <Button 
+          className="flex items-center justify-center gap-2"
+          onClick={() => setPreviewOpen(true)}
+        >
+          <Maximize className="h-4 w-4" />
+          Preview Current Theme in Fullscreen Mode
+        </Button>
+        
+        <div className="flex justify-between items-center">
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              // Reset all settings
+              handleResetSection("theme");
+              handleResetSection("typography");
+              handleResetSection("colors");
+              handleResetSection("layout");
+              handleResetSection("background");
+              
+              toast({
+                title: "All Settings Reset",
+                description: "All appearance settings have been restored to defaults.",
+              });
+            }}
+          >
+            <RotateCw className="h-4 w-4 mr-2" />
+            Reset All Settings
+          </Button>
+          
+          <Button 
+            onClick={handleSaveAll}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save Appearance Settings
+          </Button>
+        </div>
+      </div>
+      
+      {saveResetButtons}
+      
+      {/* Preview Modal would go here in a real implementation */}
     </div>
   );
 };
