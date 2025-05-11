@@ -1,12 +1,15 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Edit, Trash2, ChevronDown, ChevronUp, Plus } from "lucide-react";
+import { Edit, Trash2, ChevronDown, ChevronUp, Plus, Save } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 interface TradingRulesProps {
   onSettingChange: () => void;
@@ -58,6 +61,12 @@ const TradingRules: React.FC<TradingRulesProps> = ({ onSettingChange, saveResetB
   const [autoValidation, setAutoValidation] = useState(true);
   const [showWarnings, setShowWarnings] = useState(true);
   const [requireCompletion, setRequireCompletion] = useState(false);
+  
+  // Trading Plan
+  const [tradingPlanTitle, setTradingPlanTitle] = useState("");
+  const [tradingPlanContent, setTradingPlanContent] = useState("");
+  const [showInSidebar, setShowInSidebar] = useState(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Toggle checklist expanded state
   const toggleChecklist = (id: string) => {
@@ -221,9 +230,133 @@ const TradingRules: React.FC<TradingRulesProps> = ({ onSettingChange, saveResetB
     });
     onSettingChange();
   };
+  
+  // Save trading plan
+  const saveTradingPlan = () => {
+    if (!tradingPlanTitle) {
+      toast({
+        title: "Error",
+        description: "Please enter a trading plan title",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!tradingPlanContent) {
+      toast({
+        title: "Error",
+        description: "Please enter trading plan content",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast.success("Trading plan saved successfully");
+    onSettingChange();
+  };
+  
+  // Handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+  
+  // Import trading plan
+  const importTradingPlan = () => {
+    if (!selectedFile) {
+      toast({
+        title: "Error",
+        description: "Please select a file to import",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Simulate import
+    toast.success(`File ${selectedFile.name} imported successfully`);
+    
+    // Reset the file input
+    setSelectedFile(null);
+    const fileInput = document.getElementById('trading-plan-file') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    
+    onSettingChange();
+  };
 
   return (
     <div className="space-y-8">
+      {/* Trading Plan */}
+      <Card className="border">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-xl font-semibold text-center">Trading Plan</CardTitle>
+          <CardDescription className="text-center">
+            Link your trading plan to your journal
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <div>
+            <h3 className="font-medium mb-2">Trading Plan Title</h3>
+            <Input 
+              placeholder="e.g., Q2 2025 Trading Plan"
+              value={tradingPlanTitle}
+              onChange={(e) => setTradingPlanTitle(e.target.value)}
+            />
+          </div>
+          
+          <div>
+            <h3 className="font-medium mb-2">Trading Plan Content</h3>
+            <Textarea 
+              placeholder="Enter your trading plan details here..."
+              className="min-h-40"
+              value={tradingPlanContent}
+              onChange={(e) => setTradingPlanContent(e.target.value)}
+            />
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch 
+              id="show-sidebar" 
+              checked={showInSidebar}
+              onCheckedChange={setShowInSidebar}
+            />
+            <Label htmlFor="show-sidebar">Show in journal sidebar</Label>
+          </div>
+          
+          <div className="flex justify-end">
+            <Button onClick={saveTradingPlan}>
+              <Save className="mr-2 h-4 w-4" />
+              Save Trading Plan
+            </Button>
+          </div>
+          
+          <div className="pt-4 border-t">
+            <h3 className="font-medium mb-4">Import Trading Plan</h3>
+            <div className="flex flex-wrap gap-3">
+              <div className="flex-1 min-w-48">
+                <Input
+                  id="trading-plan-file"
+                  type="file"
+                  accept=".pdf,.docx,.md,.txt"
+                  onChange={handleFileChange}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Supported formats: PDF, DOCX, MD, TXT
+                </p>
+              </div>
+              <Button 
+                onClick={importTradingPlan}
+                disabled={!selectedFile}
+                className="whitespace-nowrap"
+              >
+                Upload
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Custom Checklists */}
       <Card className="border">
         <CardHeader className="pb-3">
