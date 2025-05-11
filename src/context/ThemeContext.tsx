@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type Theme = 'light' | 'dark';
+type Theme = 'light' | 'dark' | 'premium';
 
 interface ThemeContextType {
   theme: Theme;
@@ -17,21 +17,36 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     // Load theme from localStorage on mount
     const savedTheme = localStorage.getItem("zella-theme") as Theme | null;
-    if (savedTheme) {
+    if (savedTheme && ['light', 'dark', 'premium'].includes(savedTheme)) {
       setTheme(savedTheme);
       applyTheme(savedTheme);
     }
   }, []);
 
   const applyTheme = (selectedTheme: Theme) => {
-    document.documentElement.classList.toggle("dark", selectedTheme === "dark");
+    // Add transition class for smooth effect
+    document.body.classList.add('theme-changing');
+    
+    // Remove previous theme classes
+    document.documentElement.classList.remove('theme-light', 'theme-dark', 'theme-premium');
+    
+    // Add new theme class
+    document.documentElement.classList.add(`theme-${selectedTheme}`);
+    
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.body.classList.remove('theme-changing');
+    }, 200);
+    
+    console.log(`Theme applied: ${selectedTheme}`);
   };
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    applyTheme(newTheme);
-    localStorage.setItem("zella-theme", newTheme);
+    const themeOrder: Theme[] = ['light', 'dark', 'premium'];
+    const currentIndex = themeOrder.indexOf(theme);
+    const newTheme = themeOrder[(currentIndex + 1) % themeOrder.length];
+    
+    setThemeWithSave(newTheme);
     console.log(`Theme toggled to: ${newTheme}`);
   };
 
@@ -39,7 +54,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setTheme(newTheme);
     applyTheme(newTheme);
     localStorage.setItem("zella-theme", newTheme);
-    console.log(`Theme set to: ${newTheme}`);
+    
+    // Save preference to Supabase (will be implemented with Supabase integration)
+    console.log(`Theme set to: ${newTheme} (waiting for Supabase integration to save user preference)`);
   };
 
   return (

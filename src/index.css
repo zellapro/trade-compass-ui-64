@@ -1,8 +1,211 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Light Theme */
+  .theme-light {
+    --background: 210 17% 98%; /* #F8F9FA */
+    --foreground: 0 0% 7%; /* #111111 - Pure black for text */
+    
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 0 0% 7%; /* #111111 - Pure black for text */
+    
+    --popover: 0 0% 100%; /* #FFFFFF */
+    --popover-foreground: 0 0% 7%; /* #111111 - Pure black for text */
+    
+    --primary: 217 100% 50%; /* #0066FF - Vibrant Blue */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --secondary: 210 17% 95%; /* Light gray for secondary elements */
+    --secondary-foreground: 0 0% 7%; /* #111111 - Pure black for text */
+    
+    --muted: 210 17% 92%; /* Muted light gray */
+    --muted-foreground: 0 0% 40%; /* Medium gray text */
+    
+    --accent: 217 100% 50%; /* #0066FF - Vibrant Blue */
+    --accent-foreground: 0 0% 7%; /* #111111 - Pure black for text */
+    
+    --destructive: 0 84% 60%; /* Red */
+    --destructive-foreground: 0 0% 100%; /* White */
+    
+    --border: 0 0% 85%; /* Light gray border */
+    --input: 0 0% 85%; /* Light gray input */
+    --ring: 217 100% 50%; /* #0066FF */
+    
+    --radius: 0.5rem;
+    
+    /* Tooltip */
+    --tooltip-bg: 0 0% 90%; /* #E6E6E6 */
+    
+    /* Scrollbar */
+    --scrollbar-thumb: 0 0% 80%; /* #CCCCCC */
+    --scrollbar-track: 0 0% 95%; /* Very Light Gray */
+    
+    /* Trading specific colors */
+    --trading-green: 142 72% 50%;
+    --trading-red: 0 84% 60%;
+    --trading-blue: 214 100% 60%;
+    --trading-yellow: 45 93% 60%;
+    --trading-purple: 262 83% 58%;
+    
+    --trading-green-light: 142 72% 95%;
+    --trading-red-light: 0 84% 95%;
+    --trading-blue-light: 214 100% 95%;
+    --trading-yellow-light: 45 93% 95%;
+    
+    --trading-green-dark: 142 72% 29%;
+    --trading-red-dark: 0 84% 45%;
+    --trading-blue-dark: 214 100% 45%;
+    --trading-yellow-dark: 45 93% 37%;
+    
+    /* Glass effects */
+    --glass-bg: 0 0% 100%;
+    --glass-border: 0 0% 85%;
+    
+    /* Glow effects */
+    --glow-purple: 262 83% 58%;
+    --glow-cyan: 214 100% 60%;
+    --glow-blue: 224 76% 48%;
+    --glow-gold: 40 100% 50%;  /* Not used in light theme */
+  }
+  
+  /* Dark Theme */
+  .theme-dark {
+    --background: 0 0% 7%; /* #121212 */
+    --foreground: 0 0% 92%; /* #EAEAEA */
+    
+    --card: 0 0% 12%; /* #1E1E1E */
+    --card-foreground: 0 0% 92%; /* #EAEAEA */
+    
+    --popover: 0 0% 12%; /* #1E1E1E */
+    --popover-foreground: 0 0% 92%; /* #EAEAEA */
+    
+    --primary: 170 100% 39%; /* #00C9A7 - Cool aqua green */
+    --primary-foreground: 0 0% 7%; /* #121212 */
+    
+    --secondary: 0 0% 15%; /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 92%; /* #EAEAEA */
+    
+    --muted: 0 0% 20%; /* Muted dark gray */
+    --muted-foreground: 0 0% 60%; /* Medium gray text */
+    
+    --accent: 170 100% 39%; /* #00C9A7 - Cool aqua green */
+    --accent-foreground: 0 0% 7%; /* #121212 */
+    
+    --destructive: 0 84% 60%; /* Red */
+    --destructive-foreground: 0 0% 92%; /* #EAEAEA */
+    
+    --border: 0 0% 20%; /* Dark gray border */
+    --input: 0 0% 20%; /* Dark gray input */
+    --ring: 170 100% 39%; /* #00C9A7 */
+    
+    --radius: 0.5rem;
+    
+    /* Tooltip */
+    --tooltip-bg: 0 0% 16%; /* #2A2A2A */
+    
+    /* Scrollbar */
+    --scrollbar-thumb: 0 0% 27%; /* #444444 */
+    --scrollbar-track: 0 0% 12%; /* #1E1E1E */
+    
+    /* Trading specific colors */
+    --trading-green: 142 72% 50%;
+    --trading-red: 0 84% 60%;
+    --trading-blue: 214 100% 60%;
+    --trading-yellow: 45 93% 60%;
+    --trading-purple: 262 83% 58%;
+    
+    --trading-green-light: 142 40% 20%;
+    --trading-red-light: 0 40% 20%;
+    --trading-blue-light: 214 40% 20%;
+    --trading-yellow-light: 45 40% 20%;
+    
+    --trading-green-dark: 142 72% 60%;
+    --trading-red-dark: 0 84% 60%;
+    --trading-blue-dark: 214 100% 70%;
+    --trading-yellow-dark: 45 93% 70%;
+    
+    /* Glass effects */
+    --glass-bg: 0 0% 10%;
+    --glass-border: 0 0% 20%;
+    
+    /* Glow effects */
+    --glow-purple: 262 83% 58%;
+    --glow-cyan: 214 100% 60%;
+    --glow-blue: 224 76% 48%;
+    --glow-gold: 40 100% 50%;  /* Not used in dark theme */
+  }
+  
+  /* Premium Theme */
+  .theme-premium {
+    --background: 246 39% 9%; /* #0E0C1F - Velvet plum-black */
+    --foreground: 0 0% 96%; /* #F5F5F5 - Soft platinum */
+    
+    --card: 240 25% 14%; /* #1A1A2E - Deep indigo */
+    --card-foreground: 0 0% 96%; /* #F5F5F5 - Soft platinum */
+    
+    --popover: 240 25% 14%; /* #1A1A2E - Deep indigo */
+    --popover-foreground: 0 0% 96%; /* #F5F5F5 - Soft platinum */
+    
+    --primary: 40 100% 50%; /* #FFAE00 - Neon gold */
+    --primary-foreground: 246 39% 9%; /* #0E0C1F */
+    
+    --secondary: 240 20% 20%; /* Deeper indigo for secondary elements */
+    --secondary-foreground: 0 0% 96%; /* #F5F5F5 */
+    
+    --muted: 240 20% 25%; /* Muted indigo */
+    --muted-foreground: 0 0% 70%; /* Light gray text */
+    
+    --accent: 40 100% 50%; /* #FFAE00 - Neon gold */
+    --accent-foreground: 246 39% 9%; /* #0E0C1F */
+    
+    --destructive: 0 84% 60%; /* Red */
+    --destructive-foreground: 0 0% 96%; /* #F5F5F5 */
+    
+    --border: 240 20% 20%; /* Indigo border */
+    --input: 240 20% 20%; /* Indigo input */
+    --ring: 40 100% 50%; /* #FFAE00 */
+    
+    --radius: 0.5rem;
+    
+    /* Tooltip */
+    --tooltip-bg: 242 23% 21%; /* #292840 - Dark translucent blur */
+    
+    /* Scrollbar */
+    --scrollbar-thumb: 0 0% 60%; /* #999999 - Slim line */
+    --scrollbar-track: 240 25% 14%; /* #1A1A2E */
+    
+    /* Trading specific colors */
+    --trading-green: 142 72% 50%;
+    --trading-red: 0 84% 60%;
+    --trading-blue: 214 100% 60%;
+    --trading-yellow: 45 93% 60%;
+    --trading-purple: 262 83% 58%;
+    
+    --trading-green-light: 142 40% 20%;
+    --trading-red-light: 0 40% 20%;
+    --trading-blue-light: 214 40% 20%;
+    --trading-yellow-light: 45 40% 20%;
+    
+    --trading-green-dark: 142 72% 60%;
+    --trading-red-dark: 0 84% 60%;
+    --trading-blue-dark: 214 100% 70%;
+    --trading-yellow-dark: 45 93% 70%;
+    
+    /* Glass effects */
+    --glass-bg: 240 25% 10%;
+    --glass-border: 40 100% 50%;
+    
+    /* Glow effects */
+    --glow-purple: 262 83% 58%;
+    --glow-cyan: 214 100% 60%;
+    --glow-blue: 224 76% 48%;
+    --glow-gold: 40 100% 50%;  /* #FFAE00 - Neon gold */
+  }
+
+  /* Base default theme (will be overridden by class) */
   :root {
     --background: 240 5.9% 10%;
     --foreground: 0 0% 0%;  /* Pure black for text */
@@ -69,73 +272,14 @@
     --glow-purple: 262 83% 58%;
     --glow-cyan: 214 100% 60%;
     --glow-blue: 224 76% 48%;
-  }
-
-  .dark {
-    /* Keep dark mode settings consistent with Playbook theme */
-    --background: 240 5.9% 10%;
-    --foreground: 0 0% 0%;  /* Pure black for text */
-
-    --card: 240 5.9% 10%;
-    --card-foreground: 0 0% 0%;  /* Pure black for text */
-
-    --popover: 240 5.9% 10%;
-    --popover-foreground: 0 0% 0%;  /* Pure black for text */
-
-    --primary: 262 83% 58%;  /* Purple from Playbook */
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 0 0% 0%;  /* Pure black for text */
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 214 100% 60%;  /* Cyan/blue accent from Playbook */
-    --accent-foreground: 0 0% 0%;  /* Pure black for text */
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 262 83% 58%;  /* Purple ring */
+    --glow-gold: 40 100% 50%;
     
-    /* Sidebar and header colors to match Playbook */
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 0 0% 0%;  /* Pure black for text */
-    --sidebar-primary: 262 83% 58%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 214 100% 60%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 262 83% 58%;
+    /* Tooltip background */
+    --tooltip-bg: 0 0% 20%;
     
-    --header-background: 240 5.9% 10%;
-
-    /* Trading specific colors - based on Playbook */
-    --trading-green: 142 72% 50%;
-    --trading-red: 0 84% 60%;
-    --trading-blue: 214 100% 60%;
-    --trading-yellow: 45 93% 60%;
-    --trading-purple: 262 83% 58%;
-    
-    --trading-green-light: 142 40% 20%;
-    --trading-red-light: 0 40% 20%;
-    --trading-blue-light: 214 40% 20%;
-    --trading-yellow-light: 45 40% 20%;
-    
-    --trading-green-dark: 142 72% 60%;
-    --trading-red-dark: 0 84% 60%;
-    --trading-blue-dark: 214 100% 70%;
-    --trading-yellow-dark: 45 93% 70%;
-
-    /* Playbook-specific glassmorphism accents */
-    --glass-bg: 240 10% 3.9%;
-    --glass-border: 0 0% 100%;
-    --glow-purple: 262 83% 58%;
-    --glow-cyan: 214 100% 60%;
-    --glow-blue: 224 76% 48%;
+    /* Scrollbar */
+    --scrollbar-thumb: 0 0% 30%;
+    --scrollbar-track: 0 0% 10%;
   }
 }
 
@@ -145,8 +289,13 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-200;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Animated theme transition */
+  body.theme-changing * {
+    @apply animate-theme-transition;
   }
 }
 
@@ -188,6 +337,16 @@
   @apply bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300;
 }
 
+/* Theme-specific glass effects */
+.theme-premium .glass-card {
+  @apply border-primary/30 bg-black/40 shadow-[0_0_10px_rgba(255,174,0,0.15)];
+}
+
+.theme-premium .glass-button {
+  @apply border-primary/30 hover:border-primary/50 hover:shadow-[0_0_10px_rgba(255,174,0,0.3)];
+}
+
+/* Glow effects */
 .glow {
   box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
 }
@@ -206,6 +365,39 @@
 
 .glow-indigo {
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+}
+
+.theme-premium .glow-gold {
+  box-shadow: 0 0 15px rgba(255, 174, 0, 0.5);
+}
+
+/* Premium theme pulse animation for buttons */
+.theme-premium .btn-premium {
+  @apply animate-pulse-glow;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: hsl(var(--scrollbar-track));
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--scrollbar-thumb));
+  border-radius: 4px;
+}
+
+/* Light theme - hide scrollbar when not in use */
+.theme-light ::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.theme-light:hover ::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--scrollbar-thumb));
 }
 
 /* Subtle transitions for interactive elements */
@@ -229,4 +421,35 @@
   mask-composite: exclude;
   -webkit-mask-composite: xor;
   pointer-events: none;
+}
+
+/* Premium theme gold gradient border */
+.theme-premium .gold-border {
+  position: relative;
+  border-radius: 0.5rem;
+}
+
+.theme-premium .gold-border::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 0.75rem;
+  background: linear-gradient(to right, #FFAE00, #FFC53D, #FFAE00);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+/* Button styles for each theme */
+.theme-light .btn-theme {
+  @apply bg-primary text-white hover:bg-primary/90;
+}
+
+.theme-dark .btn-theme {
+  @apply bg-transparent border border-primary text-primary hover:bg-primary/10 hover:glow-cyan;
+}
+
+.theme-premium .btn-theme {
+  @apply bg-transparent border border-primary text-primary hover:bg-primary/10 hover:shadow-[0_0_10px_rgba(255,174,0,0.5)] transition-all;
 }
