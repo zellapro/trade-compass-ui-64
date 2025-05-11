@@ -37,13 +37,13 @@ export function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="text-xs bg-primary text-primary-foreground hover:bg-primary/90 ml-2">
-              PERSONAL
+              FUNDED
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DropdownMenuItem>Personal Account</DropdownMenuItem>
-            <DropdownMenuItem>Business Account</DropdownMenuItem>
+            <DropdownMenuItem>Funded Account</DropdownMenuItem>
             <DropdownMenuItem>Demo Account</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -45,6 +45,23 @@
     --sidebar-ring: 214 100% 60%;
     
     --header-background: 0 0% 100%;
+
+    /* Trading specific colors */
+    --trading-green: 142 72% 29%;
+    --trading-red: 0 84% 60%;
+    --trading-blue: 214 100% 60%;
+    --trading-yellow: 45 93% 47%;
+    --trading-purple: 262 83% 58%;
+    
+    --trading-green-light: 142 72% 95%;
+    --trading-red-light: 0 84% 95%;
+    --trading-blue-light: 214 100% 95%;
+    --trading-yellow-light: 45 93% 95%;
+    
+    --trading-green-dark: 142 72% 29%;
+    --trading-red-dark: 0 84% 45%;
+    --trading-blue-dark: 214 100% 45%;
+    --trading-yellow-dark: 45 93% 37%;
   }
 
   .dark {
@@ -86,6 +103,23 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
     
     --header-background: 222 47% 11%;
+
+    /* Trading specific colors - dark mode */
+    --trading-green: 142 72% 60%;
+    --trading-red: 0 84% 60%;
+    --trading-blue: 214 100% 60%;
+    --trading-yellow: 45 93% 60%;
+    --trading-purple: 262 83% 65%;
+    
+    --trading-green-light: 142 40% 20%;
+    --trading-red-light: 0 40% 20%;
+    --trading-blue-light: 214 40% 20%;
+    --trading-yellow-light: 45 40% 20%;
+    
+    --trading-green-dark: 142 72% 60%;
+    --trading-red-dark: 0 84% 60%;
+    --trading-blue-dark: 214 100% 70%;
+    --trading-yellow-dark: 45 93% 70%;
   }
 }
 
@@ -97,4 +131,34 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom styles for trader dashboard */
+.text-trading-green {
+  color: hsl(var(--trading-green));
+}
+
+.text-trading-red {
+  color: hsl(var(--trading-red));
+}
+
+.text-trading-blue {
+  color: hsl(var(--trading-blue));
+}
+
+.text-trading-yellow {
+  color: hsl(var(--trading-yellow));
+}
+
+.text-trading-blue-dark {
+  color: hsl(var(--trading-blue-dark));
+}
+
+.bg-trading-blue-light {
+  background-color: hsl(var(--trading-blue-light));
+}
+
+/* Subtle transitions for interactive elements */
+.transition-performance {
+  transition: all 0.2s ease-in-out;
 }
