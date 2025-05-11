@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useTheme } from "@/context/ThemeContext";
 import ProfileSettings from "@/components/settings/profile/ProfileSettings";
 import AccountManagement from "@/components/settings/AccountManagement";
+import BrokerIntegrations from "@/components/settings/broker-integrations/BrokerIntegrations";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -165,8 +165,24 @@ export default function Settings() {
                   onSettingChange={() => handleSettingChange('account')}
                 />
               )}
+
+              {activeTab === 'broker' && (
+                <BrokerIntegrations
+                  onSettingChange={() => handleSettingChange('broker')}
+                  saveResetButtons={
+                    <div className="flex gap-2">
+                      <button className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Reset
+                      </button>
+                      <button className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                        Save Changes
+                      </button>
+                    </div>
+                  }
+                />
+              )}
               
-              {!['profile', 'account'].includes(activeTab) && (
+              {!['profile', 'account', 'broker'].includes(activeTab) && (
                 <div className="text-center py-12">
                   <h2 className="text-2xl font-semibold mb-4">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Settings

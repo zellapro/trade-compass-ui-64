@@ -3,10 +3,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Save, Undo } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // Import all our components
-import ProfileSettings from "@/components/settings/profile/ProfileSettings";
 import SubscriptionPanel from "@/components/settings/subscription/SubscriptionPanel";
 import ActiveSessionsPanel from "@/components/settings/devices/ActiveSessionsPanel";
 import DataManagementPanel from "@/components/settings/data/DataManagementPanel";
@@ -20,7 +18,6 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
 }) => {
   const { toast } = useToast();
   const [changesMade, setChangesMade] = useState<Record<string, boolean>>({});
-  const [expandedSections, setExpandedSections] = useState<string[]>(["profile"]);
 
   const handleSettingChange = (section: string) => {
     setChangesMade(prev => ({ ...prev, [section]: true }));
@@ -45,7 +42,6 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
 
   const getSectionName = (section: string): string => {
     switch(section) {
-      case "profile": return "profile";
       case "subscription": return "subscription";
       case "sessions": return "active sessions";
       case "data": return "data management";
@@ -74,72 +70,35 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
       </Button>
     </div>
   );
-  
-  const handleAccordionChange = (value: string) => {
-    // If the value is already in the array, remove it, otherwise add it
-    setExpandedSections(prev => 
-      prev.includes(value) 
-        ? prev.filter(item => item !== value) 
-        : [...prev, value]
-    );
-  };
 
   return (
-    <div className="space-y-6">
-      <Accordion 
-        type="multiple" 
-        value={expandedSections} 
-        onValueChange={setExpandedSections}
-        className="space-y-6"
-      >
-        <AccordionItem value="profile" className="border-none">
-          <AccordionTrigger className="py-0 [&[data-state=open]]:mb-6">
-            <h2 className="text-xl font-semibold">Profile Settings</h2>
-          </AccordionTrigger>
-          <AccordionContent>
-            <ProfileSettings 
-              onSettingChange={() => handleSettingChange('profile')}
-              saveResetButtons={<SectionButtons section="profile" />}
-            />
-          </AccordionContent>
-        </AccordionItem>
-        
-        <AccordionItem value="subscription" className="border-none">
-          <AccordionTrigger className="py-0 [&[data-state=open]]:mb-6">
-            <h2 className="text-xl font-semibold">Subscription</h2>
-          </AccordionTrigger>
-          <AccordionContent>
-            <SubscriptionPanel 
-              onSettingChange={() => handleSettingChange('subscription')}
-              saveResetButtons={<SectionButtons section="subscription" />}
-            />
-          </AccordionContent>
-        </AccordionItem>
-        
-        <AccordionItem value="sessions" className="border-none">
-          <AccordionTrigger className="py-0 [&[data-state=open]]:mb-6">
-            <h2 className="text-xl font-semibold">Active Sessions</h2>
-          </AccordionTrigger>
-          <AccordionContent>
-            <ActiveSessionsPanel 
-              onSettingChange={() => handleSettingChange('sessions')}
-              saveResetButtons={<SectionButtons section="sessions" />}
-            />
-          </AccordionContent>
-        </AccordionItem>
-        
-        <AccordionItem value="data" className="border-none">
-          <AccordionTrigger className="py-0 [&[data-state=open]]:mb-6">
-            <h2 className="text-xl font-semibold">Data Management</h2>
-          </AccordionTrigger>
-          <AccordionContent>
-            <DataManagementPanel 
-              onSettingChange={() => handleSettingChange('data')}
-              saveResetButtons={<SectionButtons section="data" />}
-            />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+    <div className="space-y-8">
+      {/* Subscription Panel */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Subscription</h2>
+        <SubscriptionPanel 
+          onSettingChange={() => handleSettingChange('subscription')}
+          saveResetButtons={<SectionButtons section="subscription" />}
+        />
+      </div>
+
+      {/* Active Sessions Panel */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Active Sessions</h2>
+        <ActiveSessionsPanel 
+          onSettingChange={() => handleSettingChange('sessions')}
+          saveResetButtons={<SectionButtons section="sessions" />}
+        />
+      </div>
+
+      {/* Data Management Panel */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Data Management</h2>
+        <DataManagementPanel 
+          onSettingChange={() => handleSettingChange('data')}
+          saveResetButtons={<SectionButtons section="data" />}
+        />
+      </div>
     </div>
   );
 };
