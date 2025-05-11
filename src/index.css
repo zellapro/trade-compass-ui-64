@@ -130,6 +130,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
@@ -158,7 +159,58 @@
   background-color: hsl(var(--trading-blue-light));
 }
 
+/* Glassmorphism effects */
+.glass {
+  @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg;
+}
+
+.glass-card {
+  @apply bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg;
+}
+
+.glass-button {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300;
+}
+
+.glow {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+}
+
+.glow-purple {
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+
+.glow-indigo {
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+}
+
 /* Subtle transitions for interactive elements */
 .transition-performance {
   transition: all 0.2s ease-in-out;
+}
+
+/* Gradient borders */
+.gradient-border {
+  position: relative;
+  border-radius: 0.5rem;
+}
+
+.gradient-border::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 0.75rem;
+  background: linear-gradient(to right, #4f46e5, #a855f7, #06b6d4);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
 }
