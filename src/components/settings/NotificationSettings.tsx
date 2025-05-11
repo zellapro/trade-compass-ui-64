@@ -1,7 +1,7 @@
 
-import React, { useState } from "react";
-import AlertThresholds from "./notifications/AlertThresholds";
+import React from "react";
 import NotificationPreferences from "./notifications/NotificationPreferences";
+import AlertThresholds from "./notifications/AlertThresholds";
 
 interface NotificationSettingsProps {
   onSettingChange: () => void;
@@ -14,8 +14,8 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 }) => {
   return (
     <div className="space-y-8">
-      <AlertThresholds onSettingChange={onSettingChange} />
       <NotificationPreferences onSettingChange={onSettingChange} />
+      <AlertThresholds onSettingChange={onSettingChange} />
       
       <div className="flex justify-end">
         {saveResetButtons}

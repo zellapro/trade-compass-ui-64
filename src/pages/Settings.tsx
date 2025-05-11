@@ -6,6 +6,8 @@ import ProfileSettings from "@/components/settings/profile/ProfileSettings";
 import AccountManagement from "@/components/settings/AccountManagement";
 import BrokerIntegrations from "@/components/settings/broker-integrations/BrokerIntegrations";
 import NotificationSettings from "@/components/settings/NotificationSettings";
+import EnhancedAppearanceSettings from "@/components/settings/EnhancedAppearanceSettings";
+import TradingRules from "@/components/settings/TradingRules";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -205,7 +207,47 @@ export default function Settings() {
                 />
               )}
               
-              {!['profile', 'account', 'broker', 'notifications'].includes(activeTab) && (
+              {activeTab === 'appearance' && (
+                <EnhancedAppearanceSettings
+                  onSettingChange={() => handleSettingChange('appearance')}
+                  saveResetButtons={
+                    <div className="flex gap-2 mt-4 justify-end">
+                      <button 
+                        onClick={() => handleReset('appearance')}
+                        className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Reset All UI Settings
+                      </button>
+                      <button 
+                        onClick={() => handleSave('appearance')}
+                        className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                        Save All Changes
+                      </button>
+                    </div>
+                  }
+                />
+              )}
+              
+              {activeTab === 'trading' && (
+                <TradingRules
+                  onSettingChange={() => handleSettingChange('trading')}
+                  saveResetButtons={
+                    <div className="flex gap-2 mt-4 justify-end">
+                      <button 
+                        onClick={() => handleReset('trading')}
+                        className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Reset Rules
+                      </button>
+                      <button 
+                        onClick={() => handleSave('trading')}
+                        className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                        Save Trading Rules
+                      </button>
+                    </div>
+                  }
+                />
+              )}
+              
+              {!['profile', 'account', 'broker', 'notifications', 'appearance', 'trading'].includes(activeTab) && (
                 <div className="text-center py-12">
                   <h2 className="text-2xl font-semibold mb-4">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Settings
