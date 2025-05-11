@@ -10,6 +10,7 @@ import EnhancedAppearanceSettings from "@/components/settings/EnhancedAppearance
 import TradingRules from "@/components/settings/TradingRules";
 import ReportSettings from "@/components/settings/reports/ReportSettings";
 import ChartSettings from "@/components/settings/charts/ChartSettings";
+import SecuritySettings from "@/components/settings/security/SecuritySettings";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -127,20 +128,20 @@ export default function Settings() {
                   Chart Settings
                 </button>
                 <button
-                  onClick={() => handleTabChange('ai')}
-                  className={`p-4 text-left ${activeTab === 'ai' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  AI Preferences
-                </button>
-                <button
                   onClick={() => handleTabChange('security')}
                   className={`p-4 text-left ${activeTab === 'security' 
                     ? 'bg-accent/10 border-l-4 border-primary' 
                     : 'border-l-4 border-transparent'}`}
                 >
                   Security & Privacy
+                </button>
+                <button
+                  onClick={() => handleTabChange('ai')}
+                  className={`p-4 text-left ${activeTab === 'ai' 
+                    ? 'bg-accent/10 border-l-4 border-primary' 
+                    : 'border-l-4 border-transparent'}`}
+                >
+                  AI Preferences
                 </button>
                 <button
                   onClick={() => handleTabChange('developer')}
@@ -269,7 +270,13 @@ export default function Settings() {
                 />
               )}
               
-              {!['profile', 'account', 'broker', 'notifications', 'appearance', 'trading', 'reports', 'charts'].includes(activeTab) && (
+              {activeTab === 'security' && (
+                <SecuritySettings
+                  onSettingChange={() => handleSettingChange('security')}
+                />
+              )}
+              
+              {!['profile', 'account', 'broker', 'notifications', 'appearance', 'trading', 'reports', 'charts', 'security'].includes(activeTab) && (
                 <div className="text-center py-12">
                   <h2 className="text-2xl font-semibold mb-4">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Settings
