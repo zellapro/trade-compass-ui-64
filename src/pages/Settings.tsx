@@ -11,6 +11,7 @@ import TradingRules from "@/components/settings/TradingRules";
 import ReportSettings from "@/components/settings/reports/ReportSettings";
 import ChartSettings from "@/components/settings/charts/ChartSettings";
 import SecuritySettings from "@/components/settings/security/SecuritySettings";
+import DeveloperSettings from "@/components/settings/DeveloperSettings";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -134,14 +135,6 @@ export default function Settings() {
                     : 'border-l-4 border-transparent'}`}
                 >
                   Security & Privacy
-                </button>
-                <button
-                  onClick={() => handleTabChange('ai')}
-                  className={`p-4 text-left ${activeTab === 'ai' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  AI Preferences
                 </button>
                 <button
                   onClick={() => handleTabChange('developer')}
@@ -276,7 +269,27 @@ export default function Settings() {
                 />
               )}
               
-              {!['profile', 'account', 'broker', 'notifications', 'appearance', 'trading', 'reports', 'charts', 'security'].includes(activeTab) && (
+              {activeTab === 'developer' && (
+                <DeveloperSettings
+                  onSettingChange={() => handleSettingChange('developer')}
+                  saveResetButtons={
+                    <div className="flex gap-2 mt-4 justify-end">
+                      <button 
+                        onClick={() => handleReset('developer')}
+                        className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Reset
+                      </button>
+                      <button 
+                        onClick={() => handleSave('developer')}
+                        className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                        Save Changes
+                      </button>
+                    </div>
+                  }
+                />
+              )}
+              
+              {!['profile', 'account', 'broker', 'notifications', 'appearance', 'trading', 'reports', 'charts', 'security', 'developer'].includes(activeTab) && (
                 <div className="text-center py-12">
                   <h2 className="text-2xl font-semibold mb-4">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Settings
