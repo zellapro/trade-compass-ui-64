@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/context/ThemeContext";
 import ProfileSettings from "@/components/settings/profile/ProfileSettings";
+import AccountManagement from "@/components/settings/AccountManagement";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -159,7 +160,13 @@ export default function Settings() {
                 />
               )}
               
-              {activeTab !== 'profile' && (
+              {activeTab === 'account' && (
+                <AccountManagement
+                  onSettingChange={() => handleSettingChange('account')}
+                />
+              )}
+              
+              {!['profile', 'account'].includes(activeTab) && (
                 <div className="text-center py-12">
                   <h2 className="text-2xl font-semibold mb-4">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Settings

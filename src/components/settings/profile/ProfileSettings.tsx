@@ -9,15 +9,17 @@ import { Upload } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface ProfileSettingsProps {
-  onSave: () => void;
-  onReset: () => void;
   onSettingChange: () => void;
+  saveResetButtons?: React.ReactNode; // Make this optional
+  onSave?: () => void;
+  onReset?: () => void;
 }
 
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({ 
+  onSettingChange,
+  saveResetButtons,
   onSave,
-  onReset,
-  onSettingChange
+  onReset
 }) => {
   const { toast } = useToast();
   const [profileData, setProfileData] = useState({
@@ -63,7 +65,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
       title: "Profile updated",
       description: "Your profile settings have been saved successfully.",
     });
-    onSave();
+    if (onSave) onSave();
   };
 
   const handleReset = () => {
@@ -81,7 +83,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
       title: "Profile reset",
       description: "Your profile settings have been reset to default values.",
     });
-    onReset();
+    if (onReset) onReset();
   };
 
   return (
@@ -205,12 +207,18 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
       </div>
 
       <div className="flex justify-end gap-4 mt-6">
-        <Button variant="outline" onClick={handleReset}>
-          Reset
-        </Button>
-        <Button onClick={handleSave}>
-          Save changes
-        </Button>
+        {saveResetButtons ? (
+          saveResetButtons
+        ) : (
+          <>
+            <Button variant="outline" onClick={handleReset}>
+              Reset
+            </Button>
+            <Button onClick={handleSave}>
+              Save changes
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

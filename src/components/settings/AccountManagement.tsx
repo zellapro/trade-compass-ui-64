@@ -5,21 +5,18 @@ import { Save, Undo } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-// Import all our new components
+// Import all our components
 import ProfileSettings from "@/components/settings/profile/ProfileSettings";
-import SubscriptionDetails from "@/components/settings/subscription/SubscriptionDetails";
-import LinkedDevices from "@/components/settings/devices/LinkedDevices";
-import DataManagement from "@/components/settings/data/DataManagement";
-import SocialConnections from "@/components/settings/social/SocialConnections";
+import SubscriptionPanel from "@/components/settings/subscription/SubscriptionPanel";
+import ActiveSessionsPanel from "@/components/settings/devices/ActiveSessionsPanel";
+import DataManagementPanel from "@/components/settings/data/DataManagementPanel";
 
 interface AccountManagementProps {
   onSettingChange: () => void;
-  saveResetButtons: React.ReactNode;
 }
 
 const AccountManagement: React.FC<AccountManagementProps> = ({
   onSettingChange,
-  saveResetButtons,
 }) => {
   const { toast } = useToast();
   const [changesMade, setChangesMade] = useState<Record<string, boolean>>({});
@@ -50,9 +47,8 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
     switch(section) {
       case "profile": return "profile";
       case "subscription": return "subscription";
-      case "devices": return "linked devices";
+      case "sessions": return "active sessions";
       case "data": return "data management";
-      case "social": return "social media";
       default: return section;
     }
   };
@@ -110,24 +106,24 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
         
         <AccordionItem value="subscription" className="border-none">
           <AccordionTrigger className="py-0 [&[data-state=open]]:mb-6">
-            <h2 className="text-xl font-semibold">Subscription Plans</h2>
+            <h2 className="text-xl font-semibold">Subscription</h2>
           </AccordionTrigger>
           <AccordionContent>
-            <SubscriptionDetails 
+            <SubscriptionPanel 
               onSettingChange={() => handleSettingChange('subscription')}
               saveResetButtons={<SectionButtons section="subscription" />}
             />
           </AccordionContent>
         </AccordionItem>
         
-        <AccordionItem value="devices" className="border-none">
+        <AccordionItem value="sessions" className="border-none">
           <AccordionTrigger className="py-0 [&[data-state=open]]:mb-6">
-            <h2 className="text-xl font-semibold">Linked Devices</h2>
+            <h2 className="text-xl font-semibold">Active Sessions</h2>
           </AccordionTrigger>
           <AccordionContent>
-            <LinkedDevices 
-              onSettingChange={() => handleSettingChange('devices')}
-              saveResetButtons={<SectionButtons section="devices" />}
+            <ActiveSessionsPanel 
+              onSettingChange={() => handleSettingChange('sessions')}
+              saveResetButtons={<SectionButtons section="sessions" />}
             />
           </AccordionContent>
         </AccordionItem>
@@ -137,21 +133,9 @@ const AccountManagement: React.FC<AccountManagementProps> = ({
             <h2 className="text-xl font-semibold">Data Management</h2>
           </AccordionTrigger>
           <AccordionContent>
-            <DataManagement 
+            <DataManagementPanel 
               onSettingChange={() => handleSettingChange('data')}
               saveResetButtons={<SectionButtons section="data" />}
-            />
-          </AccordionContent>
-        </AccordionItem>
-        
-        <AccordionItem value="social" className="border-none">
-          <AccordionTrigger className="py-0 [&[data-state=open]]:mb-6">
-            <h2 className="text-xl font-semibold">Social Media Connections</h2>
-          </AccordionTrigger>
-          <AccordionContent>
-            <SocialConnections 
-              onSettingChange={() => handleSettingChange('social')}
-              saveResetButtons={<SectionButtons section="social" />}
             />
           </AccordionContent>
         </AccordionItem>
