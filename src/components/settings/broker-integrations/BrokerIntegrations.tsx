@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, DownloadCloud, ArrowRight } from "lucide-react";
+import { PlusCircle, DownloadCloud, ArrowRight, DollarSign, Shield } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 interface BrokerIntegrationsProps {
@@ -70,39 +70,59 @@ const BrokerIntegrations: React.FC<BrokerIntegrationsProps> = ({
         </CardHeader>
         <CardContent className="px-0 space-y-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-4 mb-6">
+            <TabsList className="grid grid-cols-5 mb-6">
               <TabsTrigger value="indian">Indian Markets</TabsTrigger>
               <TabsTrigger value="crypto">Crypto</TabsTrigger>
               <TabsTrigger value="forex">Forex</TabsTrigger>
               <TabsTrigger value="global">Global</TabsTrigger>
+              <TabsTrigger value="propfirm">Prop-firm Acc</TabsTrigger>
             </TabsList>
             
             {/* Common content for all tabs */}
-            {["indian", "crypto", "forex", "global"].map((tab) => (
+            {["indian", "crypto", "forex", "global", "propfirm"].map((tab) => (
               <TabsContent key={tab} value={tab} className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-2">
                   <Card className="border p-4">
                     <CardHeader className="p-0 mb-4">
-                      <CardTitle className="text-lg">Connect Platform</CardTitle>
+                      <CardTitle className="text-lg">
+                        {tab === "propfirm" ? "Connect Prop-firm Account" : "Connect Platform"}
+                      </CardTitle>
                       <CardDescription>
-                        Enter your platform details to connect
+                        {tab === "propfirm" 
+                          ? "Enter your funded account details to connect" 
+                          : "Enter your platform details to connect"}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0 space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="platform">Platform Name</Label>
+                        <Label htmlFor={`${tab}-platform`}>
+                          {tab === "propfirm" ? "Prop-firm Name" : "Platform Name"}
+                        </Label>
                         <Input 
-                          id="platform" 
-                          placeholder="Enter platform name" 
+                          id={`${tab}-platform`} 
+                          placeholder={tab === "propfirm" 
+                            ? "Enter prop-firm name (e.g. FTMO, Funded Next)" 
+                            : "Enter platform name"
+                          } 
                           value={platformName}
                           onChange={(e) => setPlatformName(e.target.value)}
                         />
                       </div>
                       
+                      {tab === "propfirm" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="account-id">Account ID</Label>
+                          <Input 
+                            id="account-id" 
+                            placeholder="Enter your funded account ID" 
+                          />
+                        </div>
+                      )}
+                      
                       <div className="space-y-2">
-                        <Label htmlFor="apiKey">API Key</Label>
+                        <Label htmlFor={`${tab}-apiKey`}>API Key</Label>
                         <Input 
-                          id="apiKey" 
+                          id={`${tab}-apiKey`} 
                           placeholder="Enter your API key" 
                           type="password"
                           value={apiKey}
@@ -111,7 +131,7 @@ const BrokerIntegrations: React.FC<BrokerIntegrationsProps> = ({
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="syncFrequency">Sync Frequency</Label>
+                        <Label htmlFor={`${tab}-syncFrequency`}>Sync Frequency</Label>
                         <Select 
                           value={syncFrequency} 
                           onValueChange={setSyncFrequency}
@@ -128,13 +148,42 @@ const BrokerIntegrations: React.FC<BrokerIntegrationsProps> = ({
                         </Select>
                       </div>
                       
+                      {tab === "propfirm" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="challenge-phase">Challenge Phase</Label>
+                          <Select defaultValue="evaluation">
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select phase" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="evaluation">Evaluation</SelectItem>
+                              <SelectItem value="verification">Verification</SelectItem>
+                              <SelectItem value="funded">Funded</SelectItem>
+                              <SelectItem value="scaling">Scaling Plan</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      
                       <Button 
                         className="w-full mt-4" 
                         onClick={handleConnect}
                         disabled={connecting}
                       >
-                        {connecting ? "Connecting..." : "Connect Platform"}
+                        {connecting ? "Connecting..." : tab === "propfirm" 
+                          ? "Connect Prop-firm Account" 
+                          : "Connect Platform"
+                        }
                       </Button>
+                      
+                      {tab === "propfirm" && (
+                        <div className="flex items-center p-3 bg-muted/50 rounded-md mt-2">
+                          <DollarSign className="h-5 w-5 mr-2 text-muted-foreground" />
+                          <p className="text-xs text-muted-foreground">
+                            Connecting your prop-firm account helps track performance metrics and challenge progress.
+                          </p>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                   
@@ -147,7 +196,10 @@ const BrokerIntegrations: React.FC<BrokerIntegrationsProps> = ({
                     </CardHeader>
                     <CardContent className="p-0 space-y-4">
                       <p className="text-sm text-muted-foreground">
-                        Import trades manually if your broker isn't supported for direct integration
+                        {tab === "propfirm" 
+                          ? "Import prop-firm trades manually if direct integration isn't available"
+                          : "Import trades manually if your broker isn't supported for direct integration"
+                        }
                       </p>
                       
                       <div className="flex flex-col sm:flex-row gap-4">
@@ -171,6 +223,15 @@ const BrokerIntegrations: React.FC<BrokerIntegrationsProps> = ({
                           Download CSV template
                         </Button>
                       </div>
+                      
+                      {tab === "propfirm" && (
+                        <div className="flex items-center p-3 bg-muted/50 rounded-md mt-2">
+                          <Shield className="h-5 w-5 mr-2 text-muted-foreground" />
+                          <p className="text-xs text-muted-foreground">
+                            Track your challenge progress and ensure you stay within drawdown and profit targets.
+                          </p>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </div>
