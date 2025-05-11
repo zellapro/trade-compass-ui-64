@@ -8,6 +8,8 @@ import BrokerIntegrations from "@/components/settings/broker-integrations/Broker
 import NotificationSettings from "@/components/settings/NotificationSettings";
 import EnhancedAppearanceSettings from "@/components/settings/EnhancedAppearanceSettings";
 import TradingRules from "@/components/settings/TradingRules";
+import ReportSettings from "@/components/settings/reports/ReportSettings";
+import ChartSettings from "@/components/settings/charts/ChartSettings";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -109,20 +111,28 @@ export default function Settings() {
                   Trading Rules
                 </button>
                 <button
-                  onClick={() => handleTabChange('ai')}
-                  className={`p-4 text-left ${activeTab === 'ai' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  AI Preferences
-                </button>
-                <button
                   onClick={() => handleTabChange('reports')}
                   className={`p-4 text-left ${activeTab === 'reports' 
                     ? 'bg-accent/10 border-l-4 border-primary' 
                     : 'border-l-4 border-transparent'}`}
                 >
                   Report Settings
+                </button>
+                <button
+                  onClick={() => handleTabChange('charts')}
+                  className={`p-4 text-left ${activeTab === 'charts' 
+                    ? 'bg-accent/10 border-l-4 border-primary' 
+                    : 'border-l-4 border-transparent'}`}
+                >
+                  Chart Settings
+                </button>
+                <button
+                  onClick={() => handleTabChange('ai')}
+                  className={`p-4 text-left ${activeTab === 'ai' 
+                    ? 'bg-accent/10 border-l-4 border-primary' 
+                    : 'border-l-4 border-transparent'}`}
+                >
+                  AI Preferences
                 </button>
                 <button
                   onClick={() => handleTabChange('security')}
@@ -247,7 +257,19 @@ export default function Settings() {
                 />
               )}
               
-              {!['profile', 'account', 'broker', 'notifications', 'appearance', 'trading'].includes(activeTab) && (
+              {activeTab === 'reports' && (
+                <ReportSettings 
+                  onSettingChange={() => handleSettingChange('reports')} 
+                />
+              )}
+              
+              {activeTab === 'charts' && (
+                <ChartSettings
+                  onSettingChange={() => handleSettingChange('charts')} 
+                />
+              )}
+              
+              {!['profile', 'account', 'broker', 'notifications', 'appearance', 'trading', 'reports', 'charts'].includes(activeTab) && (
                 <div className="text-center py-12">
                   <h2 className="text-2xl font-semibold mb-4">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Settings
