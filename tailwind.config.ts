@@ -54,14 +54,29 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         trading: {
-          green: "#22C55E",
-          red: "#EF4444",
-          blue: "#3B82F6",
-          "blue-light": "#EBF5FF",
-          "blue-dark": "#1E40AF",
-          purple: "#8B5CF6",
-          orange: "#F97316",
-          yellow: "#F59E0B"
+          green: "hsl(var(--trading-green))",
+          red: "hsl(var(--trading-red))",
+          blue: "hsl(var(--trading-blue))",
+          purple: "hsl(var(--trading-purple))",
+          yellow: "hsl(var(--trading-yellow))",
+          "blue-light": "hsl(var(--trading-blue-light))",
+          "blue-dark": "hsl(var(--trading-blue-dark))",
+          "green-light": "hsl(var(--trading-green-light))",
+          "green-dark": "hsl(var(--trading-green-dark))",
+          "red-light": "hsl(var(--trading-red-light))",
+          "red-dark": "hsl(var(--trading-red-dark))",
+          "yellow-light": "hsl(var(--trading-yellow-light))",
+          "yellow-dark": "hsl(var(--trading-yellow-dark))",
+          orange: "#F97316"
+        },
+        glass: {
+          bg: "hsl(var(--glass-bg) / 0.4)",
+          border: "hsl(var(--glass-border) / 0.1)",
+        },
+        glow: {
+          purple: "hsl(var(--glow-purple))",
+          cyan: "hsl(var(--glow-cyan))",
+          blue: "hsl(var(--glow-blue))",
         }
       },
       borderRadius: {

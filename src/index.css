@@ -1,56 +1,56 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 20% 20%;
+    --background: 240 5.9% 10%;
+    --foreground: 0 0% 0%;  /* Pure black for text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 20%;
+    --card: 240 5.9% 10%;
+    --card-foreground: 0 0% 0%;  /* Pure black for text */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 20%;
+    --popover: 240 5.9% 10%;
+    --popover-foreground: 0 0% 0%;  /* Pure black for text */
 
-    --primary: 214 100% 60%;
+    --primary: 262 83% 58%;  /* Purple from Playbook */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 20% 20%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 0 0% 0%;  /* Pure black for text */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 20% 50%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 213 100% 95%;
-    --accent-foreground: 214 100% 60%;
+    --accent: 214 100% 60%;  /* Cyan/blue accent from Playbook */
+    --accent-foreground: 0 0% 0%;  /* Pure black for text */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 214 100% 60%;
-
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 262 83% 58%;  /* Purple ring */
+    
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 20% 20%;
-    --sidebar-primary: 214 100% 60%;
+    /* Sidebar and header colors to match Playbook */
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 0 0% 0%;  /* Pure black for text */
+    --sidebar-primary: 262 83% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 213 100% 95%;
-    --sidebar-accent-foreground: 214 100% 60%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 214 100% 60%;
+    --sidebar-accent: 214 100% 60%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 262 83% 58%;
     
-    --header-background: 0 0% 100%;
+    --header-background: 240 5.9% 10%;
 
-    /* Trading specific colors */
-    --trading-green: 142 72% 29%;
+    /* Trading specific colors - based on Playbook */
+    --trading-green: 142 72% 50%;
     --trading-red: 0 84% 60%;
     --trading-blue: 214 100% 60%;
-    --trading-yellow: 45 93% 47%;
+    --trading-yellow: 45 93% 60%;
     --trading-purple: 262 83% 58%;
     
     --trading-green-light: 142 72% 95%;
@@ -62,54 +62,63 @@
     --trading-red-dark: 0 84% 45%;
     --trading-blue-dark: 214 100% 45%;
     --trading-yellow-dark: 45 93% 37%;
+
+    /* Playbook-specific glassmorphism accents */
+    --glass-bg: 240 10% 3.9%;
+    --glass-border: 0 0% 100%;
+    --glow-purple: 262 83% 58%;
+    --glow-cyan: 214 100% 60%;
+    --glow-blue: 224 76% 48%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Keep dark mode settings consistent with Playbook theme */
+    --background: 240 5.9% 10%;
+    --foreground: 0 0% 0%;  /* Pure black for text */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 5.9% 10%;
+    --card-foreground: 0 0% 0%;  /* Pure black for text */
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 5.9% 10%;
+    --popover-foreground: 0 0% 0%;  /* Pure black for text */
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 262 83% 58%;  /* Purple from Playbook */
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 0 0% 0%;  /* Pure black for text */
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 214 100% 60%;  /* Cyan/blue accent from Playbook */
+    --accent-foreground: 0 0% 0%;  /* Pure black for text */
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 262 83% 58%;  /* Purple ring */
     
+    /* Sidebar and header colors to match Playbook */
     --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-foreground: 0 0% 0%;  /* Pure black for text */
+    --sidebar-primary: 262 83% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-accent: 214 100% 60%;
+    --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 262 83% 58%;
     
-    --header-background: 222 47% 11%;
+    --header-background: 240 5.9% 10%;
 
-    /* Trading specific colors - dark mode */
-    --trading-green: 142 72% 60%;
+    /* Trading specific colors - based on Playbook */
+    --trading-green: 142 72% 50%;
     --trading-red: 0 84% 60%;
     --trading-blue: 214 100% 60%;
     --trading-yellow: 45 93% 60%;
-    --trading-purple: 262 83% 65%;
+    --trading-purple: 262 83% 58%;
     
     --trading-green-light: 142 40% 20%;
     --trading-red-light: 0 40% 20%;
@@ -120,6 +129,13 @@
     --trading-red-dark: 0 84% 60%;
     --trading-blue-dark: 214 100% 70%;
     --trading-yellow-dark: 45 93% 70%;
+
+    /* Playbook-specific glassmorphism accents */
+    --glass-bg: 240 10% 3.9%;
+    --glass-border: 0 0% 100%;
+    --glow-purple: 262 83% 58%;
+    --glow-cyan: 214 100% 60%;
+    --glow-blue: 224 76% 48%;
   }
 }
 

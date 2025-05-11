@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
-import { Sun, Moon, Monitor, RotateCw } from "lucide-react";
+import { Sun, Moon, Monitor, RotateCw, Palette } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 interface AppearanceSettingsProps {
@@ -147,6 +147,41 @@ const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
               </Label>
             </div>
           </RadioGroup>
+          
+          {/* Current Theme Layout Section - New */}
+          <div className="mt-6 border rounded-lg p-4 bg-black/20">
+            <h3 className="text-base font-medium mb-3 flex items-center">
+              <Palette className="h-5 w-5 mr-2 text-purple-400" />
+              Current Theme: Playbook
+            </h3>
+            
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              <div className="flex flex-col items-center">
+                <div className="h-8 w-8 rounded-full bg-[#8B5CF6]"></div>
+                <span className="text-xs mt-1">Purple</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="h-8 w-8 rounded-full bg-[#3B82F6]"></div>
+                <span className="text-xs mt-1">Blue</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="h-8 w-8 rounded-full bg-[#22D3EE]"></div>
+                <span className="text-xs mt-1">Cyan</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="h-8 w-8 rounded-full bg-[#22C55E]"></div>
+                <span className="text-xs mt-1">Green</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="h-8 w-8 rounded-full bg-[#EF4444]"></div>
+                <span className="text-xs mt-1">Red</span>
+              </div>
+            </div>
+            
+            <div className="text-xs text-muted-foreground bg-black/10 p-3 rounded">
+              <p>This theme uses glassmorphism effects with neon accents from the Playbook page. Text colors are set to pure black for optimal readability.</p>
+            </div>
+          </div>
           
           <div className="flex items-center justify-between space-x-2 pt-2">
             <div className="flex items-center gap-2">
