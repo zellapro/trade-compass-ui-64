@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -184,6 +183,10 @@
   box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
 }
 
+.hover\:glow-cyan:hover {
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+}
+
 .glow-purple {
   box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
 }
@@ -213,4 +216,133 @@
   mask-composite: exclude;
   -webkit-mask-composite: xor;
   pointer-events: none;
+}
+
+/* Animation keyframes */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Playbook page specific styles */
+.playbook-page .card {
+  @apply border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden transition-all duration-300;
+}
+
+.playbook-page .card:hover {
+  @apply border-white/15 shadow-lg shadow-indigo-800/10;
+}
+
+.playbook-page .gradient-card {
+  @apply bg-gradient-to-br from-indigo-900/30 to-violet-900/30 border-white/10 backdrop-blur-xl;
+}
+
+.playbook-page .gradient-border {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  z-index: 0;
+}
+
+.playbook-page .gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(to right, #4f46e5, #a855f7, #06b6d4);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.playbook-page .glass-panel {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl;
+}
+
+.playbook-page .neo-brutalism {
+  @apply bg-black/40 border-2 border-white/20 rounded-xl shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)];
+}
+
+.playbook-page .button-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.playbook-page .button-glow::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #4f46e5, #a855f7, #06b6d4);
+  z-index: -1;
+  border-radius: inherit;
+  animation: rotate-glow 2s linear infinite;
+}
+
+@keyframes rotate-glow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
