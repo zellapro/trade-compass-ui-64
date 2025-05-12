@@ -447,7 +447,14 @@
 }
 
 .theme-dark .btn-theme {
-  @apply bg-transparent border border-primary text-primary hover:bg-primary/10 hover:glow-cyan;
+  @apply bg-transparent border border-primary text-primary hover:bg-primary/10;
+}
+
+/* Define hover:glow-cyan utility class properly */
+@layer utilities {
+  .hover\:glow-cyan:hover {
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+  }
 }
 
 .theme-premium .btn-theme {
