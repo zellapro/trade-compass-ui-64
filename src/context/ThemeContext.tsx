@@ -29,6 +29,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (savedTheme) {
       setTheme(savedTheme);
       applyTheme(savedTheme);
+    } else {
+      // Default to ZellaPro theme (dark with premium styling)
+      setTheme('premium');
+      applyTheme('premium');
     }
     
     if (savedGlassmorphism !== null) {
@@ -48,7 +52,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } else if (selectedTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else if (selectedTheme === "premium") {
-      document.documentElement.classList.add("dark", "premium");
+      document.documentElement.classList.add("premium");
     }
   };
 

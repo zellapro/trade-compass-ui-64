@@ -1,9 +1,82 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
+    /* ZellaPro Theme - Dark Glassmorphism */
+    --zella-background: 230 33% 8%;  /* #0D0F1A */
+    --zella-surface: 0 0% 100% / 0.05;  /* rgba(255, 255, 255, 0.05) */
+    --zella-cyan-glow: 180 100% 50%;  /* #00FFFF */
+    --zella-electric-purple: 265 100% 50%;  /* #6F00FF */
+    --zella-primary-text: 228 53% 92%;  /* #E3E6F3 */
+    --zella-secondary-text: 228 13% 68%;  /* #A0A4B8 */
+    --zella-positive-signal: 157 100% 50%;  /* #00FF99 */
+    --zella-negative-signal: 348 100% 65%;  /* #FF4D6D */
+    --zella-divider-line: 0 0% 100% / 0.05;  /* rgba(255, 255, 255, 0.05) */
+
+    /* Base theme variables */
+    --background: 230 33% 8%;
+    --foreground: 228 53% 92%;
+
+    --card: 230 33% 12%;
+    --card-foreground: 228 53% 92%;
+
+    --popover: 230 33% 8%;
+    --popover-foreground: 228 53% 92%;
+
+    --primary: 180 100% 50%;
+    --primary-foreground: 230 33% 8%;
+
+    --secondary: 265 100% 50%;
+    --secondary-foreground: 228 53% 92%;
+
+    --muted: 228 13% 15%;
+    --muted-foreground: 228 13% 68%;
+
+    --accent: 180 100% 50%;
+    --accent-foreground: 228 53% 92%;
+
+    --destructive: 348 100% 65%;
+    --destructive-foreground: 228 53% 92%;
+
+    --border: 0 0% 100% / 0.05;
+    --input: 0 0% 100% / 0.05;
+    --ring: 180 100% 50%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 230 33% 8%;
+    --sidebar-foreground: 228 53% 92%;
+    --sidebar-primary: 180 100% 50%;
+    --sidebar-primary-foreground: 230 33% 8%;
+    --sidebar-accent: 230 33% 12%;
+    --sidebar-accent-foreground: 228 53% 92%;
+    --sidebar-border: 0 0% 100% / 0.05;
+    --sidebar-ring: 180 100% 50%;
+    
+    --header-background: 230 33% 10%;
+
+    /* Trading specific colors */
+    --trading-green: 157 100% 50%;
+    --trading-red: 348 100% 65%;
+    --trading-blue: 180 100% 50%;
+    --trading-yellow: 45 100% 65%;
+    --trading-purple: 265 100% 50%;
+    
+    --trading-green-light: 157 100% 20%;
+    --trading-red-light: 348 100% 20%;
+    --trading-blue-light: 180 100% 20%;
+    --trading-yellow-light: 45 100% 20%;
+    
+    --trading-green-dark: 157 100% 60%;
+    --trading-red-dark: 348 100% 70%;
+    --trading-blue-dark: 180 100% 60%;
+    --trading-yellow-dark: 45 100% 70%;
+  }
+
+  .light {
     --background: 210 20% 98%;
     --foreground: 220 20% 20%;
 
@@ -120,6 +193,65 @@
     --trading-blue-dark: 214 100% 70%;
     --trading-yellow-dark: 45 93% 70%;
   }
+
+  /* Premium theme */
+  .premium {
+    --background: 232 40% 8%;
+    --foreground: 228 53% 92%;
+
+    --card: 236 40% 12%;
+    --card-foreground: 228 53% 92%;
+
+    --popover: 232 40% 8%;
+    --popover-foreground: 228 53% 92%;
+
+    --primary: 40 100% 50%;
+    --primary-foreground: 232 40% 8%;
+
+    --secondary: 265 100% 50%;
+    --secondary-foreground: 228 53% 92%;
+
+    --muted: 236 33% 15%;
+    --muted-foreground: 228 13% 68%;
+
+    --accent: 40 100% 50%;
+    --accent-foreground: 228 53% 92%;
+
+    --destructive: 348 100% 65%;
+    --destructive-foreground: 228 53% 92%;
+
+    --border: 40 100% 50% / 0.1;
+    --input: 0 0% 100% / 0.05;
+    --ring: 40 100% 50%;
+
+    --sidebar-background: 232 40% 8%;
+    --sidebar-foreground: 228 53% 92%;
+    --sidebar-primary: 40 100% 50%;
+    --sidebar-primary-foreground: 232 40% 8%;
+    --sidebar-accent: 236 40% 12%;
+    --sidebar-accent-foreground: 228 53% 92%;
+    --sidebar-border: 40 100% 50% / 0.1;
+    --sidebar-ring: 40 100% 50%;
+    
+    --header-background: 232 40% 10%;
+
+    /* Trading specific colors - premium mode */
+    --trading-green: 157 100% 50%;
+    --trading-red: 348 100% 65%;
+    --trading-blue: 180 100% 50%;
+    --trading-yellow: 40 100% 50%;
+    --trading-purple: 265 100% 50%;
+    
+    --trading-green-light: 157 40% 20%;
+    --trading-red-light: 348 40% 20%;
+    --trading-blue-light: 180 40% 20%;
+    --trading-yellow-light: 40 40% 20%;
+    
+    --trading-green-dark: 157 100% 60%;
+    --trading-red-dark: 348 100% 70%;
+    --trading-blue-dark: 180 100% 60%;
+    --trading-yellow-dark: 40 100% 70%;
+  }
 }
 
 @layer base {
@@ -159,40 +291,72 @@
 }
 
 /* Glassmorphism effects */
-.glass {
-  @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg;
-}
+@layer utilities {
+  .glass {
+    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg;
+  }
 
-.glass-card {
-  @apply bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg;
-}
+  .glass-card {
+    @apply bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg;
+  }
 
-.glass-button {
-  @apply bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300;
-}
+  .glass-button {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all duration-300;
+  }
 
-.glow {
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
-}
+  .glow {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+  }
 
-.glow-text {
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
-}
+  .glow-text {
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
+  }
 
-.glow-cyan {
-  box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
-}
+  .glow-cyan {
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+  }
 
-.hover\:glow-cyan:hover {
-  box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
-}
+  .hover\:glow-cyan:hover {
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+  }
 
-.glow-purple {
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
-}
+  .glow-purple {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+  }
 
-.glow-indigo {
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+  .glow-indigo {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+  }
+
+  .neon-border {
+    @apply border border-transparent relative;
+  }
+  
+  .neon-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #00FFFF 0%, #6F00FF 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .zella-glassmorphism {
+    @apply bg-zella-surface backdrop-blur-xl border border-zella-divider-line shadow-neon-glow;
+  }
+
+  .zella-button {
+    @apply bg-gradient-to-r from-zella-cyan-glow to-zella-electric-purple text-zella-primary-text hover:shadow-button-glow transition-all duration-300;
+  }
+
+  .zella-text-gradient {
+    @apply bg-gradient-to-r from-zella-cyan-glow to-zella-electric-purple bg-clip-text text-transparent;
+  }
 }
 
 /* Subtle transitions for interactive elements */
@@ -211,71 +375,11 @@
   position: absolute;
   inset: -1px;
   border-radius: 0.75rem;
-  background: linear-gradient(to right, #4f46e5, #a855f7, #06b6d4);
+  background: linear-gradient(to right, #00FFFF, #6F00FF);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   -webkit-mask-composite: xor;
   pointer-events: none;
-}
-
-/* Animation keyframes */
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scale-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slide-in {
-  0% {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* Animation utilities */
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out forwards;
-}
-
-.animate-scale-in {
-  animation: scale-in 0.3s ease-out forwards;
-}
-
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out forwards;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s infinite;
 }
 
 /* Playbook page specific styles */
@@ -284,11 +388,11 @@
 }
 
 .playbook-page .card:hover {
-  @apply border-white/15 shadow-lg shadow-indigo-800/10;
+  @apply border-white/15 shadow-card-hover;
 }
 
 .playbook-page .gradient-card {
-  @apply bg-gradient-to-br from-indigo-900/30 to-violet-900/30 border-white/10 backdrop-blur-xl;
+  @apply bg-gradient-to-br from-zella-electric-purple/30 to-zella-cyan-glow/30 border-white/10 backdrop-blur-xl;
 }
 
 .playbook-page .gradient-border {
@@ -305,7 +409,7 @@
   z-index: -1;
   padding: 1px;
   border-radius: inherit;
-  background: linear-gradient(to right, #4f46e5, #a855f7, #06b6d4);
+  background: linear-gradient(to right, #00FFFF, #6F00FF);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   -webkit-mask-composite: xor;
@@ -332,7 +436,7 @@
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, #4f46e5, #a855f7, #06b6d4);
+  background: linear-gradient(45deg, #00FFFF, #6F00FF);
   z-index: -1;
   border-radius: inherit;
   animation: rotate-glow 2s linear infinite;
@@ -345,4 +449,21 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Typography styles */
+.zella-heading {
+  @apply font-semibold tracking-wider;
+}
+
+.zella-heading-xl {
+  @apply font-extrabold tracking-wider uppercase;
+}
+
+.zella-body {
+  @apply font-normal leading-relaxed;
+}
+
+.zella-body-emphasis {
+  @apply font-medium leading-relaxed;
 }

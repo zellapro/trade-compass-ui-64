@@ -62,6 +62,17 @@ export default {
           purple: "#8B5CF6",
           orange: "#F97316",
           yellow: "#F59E0B"
+        },
+        zella: {
+          background: "#0D0F1A",  // deep slate black
+          surface: "rgba(255, 255, 255, 0.05)",  // glass surface
+          "cyan-glow": "#00FFFF",  // neon accent 1
+          "electric-purple": "#6F00FF",  // neon accent 2
+          "primary-text": "#E3E6F3",  // soft white
+          "secondary-text": "#A0A4B8",  // muted text
+          "positive-signal": "#00FF99",  // glowing mint
+          "negative-signal": "#FF4D6D",  // negative signal
+          "divider-line": "rgba(255, 255, 255, 0.05)",  // divider lines
         }
       },
       borderRadius: {
@@ -94,6 +105,22 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" }
         },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" }
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 10px rgba(0, 255, 255, 0.3)" },
+          "50%": { boxShadow: "0 0 20px rgba(0, 255, 255, 0.6)" }
+        },
+        "border-glow": {
+          "0%, 100%": { borderColor: "rgba(0, 255, 255, 0.3)" },
+          "50%": { borderColor: "rgba(0, 255, 255, 0.6)" }
+        },
+        "button-glow": {
+          "0%, 100%": { boxShadow: "0 0 5px #6F00FF" },
+          "50%": { boxShadow: "0 0 15px #6F00FF" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -102,6 +129,18 @@ export default {
         "scale-in": "scale-in 0.3s ease-out forwards",
         "pulse-glow": "pulse-glow 2s infinite",
         "shimmer": "shimmer 2s infinite linear",
+        "float": "float 3s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2s infinite",
+        "border-glow": "border-glow 2s infinite",
+        "button-glow": "button-glow 2s infinite",
+      },
+      backgroundImage: {
+        "gradient-card-glow": "linear-gradient(90deg, #00FFFF 0%, #6F00FF 100%)",
+      },
+      boxShadow: {
+        "neon-glow": "0 0 20px rgba(0, 255, 255, 0.15)",
+        "button-glow": "0 0 10px #6F00FF",
+        "card-hover": "0 0 30px rgba(0, 255, 255, 0.2)",
       },
     },
   },

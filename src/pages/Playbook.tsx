@@ -44,10 +44,10 @@ const Playbook = () => {
   }, []);
   
   return (
-    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-zella-background relative overflow-hidden">
       {/* Enhanced glassmorphism background patterns */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-background to-background pointer-events-none"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_70%_20%,_var(--tw-gradient-stops))] from-violet-800/10 to-transparent pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zella-electric-purple/20 via-zella-background to-zella-background pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_70%_20%,_var(--tw-gradient-stops))] from-zella-cyan-glow/10 to-transparent pointer-events-none"></div>
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-full h-full bg-[linear-gradient(to_right,#0a0514_1px,transparent_1px),linear-gradient(to_bottom,#0a0514_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.08]"></div>
       </div>
@@ -62,11 +62,11 @@ const Playbook = () => {
         <div className="flex flex-col space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-4xl font-bold tracking-wider bg-gradient-to-r from-zella-primary-text to-zella-primary-text/70 bg-clip-text text-transparent">
                 Playbook™
               </h1>
-              <p className="text-muted-foreground text-sm mt-1">
-                <span className="font-medium text-primary">Strategy. Psychology. Identity.</span> — Your elite-level trader command center
+              <p className="text-zella-secondary-text text-sm mt-1">
+                <span className="font-medium text-zella-cyan-glow">Strategy. Psychology. Identity.</span> — Your elite-level trader command center
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ const Playbook = () => {
                 <RefreshCw className="h-3.5 w-3.5" />
                 Refresh
               </Button>
-              <Button variant="default" size="sm" className="h-8 gap-1 text-xs bg-indigo-600 hover:bg-indigo-500 transition-colors">
+              <Button variant="default" size="sm" className="h-8 gap-1 text-xs bg-gradient-to-r from-zella-cyan-glow to-zella-electric-purple hover:shadow-button-glow transition-all duration-300">
                 <Plus className="h-3.5 w-3.5" />
                 New Strategy
               </Button>
@@ -94,13 +94,13 @@ const Playbook = () => {
           className="w-full"
         >
           <div className="relative mb-6">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/30 via-violet-500/30 to-cyan-400/30 blur-xl h-10 rounded-full opacity-40"></div>
-            <TabsList className="relative grid grid-cols-5 w-full h-12 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full p-1 overflow-hidden shadow-lg shadow-indigo-900/20">
+            <div className="absolute inset-0 bg-gradient-to-r from-zella-electric-purple/30 via-zella-cyan-glow/30 to-zella-electric-purple/30 blur-xl h-10 rounded-full opacity-40"></div>
+            <TabsList className="relative grid grid-cols-5 w-full h-12 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full p-1 overflow-hidden shadow-neon-glow">
               <TabsTrigger 
                 value="psychology" 
                 className={cn(
                   "rounded-full text-sm flex items-center gap-2 transition-all duration-300",
-                  activeTab === "psychology" ? "data-[state=active]:bg-indigo-600/80 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
+                  activeTab === "psychology" ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-zella-electric-purple/80 data-[state=active]:to-zella-electric-purple/60 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
                 )}
               >
                 <Brain className="h-4 w-4" />
@@ -111,7 +111,7 @@ const Playbook = () => {
                 value="behavior"
                 className={cn(
                   "rounded-full text-sm flex items-center gap-2 transition-all duration-300",
-                  activeTab === "behavior" ? "data-[state=active]:bg-violet-600/80 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
+                  activeTab === "behavior" ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-zella-cyan-glow/80 data-[state=active]:to-zella-cyan-glow/60 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
                 )}
               >
                 <Lightbulb className="h-4 w-4" />
@@ -122,7 +122,7 @@ const Playbook = () => {
                 value="strategy"
                 className={cn(
                   "rounded-full text-sm flex items-center gap-2 transition-all duration-300",
-                  activeTab === "strategy" ? "data-[state=active]:bg-cyan-600/80 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
+                  activeTab === "strategy" ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-zella-cyan-glow/80 data-[state=active]:to-zella-electric-purple/80 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
                 )}
               >
                 <FileCode className="h-4 w-4" />
@@ -133,7 +133,7 @@ const Playbook = () => {
                 value="missed"
                 className={cn(
                   "rounded-full text-sm flex items-center gap-2 transition-all duration-300",
-                  activeTab === "missed" ? "data-[state=active]:bg-fuchsia-600/80 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
+                  activeTab === "missed" ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-zella-electric-purple/60 data-[state=active]:to-zella-electric-purple/80 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
                 )}
               >
                 <Telescope className="h-4 w-4" />
@@ -144,7 +144,7 @@ const Playbook = () => {
                 value="insights"
                 className={cn(
                   "rounded-full text-sm flex items-center gap-2 transition-all duration-300",
-                  activeTab === "insights" ? "data-[state=active]:bg-amber-600/80 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
+                  activeTab === "insights" ? "data-[state=active]:bg-gradient-to-r data-[state=active]:from-zella-cyan-glow/60 data-[state=active]:to-zella-cyan-glow/80 data-[state=active]:text-white data-[state=active]:shadow-inner" : ""
                 )}
               >
                 <LineChart className="h-4 w-4" />
@@ -156,7 +156,7 @@ const Playbook = () => {
           
           {/* Tab Contents with enhanced glassmorphism effect */}
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/30 to-violet-900/10 blur-3xl rounded-3xl opacity-30 -z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-zella-electric-purple/30 to-zella-cyan-glow/10 blur-3xl rounded-3xl opacity-30 -z-10"></div>
             
             <TabsContent value="psychology" className="mt-0 space-y-6 animate-fade-in">
               <div className="grid grid-cols-1 gap-6">
@@ -195,7 +195,7 @@ const Playbook = () => {
       {/* Enhanced floating button for adding missed trades */}
       <Button 
         size="sm" 
-        className="fixed bottom-6 right-6 rounded-full h-14 w-14 shadow-lg shadow-indigo-500/30 bg-gradient-to-r from-indigo-600 to-violet-600 p-0 flex items-center justify-center hover:from-indigo-500 hover:to-violet-500 z-40 hover:scale-105 transition-all duration-300 hover:shadow-indigo-500/50"
+        className="fixed bottom-6 right-6 rounded-full h-14 w-14 shadow-neon-glow bg-gradient-to-r from-zella-cyan-glow to-zella-electric-purple p-0 flex items-center justify-center hover:shadow-button-glow z-40 hover:scale-105 transition-all duration-300"
       >
         <Plus className="h-6 w-6" />
         <span className="sr-only">Add Missed Trade</span>

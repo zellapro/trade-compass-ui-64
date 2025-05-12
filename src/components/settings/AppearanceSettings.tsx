@@ -66,7 +66,7 @@ const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
   };
   
   const handleResetTheme = () => {
-    const defaultTheme = "dark"; // Default theme
+    const defaultTheme = "premium"; // Default theme is now premium
     setPreviewTheme(defaultTheme);
     setChangesMade(defaultTheme !== theme);
     
@@ -180,32 +180,32 @@ const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                 <div className={`relative overflow-hidden rounded-lg border p-1 ${previewTheme === "premium" ? "border-primary ring-2 ring-primary/20" : "border-border"}`}>
                   <RadioGroupItem value="premium" id="theme-premium" className="absolute top-2 right-2 h-4 w-4" />
                   <Label htmlFor="theme-premium" className="cursor-pointer">
-                    <div className="p-3 bg-[#0E0C1F] flex flex-col gap-3">
+                    <div className="p-3 bg-[#0D0F1A] flex flex-col gap-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center">
-                          <Sparkles className="h-5 w-5 text-amber-400 mr-2" />
-                          <span className="font-medium text-amber-50">Premium Theme</span>
+                          <Sparkles className="h-5 w-5 text-[#00FFFF] mr-2" />
+                          <span className="font-medium text-[#E3E6F3]">Premium Theme</span>
                         </div>
                       </div>
                       
                       {/* Preview Card - Premium Theme */}
-                      <div className="rounded-md border border-indigo-900/70 bg-[#1A1A2E] p-3 shadow-md">
-                        <div className="h-2 w-12 bg-amber-500 rounded mb-2"></div>
+                      <div className="rounded-md border border-[#6F00FF]/20 bg-black/40 backdrop-blur p-3 shadow-md">
+                        <div className="h-2 w-12 bg-[#00FFFF] rounded mb-2"></div>
                         <div className="space-y-1">
-                          <div className="h-2 w-24 bg-gray-200 rounded"></div>
-                          <div className="h-2 w-16 bg-gray-500 rounded"></div>
+                          <div className="h-2 w-24 bg-[#E3E6F3] rounded"></div>
+                          <div className="h-2 w-16 bg-[#A0A4B8] rounded"></div>
                         </div>
                       </div>
                       
                       {/* Chart Preview - Premium Theme */}
                       <div className="flex items-center justify-between">
-                        <div className="h-10 w-1/3 bg-green-500 rounded"></div>
-                        <div className="h-6 w-1/4 bg-red-400 rounded"></div>
-                        <div className="h-8 w-1/5 bg-amber-400 rounded"></div>
+                        <div className="h-10 w-1/3 bg-[#00FF99] rounded"></div>
+                        <div className="h-6 w-1/4 bg-[#FF4D6D] rounded"></div>
+                        <div className="h-8 w-1/5 bg-[#00FFFF] rounded"></div>
                       </div>
                     </div>
-                    <div className="p-2 text-center text-sm text-amber-100 bg-indigo-900">
-                      Rich velvet with golden accents
+                    <div className="p-2 text-center text-sm text-[#E3E6F3] bg-[#0D0F1A] border-t border-[#6F00FF]/20">
+                      <span className="bg-gradient-to-r from-[#00FFFF] to-[#6F00FF] bg-clip-text text-transparent">Rich glassmorphism with neon accents</span>
                     </div>
                   </Label>
                 </div>
@@ -346,16 +346,16 @@ const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
             </CardHeader>
             
             <CardContent className="space-y-6">
-              <div className="rounded-lg border bg-black/40 backdrop-blur-sm overflow-hidden">
-                <div className="p-4 border-b border-white/10 bg-gradient-to-r from-indigo-950/30 to-violet-950/30">
+              <div className="rounded-lg bg-zella-surface backdrop-blur-xl border border-zella-divider-line overflow-hidden shadow-neon-glow">
+                <div className="p-4 border-b border-white/10 bg-gradient-to-r from-[#6F00FF]/30 to-[#00FFFF]/30">
                   <div className="flex items-center gap-2">
-                    <FileCode className="h-5 w-5 text-cyan-400" />
-                    <h3 className="text-sm font-medium">Playbook™ UI Theme Showcase</h3>
+                    <FileCode className="h-5 w-5 text-[#00FFFF]" />
+                    <h3 className="text-sm font-medium text-zella-primary-text">Playbook™ UI Theme Showcase</h3>
                   </div>
                 </div>
                 
                 <div className="p-4">
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-zella-secondary-text mb-4">
                     The Playbook module uses a specialized theme designed for cognitive focus and trader psychology.
                     Its distinctive appearance includes:
                   </p>
@@ -363,36 +363,36 @@ const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-indigo-600"></div>
-                        <span className="text-sm">Indigo primary accent</span>
+                        <div className="h-4 w-4 rounded-full bg-[#00FFFF]"></div>
+                        <span className="text-sm text-zella-primary-text">Cyan Glow accent</span>
                       </div>
                       
                       <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-violet-600"></div>
-                        <span className="text-sm">Violet secondary accent</span>
+                        <div className="h-4 w-4 rounded-full bg-[#6F00FF]"></div>
+                        <span className="text-sm text-zella-primary-text">Electric Purple accent</span>
                       </div>
                       
                       <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-cyan-600"></div>
-                        <span className="text-sm">Cyan highlights</span>
+                        <div className="h-4 w-4 rounded-full bg-[#00FF99]"></div>
+                        <span className="text-sm text-zella-primary-text">Positive Signal indicator</span>
                       </div>
                     </div>
                     
                     <div className="space-y-2">
                       <div className="h-6 w-full rounded-md bg-black/40 backdrop-blur-sm border border-white/10">
-                        <div className="h-full w-1/2 rounded-md bg-gradient-to-r from-indigo-600/80 to-violet-600/80"></div>
+                        <div className="h-full w-1/2 rounded-md bg-gradient-to-r from-[#00FFFF]/80 to-[#6F00FF]/80"></div>
                       </div>
-                      <p className="text-xs text-muted-foreground">Glassmorphism UI elements</p>
+                      <p className="text-xs text-zella-secondary-text">Glassmorphism UI elements</p>
                       
                       <div className="flex items-center gap-2 mt-2">
-                        <div className="h-6 w-6 rounded-full bg-gradient-to-br from-indigo-600 to-violet-700 shadow shadow-indigo-500/50"></div>
-                        <span className="text-xs">Subtle neon glow effects</span>
+                        <div className="h-6 w-6 rounded-full bg-gradient-to-br from-[#00FFFF] to-[#6F00FF] shadow shadow-[#00FFFF]/50"></div>
+                        <span className="text-xs text-zella-primary-text">Subtle neon glow effects</span>
                       </div>
                     </div>
                   </div>
                   
                   <div className="mt-4 p-3 rounded-md bg-black/20 border border-white/10">
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-zella-secondary-text">
                       The Playbook™ theme is designed to reduce cognitive load and enhance focus during
                       strategic analysis and psychological profiling sessions. It uses darker backgrounds
                       with higher contrast elements to prevent eye strain during extended sessions.
@@ -431,7 +431,7 @@ const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
               
               <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-3 rounded">
                 <div className="flex items-start gap-2">
-                  <Sparkles className="h-4 w-4 mt-0.5 text-indigo-400" />
+                  <Sparkles className="h-4 w-4 mt-0.5 text-[#00FFFF]" />
                   <p>
                     The Playbook™ module maintains its specialized theme independent of your global theme selection
                     to ensure optimal psychological focus during edge development sessions.
