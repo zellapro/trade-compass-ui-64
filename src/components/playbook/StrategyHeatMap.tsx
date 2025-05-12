@@ -3,8 +3,12 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Grid3X3, Info } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 export function StrategyHeatMap() {
+  const { theme } = useTheme();
+  const isLightTheme = theme === "light";
+  
   // Days of the week
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
   
@@ -21,26 +25,42 @@ export function StrategyHeatMap() {
   ];
   
   const getColorClass = (value: number) => {
-    if (value >= 85) return "bg-green-500/90";
-    if (value >= 75) return "bg-green-500/70";
-    if (value >= 65) return "bg-green-500/50";
-    if (value >= 55) return "bg-amber-500/50";
-    if (value >= 45) return "bg-amber-500/70";
-    if (value >= 30) return "bg-red-500/60";
-    return "bg-red-500/80";
+    if (isLightTheme) {
+      if (value >= 85) return "bg-green-600/90";
+      if (value >= 75) return "bg-green-500/80";
+      if (value >= 65) return "bg-green-500/70";
+      if (value >= 55) return "bg-amber-500/70";
+      if (value >= 45) return "bg-amber-500/80";
+      if (value >= 30) return "bg-red-500/70";
+      return "bg-red-600/80";
+    } else {
+      if (value >= 85) return "bg-green-500/90";
+      if (value >= 75) return "bg-green-500/70";
+      if (value >= 65) return "bg-green-500/50";
+      if (value >= 55) return "bg-amber-500/50";
+      if (value >= 45) return "bg-amber-500/70";
+      if (value >= 30) return "bg-red-500/60";
+      return "bg-red-500/80";
+    }
   };
   
   return (
-    <Card className="border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden">
-      <CardHeader className="border-b border-white/10 bg-gradient-to-r from-amber-900/30 to-amber-800/30 pb-3">
+    <Card className={isLightTheme 
+      ? "border-gray-200 bg-white shadow-sm" 
+      : "border-white/10 bg-black/40 backdrop-blur-xl"}>
+      <CardHeader className={`border-b ${isLightTheme 
+        ? "border-gray-100 bg-gradient-to-r from-amber-50 to-amber-100/50 pb-3" 
+        : "border-white/10 bg-gradient-to-r from-amber-900/30 to-amber-800/30 pb-3"}`}>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center text-sm">
-            <Grid3X3 className="mr-2 h-4 w-4 text-amber-400" />
-            <span className="bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+            <Grid3X3 className={`mr-2 h-4 w-4 ${isLightTheme ? 'text-amber-600' : 'text-amber-400'}`} />
+            <span className={isLightTheme ? 'text-gray-800' : 'bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent'}>
               Strategy Performance Heat Map
             </span>
           </CardTitle>
-          <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs px-1.5 h-5">
+          <Badge variant="outline" className={isLightTheme 
+            ? "border-amber-200 bg-amber-50 text-amber-700 text-xs px-1.5 h-5" 
+            : "border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs px-1.5 h-5"}>
             Last 30 Days
           </Badge>
         </div>
@@ -49,11 +69,11 @@ export function StrategyHeatMap() {
       <CardContent className="p-4">
         <div className="space-y-4">
           <div className="flex items-center text-xs text-muted-foreground mb-2 justify-end">
-            <span className="inline-block w-3 h-3 bg-red-500/70 mr-1 rounded"></span>
+            <span className={`inline-block w-3 h-3 ${isLightTheme ? 'bg-red-500/80' : 'bg-red-500/70'} mr-1 rounded`}></span>
             <span className="mr-3">Poor</span>
-            <span className="inline-block w-3 h-3 bg-amber-500/60 mr-1 rounded"></span>
+            <span className={`inline-block w-3 h-3 ${isLightTheme ? 'bg-amber-500/80' : 'bg-amber-500/60'} mr-1 rounded`}></span>
             <span className="mr-3">Average</span>
-            <span className="inline-block w-3 h-3 bg-green-500/70 mr-1 rounded"></span>
+            <span className={`inline-block w-3 h-3 ${isLightTheme ? 'bg-green-500/80' : 'bg-green-500/70'} mr-1 rounded`}></span>
             <span>Excellent</span>
           </div>
           
@@ -84,7 +104,9 @@ export function StrategyHeatMap() {
                           
                           {/* Tooltip */}
                           <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-10">
-                            <div className="bg-black/90 text-white text-xs rounded py-1 px-2 min-w-[120px] backdrop-blur-sm border border-white/10">
+                            <div className={isLightTheme 
+                              ? "bg-gray-800/90 text-white text-xs rounded py-1 px-2 min-w-[120px] shadow-lg border border-gray-700" 
+                              : "bg-black/90 text-white text-xs rounded py-1 px-2 min-w-[120px] backdrop-blur-sm border border-white/10"}>
                               <div className="font-medium">
                                 {day} {timeBlocks[timeIndex]} - {parseInt(timeBlocks[timeIndex]) + 1}:00
                               </div>
@@ -94,7 +116,9 @@ export function StrategyHeatMap() {
                                 Avg R:R: {(Math.random() * 2 + 0.5).toFixed(1)}
                               </div>
                             </div>
-                            <div className="border-t-8 border-t-black/90 border-x-8 border-x-transparent h-0 w-0 absolute left-1/2 transform -translate-x-1/2"></div>
+                            <div className={isLightTheme 
+                              ? "border-t-8 border-t-gray-800/90 border-x-8 border-x-transparent h-0 w-0 absolute left-1/2 transform -translate-x-1/2" 
+                              : "border-t-8 border-t-black/90 border-x-8 border-x-transparent h-0 w-0 absolute left-1/2 transform -translate-x-1/2"}></div>
                           </div>
                         </div>
                       ))}
@@ -105,9 +129,11 @@ export function StrategyHeatMap() {
             </div>
           </div>
           
-          <div className="bg-amber-950/30 border border-amber-500/20 rounded-lg p-2 mt-3">
+          <div className={isLightTheme 
+            ? "bg-amber-50 border border-amber-200 rounded-lg p-2 mt-3" 
+            : "bg-amber-950/30 border border-amber-500/20 rounded-lg p-2 mt-3"}>
             <div className="flex items-start gap-2">
-              <Info className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
+              <Info className={`h-4 w-4 ${isLightTheme ? 'text-amber-600' : 'text-amber-400'} mt-0.5 flex-shrink-0`} />
               <p className="text-xs text-muted-foreground">
                 Your strategies perform best during the first 90 minutes of trading and in the last 30 minutes.
                 Consider focusing your trading activity within these optimal windows.
