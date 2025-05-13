@@ -13,6 +13,8 @@ import { StrategyBuilder } from "@/components/playbook/StrategyBuilder";
 import { MissedTradeLogger } from "@/components/playbook/MissedTradeLogger";
 import { StrategyHeatMap } from "@/components/playbook/StrategyHeatMap";
 import { EdgeEvolutionTracker } from "@/components/playbook/EdgeEvolutionTracker";
+import { GoalConfigurationPanel } from "@/components/playbook/GoalConfigurationPanel";
+import { DailyFocusConfigurationPanel } from "@/components/playbook/DailyFocusConfigurationPanel";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/ThemeContext";
 import {
@@ -27,7 +29,8 @@ import {
   Grid3X3,
   Check,
   RefreshCw,
-  Clock
+  Clock,
+  Settings
 } from "lucide-react";
 
 const Playbook = () => {
@@ -254,6 +257,25 @@ const Playbook = () => {
             </TabsContent>
           </div>
         </Tabs>
+        
+        {/* Configuration Panels Section */}
+        <div className="mt-8">
+          <div className="flex items-center mb-6">
+            <Settings className="h-5 w-5 mr-2" />
+            <h2 className={`text-xl font-semibold ${
+              isLightTheme 
+                ? 'text-gray-800' 
+                : 'text-zella-primary-text'
+            }`}>
+              Configure Dashboard Panels
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <GoalConfigurationPanel />
+            <DailyFocusConfigurationPanel />
+          </div>
+        </div>
       </div>
       
       {/* Enhanced floating button for adding missed trades */}

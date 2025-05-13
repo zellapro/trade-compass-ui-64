@@ -98,7 +98,7 @@ const getDayClassName = (date: Date) => {
 export function PerformanceCalendar({ timeframe }: PerformanceCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
-  const [viewMode, setViewMode] = useState<"year" | "month">("year");
+  const [viewMode, setViewMode] = useState<"year" | "month">("month"); // Fixed: Changed default to "month"
   const currentYear = new Date().getFullYear();
   const tradesForSelectedDay = selectedDate ? getTradesForDay(selectedDate) : [];
   
@@ -133,8 +133,9 @@ export function PerformanceCalendar({ timeframe }: PerformanceCalendarProps) {
         selected={selectedDate}
         onSelect={setSelectedDate}
         onMonthChange={setSelectedMonth}
+        viewMode={viewMode} // Add viewMode prop which is used in the Calendar component
         numberOfMonths={viewMode === "year" ? 12 : 1}
-        className="border rounded-md p-3"
+        className="border rounded-md p-3 pointer-events-auto" // Added pointer-events-auto
         modifiersClassNames={{
           selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
         }}
