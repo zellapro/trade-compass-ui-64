@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { 
   PieChart, 
   Pie, 
@@ -23,6 +22,7 @@ import {
   Scatter,
   ScatterChart,
   ZAxis,
+  TooltipProps
 } from "recharts";
 import { CircleCheck, CircleX, Info, ArrowUp, ArrowDown } from "lucide-react";
 
@@ -67,6 +67,25 @@ const chartConfig = {
   "Other": { color: "#6b7280" },
 };
 
+// Custom tooltip component
+const ChartTooltipContent = ({ active, payload, label }: TooltipProps<any, any>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border border-border/50 bg-background/95 p-2 shadow-md">
+        <p className="font-medium">{label || payload[0].name}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={`item-${index}`} className="text-sm" style={{ color: entry.color || entry.fill }}>
+            {entry.name || entry.dataKey}: {entry.value}
+            {entry.dataKey === "winRate" || entry.name === "Win Rate" ? "%" : ""}
+            {entry.dataKey === "avgRR" || entry.name === "Avg RR" ? "R" : ""}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export function StrategyAnalyticsPanel() {
   const [activeTab, setActiveTab] = useState("breakdown");
   
@@ -105,28 +124,26 @@ export function StrategyAnalyticsPanel() {
             <div className="flex flex-col lg:flex-row">
               <div className="w-full lg:w-1/2 flex items-center justify-center">
                 <div className="h-80 w-full">
-                  <ChartContainer config={chartConfig}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={strategyBreakdownData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={70}
-                          outerRadius={100}
-                          fill="#8884d8"
-                          paddingAngle={5}
-                          dataKey="value"
-                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        >
-                          {strategyBreakdownData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                          ))}
-                        </Pie>
-                        <Tooltip content={<ChartTooltipContent />} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={strategyBreakdownData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={70}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        paddingAngle={5}
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {strategyBreakdownData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<ChartTooltipContent />} />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
               <div className="w-full lg:w-1/2 space-y-4">
@@ -246,29 +263,27 @@ export function StrategyAnalyticsPanel() {
           
           <TabsContent value="timeframes" className="mt-0 space-y-4">
             <div className="h-80 w-full">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={strategyTimeframeData}
-                    margin={{
-                      top: 20,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Legend />
-                    <Bar dataKey="OB" name="Order Block" stackId="a" fill="#8b5cf6" />
-                    <Bar dataKey="FVG" name="Fair Value Gap" stackId="a" fill="#3b82f6" />
-                    <Bar dataKey="Breakout" name="Breakout" stackId="a" fill="#10b981" />
-                    <Bar dataKey="Range" name="Range Trade" stackId="a" fill="#f59e0b" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={strategyTimeframeData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Legend />
+                  <Bar dataKey="OB" name="Order Block" stackId="a" fill="#8b5cf6" />
+                  <Bar dataKey="FVG" name="Fair Value Gap" stackId="a" fill="#3b82f6" />
+                  <Bar dataKey="Breakout" name="Breakout" stackId="a" fill="#10b981" />
+                  <Bar dataKey="Range" name="Range Trade" stackId="a" fill="#f59e0b" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -300,55 +315,53 @@ export function StrategyAnalyticsPanel() {
           
           <TabsContent value="matrix" className="mt-0 space-y-4">
             <div className="h-80 w-full">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <ScatterChart
-                    margin={{
-                      top: 20,
-                      right: 20,
-                      bottom: 10,
-                      left: 10,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      type="number" 
-                      dataKey="x" 
-                      name="Win Rate" 
-                      unit="%" 
-                      domain={[45, 75]} 
-                    />
-                    <YAxis 
-                      type="number" 
-                      dataKey="y" 
-                      name="Avg RR" 
-                      unit="R" 
-                      domain={[1, 3.5]} 
-                    />
-                    <ZAxis 
-                      type="number" 
-                      dataKey="z" 
-                      range={[50, 400]} 
-                      name="Trades" 
-                    />
-                    <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<ChartTooltipContent />} />
-                    <Scatter name="Strategies" data={scatterData} fill="#8884d8">
-                      {scatterData.map((entry, index) => {
-                        let color = '#8884d8';
-                        switch(entry.name) {
-                          case 'Order Block': color = '#8b5cf6'; break;
-                          case 'Fair Value Gap': color = '#3b82f6'; break;
-                          case 'Breakout': color = '#10b981'; break;
-                          case 'Range Trade': color = '#f59e0b'; break;
-                          case 'Pullback': color = '#ef4444'; break;
-                          default: color = '#8884d8';
-                        }
-                        return <Cell key={`cell-${index}`} fill={color} />;
-                      })}
-                    </Scatter>
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+              <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart
+                  margin={{
+                    top: 20,
+                    right: 20,
+                    bottom: 10,
+                    left: 10,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    type="number" 
+                    dataKey="x" 
+                    name="Win Rate" 
+                    unit="%" 
+                    domain={[45, 75]} 
+                  />
+                  <YAxis 
+                    type="number" 
+                    dataKey="y" 
+                    name="Avg RR" 
+                    unit="R" 
+                    domain={[1, 3.5]} 
+                  />
+                  <ZAxis 
+                    type="number" 
+                    dataKey="z" 
+                    range={[50, 400]} 
+                    name="Trades" 
+                  />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Scatter name="Strategies" data={scatterData} fill="#8884d8">
+                    {scatterData.map((entry, index) => {
+                      let color = '#8884d8';
+                      switch(entry.name) {
+                        case 'Order Block': color = '#8b5cf6'; break;
+                        case 'Fair Value Gap': color = '#3b82f6'; break;
+                        case 'Breakout': color = '#10b981'; break;
+                        case 'Range Trade': color = '#f59e0b'; break;
+                        case 'Pullback': color = '#ef4444'; break;
+                        default: color = '#8884d8';
+                      }
+                      return <Cell key={`cell-${index}`} fill={color} />;
+                    })}
+                  </Scatter>
+                </ScatterChart>
+              </ResponsiveContainer>
             </div>
             
             <div className="p-3 bg-muted rounded-md">
