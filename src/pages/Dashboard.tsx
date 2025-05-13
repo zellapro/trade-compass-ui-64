@@ -3,10 +3,12 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BrokerIntegrationPanel } from "@/components/dashboard/BrokerIntegrationPanel";
-import { MonteCarloSimulation } from "@/components/dashboard/MonteCarloSimulation";
-import { CustomReportsBuilder } from "@/components/dashboard/CustomReportsBuilder";
-import { GoalProgressTracker } from "@/components/dashboard/GoalProgressTracker";
+import { 
+  BrokerIntegrationPanel, 
+  MonteCarloSimulation, 
+  CustomReportsBuilder, 
+  GoalProgressTracker 
+} from "@/components/dashboard";
 import { GoalTracker } from "@/components/dashboard/GoalTracker"; // Original GoalTracker component
 import { CommunityBenchmarkingPanel } from "@/components/playbook/CommunityBenchmarkingPanel";
 import { EducationalContentSuggestionModule } from "@/components/playbook/EducationalContentSuggestionModule";
