@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,35 +11,34 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
-  AlertTriangle,
-  ArrowRight,
-  Brain,
-  Check,
-  ChevronRight,
-  CircleDollarSign,
-  Clock,
-  Compass,
-  Gauge,
-  LucideIcon,
-  MapPin,
-  Maximize2,
-  MessageSquare,
-  Mic,
-  PieChart,
-  Plus,
-  RefreshCw,
-  RotateCcw,
-  Search,
-  Settings,
-  Sparkles,
-  Star,
-  Target,
-  Thermometer,
-  TrendingUp,
-  TrendingDown,
-  User,
-  Zap,
-  LayoutGrid,
+  alertTriangle as AlertTriangle,
+  arrowRight as ArrowRight,
+  brain as Brain,
+  check as Check,
+  chevronRight as ChevronRight,
+  circleDollarSign as CircleDollarSign,
+  clock as Clock,
+  compass as Compass,
+  gauge as Gauge,
+  mapPin as MapPin,
+  maximize2 as Maximize2,
+  messageSquare as MessageSquare,
+  mic as Mic,
+  pieChart as PieChart,
+  plus as Plus,
+  refreshCw as RefreshCw,
+  rotateCcw as RotateCcw,
+  search as Search,
+  settings as Settings,
+  sparkles as Sparkles,
+  star as Star,
+  target as Target,
+  thermometer as Thermometer,
+  trendingUp as TrendingUp,
+  trendingDown as TrendingDown,
+  user as User,
+  zap as Zap,
+  layoutGrid as LayoutGrid,
 } from "lucide-react";
 import { 
   HoverCard, 
@@ -354,8 +352,7 @@ export default function Dashboard() {
                 </div>
                 <Progress 
                   value={edgeSummaryData.technicalSharpness} 
-                  className="h-1.5"
-                  indicatorClassName="bg-gradient-to-r from-cyan-400 to-blue-500" 
+                  className="h-1.5 bg-black/50"
                 />
               </div>
               
@@ -366,8 +363,7 @@ export default function Dashboard() {
                 </div>
                 <Progress 
                   value={edgeSummaryData.emotionalEdge} 
-                  className="h-1.5" 
-                  indicatorClassName="bg-gradient-to-r from-purple-400 to-pink-500" 
+                  className="h-1.5 bg-black/50" 
                 />
               </div>
               
@@ -378,8 +374,7 @@ export default function Dashboard() {
                 </div>
                 <Progress 
                   value={edgeSummaryData.disciplineScore} 
-                  className="h-1.5" 
-                  indicatorClassName="bg-gradient-to-r from-green-400 to-emerald-500" 
+                  className="h-1.5 bg-black/50"  
                 />
               </div>
             </div>
@@ -420,8 +415,9 @@ export default function Dashboard() {
                     <span className="text-sm">Strategy Alignment</span>
                     <span className="text-sm font-medium">{readinessTrackerData.strategyAlignment}%</span>
                   </div>
-                  <Progress value={readinessTrackerData.strategyAlignment} className="h-2" 
-                    indicatorClassName="bg-gradient-to-r from-blue-500 to-cyan-400" 
+                  <Progress 
+                    value={readinessTrackerData.strategyAlignment} 
+                    className="h-2 bg-black/50" 
                   />
                 </div>
                 
@@ -430,8 +426,9 @@ export default function Dashboard() {
                     <span className="text-sm">Checklist Usage</span>
                     <span className="text-sm font-medium">{readinessTrackerData.checklistUsage}%</span>
                   </div>
-                  <Progress value={readinessTrackerData.checklistUsage} className="h-2"
-                    indicatorClassName="bg-gradient-to-r from-green-500 to-emerald-400" 
+                  <Progress 
+                    value={readinessTrackerData.checklistUsage} 
+                    className="h-2 bg-black/50"
                   />
                 </div>
                 
@@ -440,8 +437,9 @@ export default function Dashboard() {
                     <span className="text-sm">HTF Alignment</span>
                     <span className="text-sm font-medium">{readinessTrackerData.htfAlignment}%</span>
                   </div>
-                  <Progress value={readinessTrackerData.htfAlignment} className="h-2"
-                    indicatorClassName="bg-gradient-to-r from-purple-500 to-violet-400" 
+                  <Progress 
+                    value={readinessTrackerData.htfAlignment} 
+                    className="h-2 bg-black/50"
                   />
                 </div>
               </div>
@@ -452,8 +450,9 @@ export default function Dashboard() {
                     <span className="text-sm">Bias Journaling</span>
                     <span className="text-sm font-medium">{readinessTrackerData.biasJournaling}%</span>
                   </div>
-                  <Progress value={readinessTrackerData.biasJournaling} className="h-2"
-                    indicatorClassName="bg-gradient-to-r from-amber-500 to-yellow-400" 
+                  <Progress 
+                    value={readinessTrackerData.biasJournaling} 
+                    className="h-2 bg-black/50"
                   />
                 </div>
                 
@@ -462,8 +461,9 @@ export default function Dashboard() {
                     <span className="text-sm">Risk Discipline</span>
                     <span className="text-sm font-medium">{readinessTrackerData.riskDiscipline}%</span>
                   </div>
-                  <Progress value={readinessTrackerData.riskDiscipline} className="h-2"
-                    indicatorClassName="bg-gradient-to-r from-red-500 to-pink-400" 
+                  <Progress 
+                    value={readinessTrackerData.riskDiscipline} 
+                    className="h-2 bg-black/50"
                   />
                 </div>
                 
@@ -784,386 +784,4 @@ export default function Dashboard() {
                   {edgeDriftData.confidence.change > 0 ? (
                     <TrendingUp className="h-3 w-3 mr-1" />
                   ) : (
-                    <TrendingDown className="h-3 w-3 mr-1" />
-                  )}
-                  <span>{Math.abs(edgeDriftData.confidence.change)}% change</span>
-                </div>
-              </div>
-              
-              <div className="p-2 rounded-md bg-black/20">
-                <div className="text-xs text-muted-foreground">Grading</div>
-                <div className="text-lg font-bold">{edgeDriftData.grading.current}%</div>
-                <div className={cn(
-                  "text-xs flex items-center",
-                  edgeDriftData.grading.change > 0 ? "text-green-400" : "text-red-400"
-                )}>
-                  {edgeDriftData.grading.change > 0 ? (
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                  ) : (
-                    <TrendingDown className="h-3 w-3 mr-1" />
-                  )}
-                  <span>{Math.abs(edgeDriftData.grading.change)}% change</span>
-                </div>
-              </div>
-              
-              <div className="p-2 rounded-md bg-black/20">
-                <div className="text-xs text-muted-foreground">Personality Fit</div>
-                <div className="text-lg font-bold">{edgeDriftData.personalityFit.current}%</div>
-                <div className={cn(
-                  "text-xs flex items-center",
-                  edgeDriftData.personalityFit.change > 0 ? "text-green-400" : "text-red-400"
-                )}>
-                  {edgeDriftData.personalityFit.change > 0 ? (
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                  ) : (
-                    <TrendingDown className="h-3 w-3 mr-1" />
-                  )}
-                  <span>{Math.abs(edgeDriftData.personalityFit.change)}% change</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Recommendations</h4>
-              <div className="space-y-2">
-                {edgeDriftData.recommendations.map((rec, idx) => (
-                  <div 
-                    key={idx}
-                    className="p-2 rounded-md bg-white/5 hover:bg-white/10 flex gap-2 cursor-pointer transition-colors"
-                  >
-                    <div className={cn(
-                      "w-1 self-stretch rounded-full",
-                      idx === 0 ? "bg-amber-400" : 
-                      idx === 1 ? "bg-cyan-400" : 
-                      "bg-red-400"
-                    )}></div>
-                    <div className="text-sm">
-                      {rec}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </GlassCard>
-        
-        {/* AI Performance Scanner */}
-        <GlassCard className="lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2">
-              <Search className="w-5 h-5 text-cyan-400" />
-              <span>AI Performance Scanner</span>
-            </CardTitle>
-            <CardDescription>Weekly mistake analysis</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="h-[120px]">
-              <ChartContainer
-                config={{
-                  Hesitation: {
-                    color: "#f59e0b" // Amber
-                  },
-                  "Early Exit": {
-                    color: "#3b82f6" // Blue
-                  },
-                  "FOMO Entry": {
-                    color: "#ef4444" // Red
-                  },
-                  Other: {
-                    color: "#9ca3af" // Gray
-                  }
-                }}
-              >
-                <BarChart
-                  data={performanceScannerData.mistakeCategories}
-                  margin={{ top: 5, right: 5, left: 5, bottom: 20 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis 
-                    dataKey="name"
-                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
-                    stroke="rgba(255,255,255,0.2)"
-                  />
-                  <YAxis 
-                    tick={{ fill: "rgba(255,255,255,0.5)" }}
-                    stroke="rgba(255,255,255,0.2)"
-                  />
-                  <ChartTooltip />
-                  <Bar dataKey="count" fillOpacity={0.8} />
-                </BarChart>
-              </ChartContainer>
-            </div>
-            
-            <div>
-              <h4 className="text-sm font-medium mb-2">Top Correctable Mistakes</h4>
-              <div className="space-y-2">
-                {performanceScannerData.topCorrectables.map((mistake, idx) => (
-                  <div key={idx} className="flex items-start gap-2 text-sm">
-                    <div className="bg-white/10 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
-                      {idx + 1}
-                    </div>
-                    <span>{mistake}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex justify-end">
-              <Link to="/journal">
-                <NeonButton size="sm" className="gap-1">
-                  <span>View Detailed Analysis</span>
-                  <ChevronRight className="h-4 w-4" />
-                </NeonButton>
-              </Link>
-            </div>
-          </CardContent>
-        </GlassCard>
-      </div>
-      
-      {/* Fourth row: Edge Amplifier + Smart Integration and Mini Check-ins */}
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-        {/* Edge Amplifier */}
-        <GlassCard neonAccent>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-cyan-400" />
-              <span>Edge Amplifier</span>
-            </CardTitle>
-            <CardDescription>Today's focus recommendations</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-lg p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-cyan-500/20 p-3 rounded-full">
-                  <Target className="h-6 w-6 text-cyan-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-md">Daily Focus Recommendation</h3>
-                  <p className="text-cyan-200">{edgeAmplifierData.dailyFocus}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="p-3 bg-black/20 rounded-md">
-                <h4 className="text-sm text-muted-foreground mb-1">Setup of the Day</h4>
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-amber-400" />
-                  <span className="font-medium">{edgeAmplifierData.setupOfDay}</span>
-                </div>
-              </div>
-              
-              <div className="p-3 bg-black/20 rounded-md">
-                <h4 className="text-sm text-muted-foreground mb-1">Recommended Timeframe</h4>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-cyan-400" />
-                  <span className="font-medium">{edgeAmplifierData.timeframeRecommendation}</span>
-                </div>
-              </div>
-              
-              <div className="p-3 bg-black/20 rounded-md">
-                <h4 className="text-sm text-muted-foreground mb-1">Avoid Today</h4>
-                <div className="flex items-center gap-2 text-red-400">
-                  <AlertTriangle className="h-4 w-4" />
-                  <span className="font-medium">{edgeAmplifierData.avoidToday}</span>
-                </div>
-              </div>
-              
-              <div className="p-3 bg-black/20 rounded-md">
-                <h4 className="text-sm text-muted-foreground mb-1">Market Condition</h4>
-                <div className="flex items-center gap-2">
-                  <Thermometer className="h-4 w-4 text-green-400" />
-                  <span className="font-medium">{edgeAmplifierData.marketCondition}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-4 flex justify-end">
-              <Link to="/playbook">
-                <NeonButton size="sm" className="gap-1">
-                  <span>Customize Focus Areas</span>
-                  <ChevronRight className="h-4 w-4" />
-                </NeonButton>
-              </Link>
-            </div>
-          </CardContent>
-        </GlassCard>
-        
-        {/* Smart Integration Bar + Mini Check-ins */}
-        <div className="space-y-4">
-          {/* Smart Integration Bar */}
-          <GlassCard>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Smart Integration Bar</CardTitle>
-              <CardDescription>One-click actions based on context</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-3">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button className="bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30">
-                        <RotateCcw className="h-4 w-4 mr-2" />
-                        <span>Replay Last Trade</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="w-[200px] text-xs">
-                        Review your last AAPL trade with AI analysis
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <Link to="/journal">
-                  <Button className="bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30">
-                    <Plus className="h-4 w-4 mr-2" />
-                    <span>Add Missed Trade</span>
-                  </Button>
-                </Link>
-                
-                <Link to="/journal">
-                  <Button className="bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    <span>Open Journal Entry</span>
-                  </Button>
-                </Link>
-                
-                <Link to="/reports">
-                  <Button className="bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30">
-                    <Brain className="h-4 w-4 mr-2" />
-                    <span>AI Therapy Feedback</span>
-                  </Button>
-                </Link>
-                
-                <Link to="/playbook">
-                  <Button className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/30">
-                    <Settings className="h-4 w-4 mr-2" />
-                    <span>Strategy Version History</span>
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </GlassCard>
-          
-          {/* Mini Check-ins */}
-          <GlassCard>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-5 h-5 text-cyan-400" />
-                <span>Mini Check-ins + AI Alerts</span>
-              </CardTitle>
-              <CardDescription>Quick emotional check-in for better awareness</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium mb-2">Recent Emotions</h4>
-                <div className="flex gap-2">
-                  {miniCheckinData.recentEmotions.map((emotion, idx) => (
-                    <Badge 
-                      key={idx} 
-                      className={cn(
-                        "capitalize",
-                        getEmotionColor(emotion)
-                      )}
-                    >
-                      {emotion}
-                    </Badge>
-                  ))}
-                </div>
-                
-                <h4 className="text-sm font-medium mt-3 mb-2">Confidence Level</h4>
-                <div className="flex gap-2">
-                  {miniCheckinData.confidenceChecks.map((level, idx) => (
-                    <div 
-                      key={idx}
-                      className={cn(
-                        "h-8 w-8 rounded-full flex items-center justify-center text-xs border transition-colors",
-                        idx === miniCheckinData.confidenceChecks.length - 1 
-                          ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/30" 
-                          : "bg-black/30 text-gray-300 border-white/10"
-                      )}
-                    >
-                      {level}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium mb-2">AI Observations</h4>
-                <div className="space-y-2">
-                  {miniCheckinData.aiObservations.map((observation, idx) => (
-                    <HoverCard key={idx}>
-                      <HoverCardTrigger asChild>
-                        <div className="p-2 rounded-md bg-white/5 hover:bg-white/10 flex gap-2 cursor-pointer transition-colors">
-                          <Sparkles className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                          <span className="text-sm">{observation}</span>
-                        </div>
-                      </HoverCardTrigger>
-                      <HoverCardContent className="w-80">
-                        <div className="space-y-2">
-                          <h4 className="font-medium">AI Insight</h4>
-                          <p className="text-sm">
-                            This pattern was detected across your last 12 trading sessions. 
-                            Would you like a deeper analysis of your energy levels and optimal trading times?
-                          </p>
-                          <div className="flex gap-2 pt-1">
-                            <NeonButton size="sm">Generate Report</NeonButton>
-                            <Button variant="ghost" size="sm">Dismiss</Button>
-                          </div>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </GlassCard>
-        </div>
-      </div>
-      
-      {/* Floating AI Assistant Button */}
-      <div className="fixed bottom-6 right-6 z-30">
-        <Drawer>
-          <DrawerTrigger asChild>
-            <Button 
-              className="h-14 w-14 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,255,255,0.3)] bg-gradient-to-r from-blue-600 to-cyan-400 border-none hover:shadow-[0_0_30px_rgba(0,255,255,0.5)]"
-            >
-              <Mic className="h-6 w-6" />
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent>
-            <div className="p-4">
-              <h3 className="text-lg font-bold mb-2">ZellaPro AI Assistant</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Ask me anything about your trading or get insights from your data.
-              </p>
-              <div className="flex gap-3">
-                <Button className="flex-1 bg-gradient-to-r from-blue-700 to-cyan-600">Voice Command</Button>
-                <Button className="flex-1" variant="outline">Text Chat</Button>
-              </div>
-              <div className="mt-4">
-                <h4 className="text-sm font-medium mb-2">Quick Commands:</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button variant="ghost" className="justify-start text-sm" size="sm">
-                    "Show me my best setups"
-                  </Button>
-                  <Button variant="ghost" className="justify-start text-sm" size="sm">
-                    "When am I most profitable?"
-                  </Button>
-                  <Button variant="ghost" className="justify-start text-sm" size="sm">
-                    "Analyze my last 5 trades"
-                  </Button>
-                  <Button variant="ghost" className="justify-start text-sm" size="sm">
-                    "Create a new strategy"
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </DrawerContent>
-        </Drawer>
-      </div>
-    </div>
-  );
-}
+                    <TrendingDown className="h-3
