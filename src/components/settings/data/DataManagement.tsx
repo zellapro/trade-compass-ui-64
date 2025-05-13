@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,17 +13,12 @@ import { DateRange } from "react-day-picker";
 import { addDays, subDays } from "date-fns";
 
 interface DataManagementProps {
-  onSettingChange: () => void;
-  saveResetButtons: React.ReactNode;
+  onSettingChange?: () => void;
+  saveResetButtons?: React.ReactNode;
 }
 
-interface ExportFilter {
-  id: string;
-  label: string;
-}
-
-const DataManagement: React.FC<DataManagementProps> = ({ 
-  onSettingChange,
+export const DataManagement: React.FC<DataManagementProps> = ({ 
+  onSettingChange = () => {},
   saveResetButtons
 }) => {
   const { toast } = useToast();

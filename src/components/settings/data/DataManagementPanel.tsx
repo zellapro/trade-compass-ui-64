@@ -1,7 +1,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import BackupRestorePanel from "./BackupRestorePanel";
+import BackupRestorePanel from "../../../components/settings/data/BackupRestorePanel";
 import { DataManagement } from "./DataManagement";
 
 interface DataManagementPanelProps {
@@ -20,7 +20,10 @@ const DataManagementPanel: React.FC<DataManagementPanelProps> = ({
         saveResetButtons={saveResetButtons}
       />
       
-      <DataManagement />
+      <DataManagement 
+        onSettingChange={onSettingChange}
+        saveResetButtons={saveResetButtons}
+      />
     </div>
   );
 };

@@ -11,9 +11,11 @@ import { TradeEntryCard } from "@/components/journal/TradeEntryCard";
 import { TradeFilterBar } from "@/components/journal/TradeFilterBar";
 import { StickySidebar } from "@/components/journal/StickySidebar";
 import { DailySummaryCard } from "@/components/journal/DailySummaryCard";
-import { ScreenshotAnnotationPanel } from "@/components/journal/ScreenshotAnnotationPanel";
-import { EmotionOutcomeAnalysis } from "@/components/journal/EmotionOutcomeAnalysis";
-import { MultiAccountSupport } from "@/components/journal/MultiAccountSupport";
+
+// Note: Both components below need to be created in the right paths
+import { ScreenshotAnnotationPanel } from "../components/journal/ScreenshotAnnotationPanel";
+import { EmotionOutcomeAnalysis } from "../components/journal/EmotionOutcomeAnalysis";
+import { MultiAccountSupport } from "../components/journal/MultiAccountSupport";
 
 export interface Trade {
   id: string;
