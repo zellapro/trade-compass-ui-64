@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,73 +10,207 @@ import {
   TabsTrigger 
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
   AlertTriangle,
+  ArrowRight,
+  Brain,
   Check,
   ChevronRight,
   CircleDollarSign,
+  Clock,
+  Compass,
+  Gauge,
+  LucideIcon,
+  MapPin,
+  Maximize2,
+  MessageSquare,
+  Mic,
+  PieChart,
+  Plus,
   RefreshCw,
+  RotateCcw,
+  Search,
+  Settings,
+  Sparkles,
   Star,
+  Target,
+  Thermometer,
   TrendingUp,
   TrendingDown,
+  User,
   Zap,
+  LayoutGrid,
 } from "lucide-react";
+import { 
+  HoverCard, 
+  HoverCardTrigger, 
+  HoverCardContent 
+} from "@/components/ui/hover-card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent
+} from "@/components/ui/chart";
+import {
+  ResponsiveContainer,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  AreaChart, 
+  Area,
+  LineChart,
+  Line,
+  BarChart,
+  Bar
+} from "recharts";
+import { Link } from "react-router-dom";
 
-// Tabs for the Pre-trade Readiness Checklist
-const checklistItems = [
-  { id: 1, text: "Slept 7+ hours", checked: true },
-  { id: 2, text: "Completed pre-market analysis", checked: true },
-  { id: 3, text: "Reviewed setups and strategies", checked: true },
-  { id: 4, text: "Updated risk parameters", checked: false },
-  { id: 5, text: "Mental clarity check", checked: true },
-  { id: 6, text: "Checked economic calendar", checked: true },
+// Mock data for the dashboard modules
+const edgeSummaryData = {
+  technicalSharpness: 78,
+  emotionalEdge: 65,
+  disciplineScore: 83,
+  insights: [
+    "You hesitated 3 times yesterday — tap to review those trades",
+    "Emotional stability improves during US session",
+    "Checklist usage correlates with better win rate"
+  ]
+};
+
+const readinessTrackerData = {
+  strategyAlignment: 86,
+  checklistUsage: 70,
+  htfAlignment: 92,
+  biasJournaling: 45,
+  riskDiscipline: 89,
+  alerts: [
+    "Strategy A used without checklist 2x this week",
+    "HTF alignment strong today - consider larger position size"
+  ]
+};
+
+const mindsetData = {
+  emotionalStability: 75,
+  impulsiveness: 30,
+  overtradingRisk: 20,
+  currentState: "focused", // can be: calm, distracted, anxious, focused
+  recommendations: [
+    "Pre-session meditation completed",
+    "Risk parameters set for the session",
+    "Journal entry scheduled for end of day"
+  ]
+};
+
+const rhythmMapData = [
+  { time: "08:00", action: "Morning Journal", category: "journal", result: null },
+  { time: "09:30", action: "Market Open", category: "market", result: null },
+  { time: "10:15", action: "AAPL Trade", category: "trade", result: "win" },
+  { time: "11:30", action: "TSLA Trade", category: "trade", result: "loss" },
+  { time: "12:30", action: "Break", category: "rest", result: null },
+  { time: "13:45", action: "MSFT Trade", category: "trade", result: "win" },
+  { time: "14:30", action: "Chat with AI", category: "ai", result: null },
+  { time: "15:30", action: "AMZN Trade", category: "trade", result: "win" },
+  { time: "16:00", action: "Market Close", category: "market", result: null },
+  { time: "16:30", action: "Trade Replay", category: "replay", result: null }
 ];
 
-// Mock data for the Rhythm Map visualization
-const rhythmData = [
-  { time: "9:30", performance: "good", trigger: null },
-  { time: "10:00", performance: "good", trigger: null },
-  { time: "10:30", performance: "poor", trigger: "FOMO" },
-  { time: "11:00", performance: "poor", trigger: "Revenge" },
-  { time: "11:30", performance: "neutral", trigger: null },
-  { time: "12:00", performance: "neutral", trigger: null },
-  { time: "12:30", performance: "good", trigger: null },
-  { time: "13:00", performance: "good", trigger: null },
-  { time: "13:30", performance: "good", trigger: null },
-  { time: "14:00", performance: "poor", trigger: "Fatigue" },
-  { time: "14:30", performance: "neutral", trigger: null },
-  { time: "15:00", performance: "good", trigger: null },
-  { time: "15:30", performance: "good", trigger: null },
-  { time: "16:00", performance: "good", trigger: null },
+// Scatter plot data for Behavior vs Outcome
+const behaviorOutcomeData = [
+  { disciplineScore: 80, pnl: 450, emotion: "calm", date: "Mon" },
+  { disciplineScore: 65, pnl: -200, emotion: "anxious", date: "Mon" },
+  { disciplineScore: 90, pnl: 700, emotion: "focused", date: "Tue" },
+  { disciplineScore: 75, pnl: 300, emotion: "calm", date: "Tue" },
+  { disciplineScore: 40, pnl: -350, emotion: "distracted", date: "Wed" },
+  { disciplineScore: 85, pnl: 600, emotion: "focused", date: "Wed" },
+  { disciplineScore: 60, pnl: -150, emotion: "anxious", date: "Thu" },
+  { disciplineScore: 95, pnl: 800, emotion: "focused", date: "Thu" },
+  { disciplineScore: 70, pnl: 200, emotion: "calm", date: "Fri" },
+  { disciplineScore: 50, pnl: -250, emotion: "distracted", date: "Fri" }
 ];
 
-// Data for the behavior matrix
-const behaviorMatrix = [
-  { type: "win-disciplined", count: 18, percentage: 45 },
-  { type: "win-impulsive", count: 6, percentage: 15 },
-  { type: "loss-disciplined", count: 12, percentage: 30 },
-  { type: "loss-impulsive", count: 4, percentage: 10 },
-];
+// Edge drift data
+const edgeDriftData = {
+  winRate: {
+    current: 68,
+    previous: 72,
+    change: -4
+  },
+  confidence: {
+    current: 85,
+    previous: 80,
+    change: 5
+  },
+  grading: {
+    current: 78,
+    previous: 75,
+    change: 3
+  },
+  personalityFit: {
+    current: 90,
+    previous: 92,
+    change: -2
+  },
+  recommendations: [
+    "Retest Bull Flag pattern with lower position size",
+    "Refine entry criteria for Opening Range plays",
+    "Consider retiring Reversal setup - low win rate"
+  ]
+};
+
+// AI performance scanner data
+const performanceScannerData = {
+  mistakeCategories: [
+    { name: "Hesitation", count: 5, pctOfTotal: 42 },
+    { name: "Early Exit", count: 3, pctOfTotal: 25 },
+    { name: "FOMO Entry", count: 2, pctOfTotal: 16 },
+    { name: "Other", count: 2, pctOfTotal: 17 }
+  ],
+  topCorrectables: [
+    "Hesitating on valid A+ setups when all criteria met",
+    "Taking profits too early on trend continuation plays",
+    "Entering late after missing initial entry point"
+  ],
+  improvementTrend: [
+    { week: "Week 1", mistakes: 15 },
+    { week: "Week 2", mistakes: 12 },
+    { week: "Week 3", mistakes: 10 },
+    { week: "Week 4", mistakes: 7 }
+  ]
+};
+
+const edgeAmplifierData = {
+  dailyFocus: "Today, focus on OB setup only during NY session with 2.5+ R:R",
+  setupOfDay: "Volume Breakout",
+  timeframeRecommendation: "5-min chart with 15-min confirmation",
+  avoidToday: "Reversal patterns in chop zones",
+  marketCondition: "Trending on higher timeframes"
+};
+
+// Mini check-in data
+const miniCheckinData = {
+  recentEmotions: ["calm", "focused", "anxious", "focused", "distracted"],
+  confidenceChecks: [4, 5, 3, 5, 4], // 1-5 scale
+  aiObservations: [
+    "3 days of low energy before London open – reduce complexity?",
+    "Higher win rate when trading 2+ hours after market open",
+    "Chart annotations increase win percentage by 15%"
+  ]
+};
 
 export default function Dashboard() {
   const { toast } = useToast();
-  const [checklist, setChecklist] = useState(checklistItems);
-  const [energyLevel, setEnergyLevel] = useState(85);
-  const [preparedness, setPreparedness] = useState(90);
-  const [setupScore, setSetupScore] = useState(75);
-  const [moodRating, setMoodRating] = useState(4); // 1-5 scale
-  const [disciplineScore, setDisciplineScore] = useState(88);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [journalEntry, setJournalEntry] = useState("");
-
-  const handleChecklistToggle = (id: number) => {
-    setChecklist(
-      checklist.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
-    );
-  };
+  const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
+  
+  useEffect(() => {
+    // Load dashboard data here from API in a real implementation
+  }, []);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -85,371 +219,950 @@ export default function Dashboard() {
     setTimeout(() => {
       toast({
         title: "Dashboard Refreshed",
-        description: "Latest trader metrics and AI insights updated.",
+        description: "Latest metrics and AI insights updated.",
         duration: 3000,
       });
       setIsRefreshing(false);
     }, 1500);
   };
 
-  const completedChecklistItems = checklist.filter(item => item.checked).length;
-  const checklistPercentage = (completedChecklistItems / checklist.length) * 100;
+  const handleAiAssistantToggle = () => {
+    setAiAssistantOpen(!aiAssistantOpen);
+  };
+  
+  const getEmotionColor = (emotion: string) => {
+    switch (emotion) {
+      case "calm": return "bg-cyan-500/20 text-cyan-500";
+      case "focused": return "bg-green-500/20 text-green-500";
+      case "anxious": return "bg-amber-500/20 text-amber-500";
+      case "distracted": return "bg-red-500/20 text-red-500";
+      default: return "bg-blue-500/20 text-blue-500";
+    }
+  };
+  
+  const getActionColor = (category: string) => {
+    switch (category) {
+      case "journal": return "bg-purple-500/20 text-purple-500";
+      case "trade": return "bg-blue-500/20 text-blue-500";
+      case "market": return "bg-gray-500/20 text-gray-500";
+      case "rest": return "bg-green-500/20 text-green-500";
+      case "ai": return "bg-cyan-500/20 text-cyan-500";
+      case "replay": return "bg-amber-500/20 text-amber-500";
+      default: return "bg-gray-500/20 text-gray-500";
+    }
+  };
+  
+  const getResultColor = (result: string | null) => {
+    switch (result) {
+      case "win": return "bg-green-500/20 text-green-500";
+      case "loss": return "bg-red-500/20 text-red-500";
+      default: return "";
+    }
+  };
 
-  const moodLabels = ["Very Poor", "Poor", "Neutral", "Good", "Excellent"];
+  // Helper components for reusability
+  const GlassCard = ({ 
+    className,
+    children,
+    neonAccent = false,
+    ...props
+  }: React.ComponentProps<typeof Card> & { neonAccent?: boolean }) => (
+    <Card 
+      className={cn(
+        "backdrop-blur-md bg-black/40 border border-white/10",
+        neonAccent && "shadow-[0_0_15px_rgba(0,255,255,0.15)]",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Card>
+  );
+
+  const NeonButton = ({ 
+    className,
+    children,
+    ...props
+  }: React.ComponentProps<typeof Button>) => (
+    <Button 
+      className={cn(
+        "bg-transparent backdrop-blur-sm border border-cyan-500/50 text-cyan-500 shadow-[0_0_10px_rgba(0,255,255,0.2)] hover:shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:bg-cyan-950/30 transition-all duration-300",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Button>
+  );
+
+  const SectionTitle = ({ 
+    icon: Icon,
+    title, 
+    className 
+  }: { 
+    icon: LucideIcon;
+    title: string;
+    className?: string;
+  }) => (
+    <div className={cn("flex items-center gap-2 text-lg font-semibold", className)}>
+      <Icon className="w-5 h-5 text-cyan-400" />
+      <span className="bg-gradient-to-br from-white via-white/90 to-white/70 bg-clip-text text-transparent">
+        {title}
+      </span>
+    </div>
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-10 relative">
+      {/* Top header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Trader Dashboard</h1>
-          <p className="text-muted-foreground">Mental and performance tracking for today's session</p>
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+            Trader Performance Cockpit
+          </h1>
+          <p className="text-muted-foreground">
+            Real-time metrics and AI insights for peak performance
+          </p>
         </div>
         <Button 
           onClick={handleRefresh} 
-          className="flex items-center gap-2" 
+          className="flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/10" 
           disabled={isRefreshing}
         >
           <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
-          {isRefreshing ? "Refreshing..." : "Refresh Now"}
+          {isRefreshing ? "Refreshing..." : "Refresh Data"}
         </Button>
       </div>
 
-      {/* Focus Panel + Readiness Gauges (Top Row) */}
+      {/* First row: Edge Summary + Readiness Tracker */}
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
-        {/* Daily Focus Panel */}
-        <Card className="lg:col-span-1">
+        {/* AI Daily Edge Summary */}
+        <GlassCard className="lg:col-span-1 overflow-hidden">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Zap className="mr-2 h-5 w-5 text-yellow-500" />
-              Daily Focus
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-cyan-400" />
+              <span>AI Daily Edge Summary</span>
             </CardTitle>
-            <CardDescription>AI-generated tactical guidance</CardDescription>
+            <CardDescription>Overall performance analysis</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-md border border-yellow-100 dark:border-yellow-800/30">
-              <p className="font-medium text-yellow-800 dark:text-yellow-300">Primary Focus</p>
-              <p className="text-yellow-700 dark:text-yellow-400 mt-1">Execute only A+ setups today. Market conditions favor patience over aggression.</p>
-            </div>
-            
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md border border-blue-100 dark:border-blue-800/30">
-              <p className="font-medium text-blue-800 dark:text-blue-300">Risk Warning</p>
-              <p className="text-blue-700 dark:text-blue-400 mt-1">Guard against hesitation on valid setups. Your recent pattern shows missed opportunities.</p>
-            </div>
-            
-            <div className="mt-2 flex justify-end">
-              <Button variant="ghost" size="sm" className="text-xs flex items-center">
-                View Details
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Technical Readiness Gauges */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Technical Readiness</CardTitle>
-            <CardDescription>Current mental and physical preparation</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Energy Level</span>
-                  <span className="text-sm font-medium">{energyLevel}%</span>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm">Technical Sharpness</span>
+                  <span className="text-sm font-medium">{edgeSummaryData.technicalSharpness}%</span>
                 </div>
-                <div className="relative">
-                  <Progress value={energyLevel} className="h-2" />
-                </div>
+                <Progress 
+                  value={edgeSummaryData.technicalSharpness} 
+                  className="h-1.5"
+                  indicatorClassName="bg-gradient-to-r from-cyan-400 to-blue-500" 
+                />
               </div>
               
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Pre-Market Preparation</span>
-                  <span className="text-sm font-medium">{preparedness}%</span>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm">Emotional Edge</span>
+                  <span className="text-sm font-medium">{edgeSummaryData.emotionalEdge}%</span>
                 </div>
-                <div className="relative">
-                  <Progress value={preparedness} className="h-2" />
-                </div>
+                <Progress 
+                  value={edgeSummaryData.emotionalEdge} 
+                  className="h-1.5" 
+                  indicatorClassName="bg-gradient-to-r from-purple-400 to-pink-500" 
+                />
               </div>
               
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Setup Memorization Score</span>
-                  <span className="text-sm font-medium">{setupScore}%</span>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm">Discipline Score</span>
+                  <span className="text-sm font-medium">{edgeSummaryData.disciplineScore}%</span>
                 </div>
-                <div className="relative">
-                  <Progress value={setupScore} className="h-2" />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-2 mt-4">
-                <div className="border rounded-md p-2 text-center">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">4/5</div>
-                  <div className="text-xs text-muted-foreground">Win Streak</div>
-                </div>
-                <div className="border rounded-md p-2 text-center">
-                  <div className="text-2xl font-bold">12</div>
-                  <div className="text-xs text-muted-foreground">Days Active</div>
-                </div>
-                <div className="border rounded-md p-2 text-center">
-                  <div className="text-2xl font-bold text-primary">A+</div>
-                  <div className="text-xs text-muted-foreground">Consistency</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Middle Row: Mindset & Rhythm */}
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
-        {/* Mindset & Discipline Panel */}
-        <Card className="lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Mindset & Discipline</CardTitle>
-            <CardDescription>Psychological state tracking</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <div className="mb-2">
-                <label className="text-sm font-medium">Mood Rating</label>
-                <div className="flex justify-between mt-2">
-                  {moodLabels.map((label, index) => (
-                    <button 
-                      key={index}
-                      onClick={() => setMoodRating(index + 1)}
-                      className={`rounded-full w-10 h-10 flex items-center justify-center ${
-                        moodRating === index + 1 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted hover:bg-muted/80'
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                </div>
-                <div className="text-xs text-center mt-2 text-muted-foreground">
-                  Current: {moodLabels[moodRating - 1]}
-                </div>
-              </div>
-              
-              <div className="mt-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Discipline Meter</span>
-                  <span className="text-sm font-medium">{disciplineScore}%</span>
-                </div>
-                <Progress value={disciplineScore} className="h-2" />
-                <div className="text-xs text-muted-foreground mt-2">
-                  Based on your checklist adherence and trade plan compliance
-                </div>
-              </div>
-              
-              <div className="mt-4">
-                <label className="text-sm font-medium block mb-2">
-                  Mini Journal
-                </label>
-                <textarea 
-                  placeholder="What's your biggest risk today?"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none h-20"
-                  value={journalEntry}
-                  onChange={(e) => setJournalEntry(e.target.value)}
+                <Progress 
+                  value={edgeSummaryData.disciplineScore} 
+                  className="h-1.5" 
+                  indicatorClassName="bg-gradient-to-r from-green-400 to-emerald-500" 
                 />
               </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        {/* Rhythm Map */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Rhythm Map</CardTitle>
-            <CardDescription>Yesterday's session performance rhythm</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-7 gap-1 mb-6">
-              {rhythmData.map((block, index) => (
-                <div 
-                  key={index} 
-                  className={`relative h-16 rounded-md flex items-center justify-center ${
-                    block.performance === 'good' 
-                      ? 'bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-800/30' 
-                      : block.performance === 'poor' 
-                        ? 'bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800/30' 
-                        : 'bg-muted border-muted-foreground/20'
-                  } border`}
-                >
-                  <span className="text-xs font-medium">{block.time}</span>
-                  {block.trigger && (
-                    <div className="absolute -bottom-6 w-full text-center">
-                      <Badge variant="outline" className="text-[10px] bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/30">
-                        {block.trigger}
-                      </Badge>
-                    </div>
-                  )}
+            
+            {/* AI Insights */}
+            <div className="space-y-2">
+              {edgeSummaryData.insights.map((insight, idx) => (
+                <div key={idx} className="flex gap-2 p-2 rounded-md bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+                  <Zap className="h-5 w-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">{insight}</span>
                 </div>
               ))}
             </div>
             
-            <div className="flex items-center justify-around mt-10 text-sm">
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                <span>Good Performance</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-muted mr-2"></div>
-                <span>Neutral</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                <span>Poor Performance</span>
-              </div>
+            <div className="flex justify-end">
+              <NeonButton size="sm" className="gap-1">
+                <span>Full Analysis</span>
+                <ChevronRight className="h-4 w-4" />
+              </NeonButton>
             </div>
           </CardContent>
-        </Card>
-      </div>
-      
-      {/* Bottom Row: Behavior Analysis and Checklists */}
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-        {/* Behavior vs Outcome Matrix */}
-        <Card>
+        </GlassCard>
+        
+        {/* Technical Readiness Tracker */}
+        <GlassCard className="lg:col-span-2 overflow-hidden">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Behavior vs Outcome Analyzer</CardTitle>
-            <CardDescription>Spotting patterns between actions and results</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <Gauge className="w-5 h-5 text-cyan-400" />
+              <span>Technical Readiness Tracker</span>
+            </CardTitle>
+            <CardDescription>Strategy alignment and preparedness</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="border rounded-md p-4 bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800/30">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="font-medium text-green-800 dark:text-green-300">Win + Disciplined</span>
-                  <span className="font-bold text-green-600 dark:text-green-400">{behaviorMatrix[0].count}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Strategy Alignment</span>
+                    <span className="text-sm font-medium">{readinessTrackerData.strategyAlignment}%</span>
+                  </div>
+                  <Progress value={readinessTrackerData.strategyAlignment} className="h-2" 
+                    indicatorClassName="bg-gradient-to-r from-blue-500 to-cyan-400" 
+                  />
                 </div>
-                <Progress value={behaviorMatrix[0].percentage} className="h-2 bg-green-200" />
-                <p className="text-xs mt-2 text-green-700 dark:text-green-400">
-                  Perfect execution with positive outcome. <br />This is your ideal zone.
-                </p>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Checklist Usage</span>
+                    <span className="text-sm font-medium">{readinessTrackerData.checklistUsage}%</span>
+                  </div>
+                  <Progress value={readinessTrackerData.checklistUsage} className="h-2"
+                    indicatorClassName="bg-gradient-to-r from-green-500 to-emerald-400" 
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">HTF Alignment</span>
+                    <span className="text-sm font-medium">{readinessTrackerData.htfAlignment}%</span>
+                  </div>
+                  <Progress value={readinessTrackerData.htfAlignment} className="h-2"
+                    indicatorClassName="bg-gradient-to-r from-purple-500 to-violet-400" 
+                  />
+                </div>
               </div>
               
-              <div className="border rounded-md p-4 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-800/30">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="font-medium text-yellow-800 dark:text-yellow-300">Win + Impulsive</span>
-                  <span className="font-bold text-yellow-600 dark:text-yellow-400">{behaviorMatrix[1].count}</span>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Bias Journaling</span>
+                    <span className="text-sm font-medium">{readinessTrackerData.biasJournaling}%</span>
+                  </div>
+                  <Progress value={readinessTrackerData.biasJournaling} className="h-2"
+                    indicatorClassName="bg-gradient-to-r from-amber-500 to-yellow-400" 
+                  />
                 </div>
-                <Progress value={behaviorMatrix[1].percentage} className="h-2 bg-yellow-200" />
-                <p className="text-xs mt-2 text-yellow-700 dark:text-yellow-400">
-                  Risky behavior with lucky outcome. <br />Dangerous reinforcement zone.
-                </p>
-              </div>
-              
-              <div className="border rounded-md p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/30">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="font-medium text-blue-800 dark:text-blue-300">Loss + Disciplined</span>
-                  <span className="font-bold text-blue-600 dark:text-blue-400">{behaviorMatrix[2].count}</span>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Risk Discipline</span>
+                    <span className="text-sm font-medium">{readinessTrackerData.riskDiscipline}%</span>
+                  </div>
+                  <Progress value={readinessTrackerData.riskDiscipline} className="h-2"
+                    indicatorClassName="bg-gradient-to-r from-red-500 to-pink-400" 
+                  />
                 </div>
-                <Progress value={behaviorMatrix[2].percentage} className="h-2 bg-blue-200" />
-                <p className="text-xs mt-2 text-blue-700 dark:text-blue-400">
-                  Good process despite outcome. <br />Focus on the quality of decision.
-                </p>
-              </div>
-              
-              <div className="border rounded-md p-4 bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800/30">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="font-medium text-red-800 dark:text-red-300">Loss + Impulsive</span>
-                  <span className="font-bold text-red-600 dark:text-red-400">{behaviorMatrix[3].count}</span>
+                
+                <div className="space-y-2 pt-2">
+                  {readinessTrackerData.alerts.map((alert, idx) => (
+                    <div key={idx} className="flex gap-2 text-sm">
+                      <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                      <span>{alert}</span>
+                    </div>
+                  ))}
                 </div>
-                <Progress value={behaviorMatrix[3].percentage} className="h-2 bg-red-200" />
-                <p className="text-xs mt-2 text-red-700 dark:text-red-400">
-                  Poor decision with negative outcome. <br />Critical area to improve.
-                </p>
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassCard>
+      </div>
+      
+      {/* Second row: Mindset Monitor + Daily Rhythm Map */}
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+        {/* Mindset + Discipline Monitor */}
+        <GlassCard className="lg:col-span-1" neonAccent>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-cyan-400" />
+              <span>Mindset + Discipline Monitor</span>
+            </CardTitle>
+            <div className="flex flex-wrap gap-2 mt-1">
+              <Badge 
+                className={cn(
+                  "capitalize shadow-sm",
+                  getEmotionColor(mindsetData.currentState)
+                )}
+              >
+                {mindsetData.currentState}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm">Emotional Stability</span>
+                <span className="text-sm font-medium">{mindsetData.emotionalStability}%</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-black/50 relative overflow-hidden">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full"
+                  style={{ width: `${mindsetData.emotionalStability}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm">Impulsiveness Risk</span>
+                <span className="text-sm font-medium">{mindsetData.impulsiveness}%</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-black/50 relative overflow-hidden">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-400 to-red-500 rounded-full"
+                  style={{ width: `${mindsetData.impulsiveness}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm">Overtrading Risk</span>
+                <span className="text-sm font-medium">{mindsetData.overtradingRisk}%</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-black/50 relative overflow-hidden">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-400 to-red-500 rounded-full"
+                  style={{ width: `${mindsetData.overtradingRisk}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <div className="bg-black/20 rounded-md p-3 space-y-2">
+              <h4 className="text-sm font-medium text-cyan-400">Recommendations</h4>
+              {mindsetData.recommendations.map((rec, idx) => (
+                <div key={idx} className="flex items-center gap-2 text-xs">
+                  <Check className="h-3.5 w-3.5 text-green-400" />
+                  <span>{rec}</span>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex justify-end">
+              <Link to="/playbook">
+                <NeonButton size="sm" className="gap-1">
+                  <span>Full Mental Toolkit</span>
+                  <ChevronRight className="h-4 w-4" />
+                </NeonButton>
+              </Link>
+            </div>
+          </CardContent>
+        </GlassCard>
         
-        {/* Pre-Trade Readiness & Edge Amplifier */}
-        <div className="space-y-4">
-          {/* Pre-Trade Readiness Checklist */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Pre-Trade Readiness</CardTitle>
-              <CardDescription>Complete before market open</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {checklist.map((item) => (
-                  <div 
-                    key={item.id} 
-                    className={`flex items-center p-3 border rounded-md ${
-                      item.checked 
-                        ? 'bg-muted/50 border-muted' 
-                        : 'bg-background'
-                    }`}
-                    onClick={() => handleChecklistToggle(item.id)}
-                  >
-                    <div className={`w-5 h-5 rounded flex items-center justify-center mr-3 ${
-                      item.checked ? 'bg-primary text-primary-foreground' : 'border'
-                    }`}>
-                      {item.checked && <Check size={12} />}
+        {/* Daily Rhythm Map */}
+        <GlassCard className="lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Compass className="w-5 h-5 text-cyan-400" />
+              <span>Daily Rhythm Map</span>
+            </CardTitle>
+            <CardDescription>Your trading day timeline</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="relative">
+              {/* Timeline line */}
+              <div className="absolute top-4 left-4 bottom-4 w-[1px] bg-white/10"></div>
+              
+              <div className="space-y-3 pl-9">
+                {rhythmMapData.map((item, idx) => (
+                  <div key={idx} className="relative">
+                    {/* Time node */}
+                    <div className="absolute -left-9 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-white/30 bg-black/80 flex items-center justify-center">
+                      <div className={cn("w-2 h-2 rounded-full", 
+                        item.result === "win" ? "bg-green-400" : 
+                        item.result === "loss" ? "bg-red-400" : 
+                        "bg-white/30"
+                      )}></div>
                     </div>
-                    <span className={`flex-1 ${item.checked ? 'line-through text-muted-foreground' : ''}`}>
-                      {item.text}
-                    </span>
+                    
+                    {/* Time label */}
+                    <div className="absolute -left-[4.5rem] top-1/2 -translate-y-1/2 w-8 text-right">
+                      <span className="text-xs text-gray-400">{item.time}</span>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className={cn(
+                      "p-2 rounded-md cursor-pointer transition-all hover:bg-white/10",
+                      item.result === "win" ? "border-l-2 border-l-green-500" :
+                      item.result === "loss" ? "border-l-2 border-l-red-500" :
+                      "border-l-2 border-l-transparent"
+                    )}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Badge className={getActionColor(item.category)}>
+                            {item.category}
+                          </Badge>
+                          <span className="font-medium text-sm">{item.action}</span>
+                        </div>
+                        {item.result && (
+                          <Badge className={getResultColor(item.result)}>
+                            {item.result}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-          
-          {/* Edge Amplifier AI Panel */}
-          <Card>
+            </div>
+          </CardContent>
+        </GlassCard>
+      </div>
+      
+      {/* Third row: Behavior vs Outcome + Edge Drift + AI Scanner */}
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+        {/* Behavior vs. Outcome Correlator */}
+        <GlassCard className="lg:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <PieChart className="w-5 h-5 text-cyan-400" />
+              <span>Behavior vs. Outcome</span>
+            </CardTitle>
+            <CardDescription>Discipline correlation with results</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[220px] w-full">
+              <ChartContainer
+                config={{
+                  focused: {
+                    color: "#22c55e" // Green
+                  },
+                  calm: {
+                    color: "#3b82f6" // Blue
+                  },
+                  anxious: {
+                    color: "#f59e0b" // Amber
+                  },
+                  distracted: {
+                    color: "#ef4444" // Red
+                  }
+                }}
+              >
+                <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis 
+                    type="number" 
+                    dataKey="disciplineScore" 
+                    name="Discipline" 
+                    tick={{ fill: "rgba(255,255,255,0.5)" }}
+                    stroke="rgba(255,255,255,0.2)"
+                    label={{ 
+                      value: 'Discipline Score', 
+                      position: 'bottom',
+                      fill: "rgba(255,255,255,0.5)",
+                      fontSize: 12
+                    }}
+                  />
+                  <YAxis 
+                    type="number" 
+                    dataKey="pnl" 
+                    name="P&L" 
+                    unit="$" 
+                    tick={{ fill: "rgba(255,255,255,0.5)" }}
+                    stroke="rgba(255,255,255,0.2)"
+                  />
+                  <ChartTooltip cursor={{ strokeDasharray: '3 3' }} content={<ChartTooltipContent />} />
+                  <Scatter 
+                    data={behaviorOutcomeData} 
+                    fill="#8884d8" 
+                  >
+                    {behaviorOutcomeData.map((entry, index) => {
+                      let color;
+                      switch (entry.emotion) {
+                        case "focused": color = "#22c55e"; break;
+                        case "calm": color = "#3b82f6"; break;
+                        case "anxious": color = "#f59e0b"; break;
+                        case "distracted": color = "#ef4444"; break;
+                        default: color = "#8884d8";
+                      }
+                      return (
+                        <g key={index}>
+                          <circle
+                            cx={0}
+                            cy={0}
+                            r={6}
+                            fill={color}
+                            fillOpacity={0.7}
+                            className={entry.emotion}
+                          />
+                          <text 
+                            x={10} 
+                            y={10} 
+                            textAnchor="start" 
+                            fill="rgba(255,255,255,0.6)" 
+                            fontSize={10}
+                          >
+                            {entry.date}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </Scatter>
+                </ScatterChart>
+              </ChartContainer>
+            </div>
+            
+            <div className="mt-4 flex flex-wrap gap-2 justify-center">
+              {["focused", "calm", "anxious", "distracted"].map((emotion) => (
+                <div key={emotion} className="flex items-center gap-1">
+                  <div className={cn(
+                    "w-3 h-3 rounded-full",
+                    emotion === "focused" ? "bg-green-500" :
+                    emotion === "calm" ? "bg-blue-500" :
+                    emotion === "anxious" ? "bg-amber-500" :
+                    "bg-red-500"
+                  )}></div>
+                  <span className="text-xs capitalize">{emotion}</span>
+                </div>
+              ))}
+            </div>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="link" size="sm" className="mt-1 text-cyan-400">
+                    Insight: Better outcomes correlated with higher discipline scores
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="w-[200px] text-xs">
+                    Your win rate is 78% when discipline score is above 80, compared to 35% when below 60.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardContent>
+        </GlassCard>
+        
+        {/* Edge Drift Alert */}
+        <GlassCard className="lg:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-400" />
+              <span>Edge Drift Alert</span>
+            </CardTitle>
+            <CardDescription>Strategy performance monitoring</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Win Rate</div>
+                <div className="text-lg font-bold">{edgeDriftData.winRate.current}%</div>
+                <div className={cn(
+                  "text-xs flex items-center",
+                  edgeDriftData.winRate.change > 0 ? "text-green-400" : "text-red-400"
+                )}>
+                  {edgeDriftData.winRate.change > 0 ? (
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                  )}
+                  <span>{Math.abs(edgeDriftData.winRate.change)}% change</span>
+                </div>
+              </div>
+              
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Confidence</div>
+                <div className="text-lg font-bold">{edgeDriftData.confidence.current}%</div>
+                <div className={cn(
+                  "text-xs flex items-center",
+                  edgeDriftData.confidence.change > 0 ? "text-green-400" : "text-red-400"
+                )}>
+                  {edgeDriftData.confidence.change > 0 ? (
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                  )}
+                  <span>{Math.abs(edgeDriftData.confidence.change)}% change</span>
+                </div>
+              </div>
+              
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Grading</div>
+                <div className="text-lg font-bold">{edgeDriftData.grading.current}%</div>
+                <div className={cn(
+                  "text-xs flex items-center",
+                  edgeDriftData.grading.change > 0 ? "text-green-400" : "text-red-400"
+                )}>
+                  {edgeDriftData.grading.change > 0 ? (
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                  )}
+                  <span>{Math.abs(edgeDriftData.grading.change)}% change</span>
+                </div>
+              </div>
+              
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Personality Fit</div>
+                <div className="text-lg font-bold">{edgeDriftData.personalityFit.current}%</div>
+                <div className={cn(
+                  "text-xs flex items-center",
+                  edgeDriftData.personalityFit.change > 0 ? "text-green-400" : "text-red-400"
+                )}>
+                  {edgeDriftData.personalityFit.change > 0 ? (
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                  )}
+                  <span>{Math.abs(edgeDriftData.personalityFit.change)}% change</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Recommendations</h4>
+              <div className="space-y-2">
+                {edgeDriftData.recommendations.map((rec, idx) => (
+                  <div 
+                    key={idx}
+                    className="p-2 rounded-md bg-white/5 hover:bg-white/10 flex gap-2 cursor-pointer transition-colors"
+                  >
+                    <div className={cn(
+                      "w-1 self-stretch rounded-full",
+                      idx === 0 ? "bg-amber-400" : 
+                      idx === 1 ? "bg-cyan-400" : 
+                      "bg-red-400"
+                    )}></div>
+                    <div className="text-sm">
+                      {rec}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </GlassCard>
+        
+        {/* AI Performance Scanner */}
+        <GlassCard className="lg:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Search className="w-5 h-5 text-cyan-400" />
+              <span>AI Performance Scanner</span>
+            </CardTitle>
+            <CardDescription>Weekly mistake analysis</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="h-[120px]">
+              <ChartContainer
+                config={{
+                  Hesitation: {
+                    color: "#f59e0b" // Amber
+                  },
+                  "Early Exit": {
+                    color: "#3b82f6" // Blue
+                  },
+                  "FOMO Entry": {
+                    color: "#ef4444" // Red
+                  },
+                  Other: {
+                    color: "#9ca3af" // Gray
+                  }
+                }}
+              >
+                <BarChart
+                  data={performanceScannerData.mistakeCategories}
+                  margin={{ top: 5, right: 5, left: 5, bottom: 20 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis 
+                    dataKey="name"
+                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
+                    stroke="rgba(255,255,255,0.2)"
+                  />
+                  <YAxis 
+                    tick={{ fill: "rgba(255,255,255,0.5)" }}
+                    stroke="rgba(255,255,255,0.2)"
+                  />
+                  <ChartTooltip />
+                  <Bar dataKey="count" fillOpacity={0.8} />
+                </BarChart>
+              </ChartContainer>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium mb-2">Top Correctable Mistakes</h4>
+              <div className="space-y-2">
+                {performanceScannerData.topCorrectables.map((mistake, idx) => (
+                  <div key={idx} className="flex items-start gap-2 text-sm">
+                    <div className="bg-white/10 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+                      {idx + 1}
+                    </div>
+                    <span>{mistake}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex justify-end">
+              <Link to="/journal">
+                <NeonButton size="sm" className="gap-1">
+                  <span>View Detailed Analysis</span>
+                  <ChevronRight className="h-4 w-4" />
+                </NeonButton>
+              </Link>
+            </div>
+          </CardContent>
+        </GlassCard>
+      </div>
+      
+      {/* Fourth row: Edge Amplifier + Smart Integration and Mini Check-ins */}
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+        {/* Edge Amplifier */}
+        <GlassCard neonAccent>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-cyan-400" />
+              <span>Edge Amplifier</span>
+            </CardTitle>
+            <CardDescription>Today's focus recommendations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-cyan-500/20 p-3 rounded-full">
+                  <Target className="h-6 w-6 text-cyan-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-md">Daily Focus Recommendation</h3>
+                  <p className="text-cyan-200">{edgeAmplifierData.dailyFocus}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="p-3 bg-black/20 rounded-md">
+                <h4 className="text-sm text-muted-foreground mb-1">Setup of the Day</h4>
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-amber-400" />
+                  <span className="font-medium">{edgeAmplifierData.setupOfDay}</span>
+                </div>
+              </div>
+              
+              <div className="p-3 bg-black/20 rounded-md">
+                <h4 className="text-sm text-muted-foreground mb-1">Recommended Timeframe</h4>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-cyan-400" />
+                  <span className="font-medium">{edgeAmplifierData.timeframeRecommendation}</span>
+                </div>
+              </div>
+              
+              <div className="p-3 bg-black/20 rounded-md">
+                <h4 className="text-sm text-muted-foreground mb-1">Avoid Today</h4>
+                <div className="flex items-center gap-2 text-red-400">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="font-medium">{edgeAmplifierData.avoidToday}</span>
+                </div>
+              </div>
+              
+              <div className="p-3 bg-black/20 rounded-md">
+                <h4 className="text-sm text-muted-foreground mb-1">Market Condition</h4>
+                <div className="flex items-center gap-2">
+                  <Thermometer className="h-4 w-4 text-green-400" />
+                  <span className="font-medium">{edgeAmplifierData.marketCondition}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <Link to="/playbook">
+                <NeonButton size="sm" className="gap-1">
+                  <span>Customize Focus Areas</span>
+                  <ChevronRight className="h-4 w-4" />
+                </NeonButton>
+              </Link>
+            </div>
+          </CardContent>
+        </GlassCard>
+        
+        {/* Smart Integration Bar + Mini Check-ins */}
+        <div className="space-y-4">
+          {/* Smart Integration Bar */}
+          <GlassCard>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center">
-                <Star className="mr-2 h-5 w-5 text-primary" />
-                Edge Amplifier AI
-              </CardTitle>
+              <CardTitle className="text-lg">Smart Integration Bar</CardTitle>
+              <CardDescription>One-click actions based on context</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="p-3 border rounded-md bg-primary/5">
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button className="bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30">
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        <span>Replay Last Trade</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="w-[200px] text-xs">
+                        Review your last AAPL trade with AI analysis
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <Link to="/journal">
+                  <Button className="bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30">
+                    <Plus className="h-4 w-4 mr-2" />
+                    <span>Add Missed Trade</span>
+                  </Button>
+                </Link>
+                
+                <Link to="/journal">
+                  <Button className="bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    <span>Open Journal Entry</span>
+                  </Button>
+                </Link>
+                
+                <Link to="/reports">
+                  <Button className="bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30">
+                    <Brain className="h-4 w-4 mr-2" />
+                    <span>AI Therapy Feedback</span>
+                  </Button>
+                </Link>
+                
+                <Link to="/playbook">
+                  <Button className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/30">
+                    <Settings className="h-4 w-4 mr-2" />
+                    <span>Strategy Version History</span>
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </GlassCard>
+          
+          {/* Mini Check-ins */}
+          <GlassCard>
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2">
+                <User className="w-5 h-5 text-cyan-400" />
+                <span>Mini Check-ins + AI Alerts</span>
+              </CardTitle>
+              <CardDescription>Quick emotional check-in for better awareness</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium mb-2">Recent Emotions</h4>
                 <div className="flex gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
-                  <div>
-                    <p className="font-medium">Your top setups are 3x more profitable</p>
-                    <p className="text-sm text-muted-foreground">
-                      Focus on key patterns: VWAP retest and Opening Range Breakouts
-                    </p>
-                  </div>
+                  {miniCheckinData.recentEmotions.map((emotion, idx) => (
+                    <Badge 
+                      key={idx} 
+                      className={cn(
+                        "capitalize",
+                        getEmotionColor(emotion)
+                      )}
+                    >
+                      {emotion}
+                    </Badge>
+                  ))}
+                </div>
+                
+                <h4 className="text-sm font-medium mt-3 mb-2">Confidence Level</h4>
+                <div className="flex gap-2">
+                  {miniCheckinData.confidenceChecks.map((level, idx) => (
+                    <div 
+                      key={idx}
+                      className={cn(
+                        "h-8 w-8 rounded-full flex items-center justify-center text-xs border transition-colors",
+                        idx === miniCheckinData.confidenceChecks.length - 1 
+                          ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/30" 
+                          : "bg-black/30 text-gray-300 border-white/10"
+                      )}
+                    >
+                      {level}
+                    </div>
+                  ))}
                 </div>
               </div>
               
-              <div className="p-3 border rounded-md bg-red-50 dark:bg-red-900/10">
-                <div className="flex gap-2">
-                  <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-red-800 dark:text-red-400">Risk rising after winning streaks</p>
-                    <p className="text-sm text-red-700 dark:text-red-300">
-                      You tend to increase position size after 2+ wins. Stick to your risk plan.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-3 border rounded-md">
-                <p className="font-medium mb-2">Double down on today:</p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-primary/10 hover:bg-primary/20 text-primary border-primary/20">
-                    Patience
-                  </Badge>
-                  <Badge className="bg-primary/10 hover:bg-primary/20 text-primary border-primary/20">
-                    Position sizing
-                  </Badge>
-                  <Badge className="bg-primary/10 hover:bg-primary/20 text-primary border-primary/20">
-                    Early exits
-                  </Badge>
+              <div>
+                <h4 className="text-sm font-medium mb-2">AI Observations</h4>
+                <div className="space-y-2">
+                  {miniCheckinData.aiObservations.map((observation, idx) => (
+                    <HoverCard key={idx}>
+                      <HoverCardTrigger asChild>
+                        <div className="p-2 rounded-md bg-white/5 hover:bg-white/10 flex gap-2 cursor-pointer transition-colors">
+                          <Sparkles className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm">{observation}</span>
+                        </div>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80">
+                        <div className="space-y-2">
+                          <h4 className="font-medium">AI Insight</h4>
+                          <p className="text-sm">
+                            This pattern was detected across your last 12 trading sessions. 
+                            Would you like a deeper analysis of your energy levels and optimal trading times?
+                          </p>
+                          <div className="flex gap-2 pt-1">
+                            <NeonButton size="sm">Generate Report</NeonButton>
+                            <Button variant="ghost" size="sm">Dismiss</Button>
+                          </div>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  ))}
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </GlassCard>
         </div>
+      </div>
+      
+      {/* Floating AI Assistant Button */}
+      <div className="fixed bottom-6 right-6 z-30">
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button 
+              className="h-14 w-14 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,255,255,0.3)] bg-gradient-to-r from-blue-600 to-cyan-400 border-none hover:shadow-[0_0_30px_rgba(0,255,255,0.5)]"
+            >
+              <Mic className="h-6 w-6" />
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <div className="p-4">
+              <h3 className="text-lg font-bold mb-2">ZellaPro AI Assistant</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Ask me anything about your trading or get insights from your data.
+              </p>
+              <div className="flex gap-3">
+                <Button className="flex-1 bg-gradient-to-r from-blue-700 to-cyan-600">Voice Command</Button>
+                <Button className="flex-1" variant="outline">Text Chat</Button>
+              </div>
+              <div className="mt-4">
+                <h4 className="text-sm font-medium mb-2">Quick Commands:</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="ghost" className="justify-start text-sm" size="sm">
+                    "Show me my best setups"
+                  </Button>
+                  <Button variant="ghost" className="justify-start text-sm" size="sm">
+                    "When am I most profitable?"
+                  </Button>
+                  <Button variant="ghost" className="justify-start text-sm" size="sm">
+                    "Analyze my last 5 trades"
+                  </Button>
+                  <Button variant="ghost" className="justify-start text-sm" size="sm">
+                    "Create a new strategy"
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   );
