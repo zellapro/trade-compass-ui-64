@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,34 +12,34 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
-  alertTriangle as AlertTriangle,
-  arrowRight as ArrowRight,
-  brain as Brain,
-  check as Check,
-  chevronRight as ChevronRight,
-  circleDollarSign as CircleDollarSign,
-  clock as Clock,
-  compass as Compass,
-  gauge as Gauge,
-  mapPin as MapPin,
-  maximize2 as Maximize2,
-  messageSquare as MessageSquare,
-  mic as Mic,
-  pieChart as PieChart,
-  plus as Plus,
-  refreshCw as RefreshCw,
-  rotateCcw as RotateCcw,
-  search as Search,
-  settings as Settings,
-  sparkles as Sparkles,
-  star as Star,
-  target as Target,
-  thermometer as Thermometer,
-  trendingUp as TrendingUp,
-  trendingDown as TrendingDown,
-  user as User,
-  zap as Zap,
-  layoutGrid as LayoutGrid,
+  AlertTriangle,
+  ArrowRight,
+  Brain,
+  Check,
+  ChevronRight,
+  CircleDollarSign,
+  Clock,
+  Compass,
+  Gauge,
+  MapPin,
+  Maximize2,
+  MessageSquare,
+  Mic,
+  PieChart,
+  Plus,
+  RefreshCw,
+  RotateCcw,
+  Search,
+  Settings,
+  Sparkles,
+  Star,
+  Target,
+  Thermometer,
+  TrendingUp,
+  TrendingDown,
+  User,
+  Zap,
+  LayoutGrid,
 } from "lucide-react";
 import { 
   HoverCard, 
@@ -200,6 +201,8 @@ const miniCheckinData = {
     "Chart annotations increase win percentage by 15%"
   ]
 };
+
+type LucideIcon = React.ComponentType<React.SVGProps<SVGSVGElement> & {size?: number | string}>;
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -784,4 +787,316 @@ export default function Dashboard() {
                   {edgeDriftData.confidence.change > 0 ? (
                     <TrendingUp className="h-3 w-3 mr-1" />
                   ) : (
-                    <TrendingDown className="h-3
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                  )}
+                  <span>{Math.abs(edgeDriftData.confidence.change)}% change</span>
+                </div>
+              </div>
+              
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Grading</div>
+                <div className="text-lg font-bold">{edgeDriftData.grading.current}%</div>
+                <div className={cn(
+                  "text-xs flex items-center",
+                  edgeDriftData.grading.change > 0 ? "text-green-400" : "text-red-400"
+                )}>
+                  {edgeDriftData.grading.change > 0 ? (
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                  )}
+                  <span>{Math.abs(edgeDriftData.grading.change)}% change</span>
+                </div>
+              </div>
+              
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Personality Fit</div>
+                <div className="text-lg font-bold">{edgeDriftData.personalityFit.current}%</div>
+                <div className={cn(
+                  "text-xs flex items-center",
+                  edgeDriftData.personalityFit.change > 0 ? "text-green-400" : "text-red-400"
+                )}>
+                  {edgeDriftData.personalityFit.change > 0 ? (
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 mr-1" />
+                  )}
+                  <span>{Math.abs(edgeDriftData.personalityFit.change)}% change</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-amber-400">Recommendations:</h4>
+              {edgeDriftData.recommendations.map((rec, idx) => (
+                <div key={idx} className="flex gap-2 items-start p-1.5 rounded hover:bg-white/5 transition-colors">
+                  <ArrowRight className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-xs">{rec}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </GlassCard>
+        
+        {/* AI Performance Scanner */}
+        <GlassCard className="lg:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-cyan-400" />
+              <span>AI Performance Scanner</span>
+            </CardTitle>
+            <CardDescription>Trade execution analysis</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="text-sm font-medium mb-2">Mistake Categories</h4>
+              <div className="space-y-2">
+                {performanceScannerData.mistakeCategories.map((cat, idx) => (
+                  <div key={idx} className="w-full">
+                    <div className="flex justify-between text-xs mb-1">
+                      <span>{cat.name}</span>
+                      <span>{cat.count} occurrences ({cat.pctOfTotal}%)</span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-black/50 overflow-hidden">
+                      <div 
+                        className="h-full bg-cyan-500 rounded-full" 
+                        style={{ width: `${cat.pctOfTotal}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium mb-2 text-cyan-400">Top Correctables:</h4>
+              {performanceScannerData.topCorrectables.map((item, idx) => (
+                <div key={idx} className="flex gap-2 items-start p-1.5 rounded hover:bg-white/5 transition-colors">
+                  <Check className="h-4 w-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-xs">{item}</span>
+                </div>
+              ))}
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium mb-3">Improvement Trend</h4>
+              <div className="h-[60px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={performanceScannerData.improvementTrend}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis 
+                      dataKey="week" 
+                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
+                      axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                    />
+                    <YAxis 
+                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
+                      axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="mistakes" 
+                      stroke="#06b6d4" 
+                      strokeWidth={2} 
+                      dot={{ stroke: "#06b6d4", strokeWidth: 2, fill: "#06b6d4" }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </CardContent>
+        </GlassCard>
+      </div>
+      
+      {/* Fourth row: Edge Amplifier + Smart Integration + Mini Check-ins */}
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+        {/* Edge Amplifier */}
+        <GlassCard className="lg:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-cyan-400" />
+              <span>Edge Amplifier</span>
+            </CardTitle>
+            <CardDescription>Daily focus recommendations</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-gradient-to-br from-cyan-500/20 to-purple-500/20 p-4 rounded-md border border-cyan-500/20">
+              <h3 className="font-medium text-cyan-400 mb-2">Daily Focus:</h3>
+              <p className="text-sm">{edgeAmplifierData.dailyFocus}</p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Setup of the Day</div>
+                <div className="font-medium text-sm">{edgeAmplifierData.setupOfDay}</div>
+              </div>
+              
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Market Condition</div>
+                <div className="font-medium text-sm">{edgeAmplifierData.marketCondition}</div>
+              </div>
+              
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Timeframe</div>
+                <div className="font-medium text-sm">{edgeAmplifierData.timeframeRecommendation}</div>
+              </div>
+              
+              <div className="p-2 rounded-md bg-black/20">
+                <div className="text-xs text-muted-foreground">Avoid Today</div>
+                <div className="font-medium text-sm">{edgeAmplifierData.avoidToday}</div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end">
+              <NeonButton size="sm" className="gap-1">
+                <span>Customize Focus</span>
+                <ChevronRight className="h-4 w-4" />
+              </NeonButton>
+            </div>
+          </CardContent>
+        </GlassCard>
+        
+        {/* Smart Integration Bar */}
+        <GlassCard className="lg:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <LayoutGrid className="w-5 h-5 text-cyan-400" />
+              <span>Smart Integration Bar</span>
+            </CardTitle>
+            <CardDescription>Quick actions for your workflow</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <NeonButton className="justify-start gap-2">
+                <RotateCcw className="h-4 w-4" />
+                <span>Replay Last Trade</span>
+              </NeonButton>
+              
+              <NeonButton className="justify-start gap-2">
+                <Plus className="h-4 w-4" />
+                <span>Add Missed Trade</span>
+              </NeonButton>
+              
+              <NeonButton className="justify-start gap-2">
+                <MessageSquare className="h-4 w-4" />
+                <span>Open Journal Entry</span>
+              </NeonButton>
+              
+              <NeonButton className="justify-start gap-2">
+                <Brain className="h-4 w-4" />
+                <span>AI Therapy Feedback</span>
+              </NeonButton>
+              
+              <NeonButton className="justify-start gap-2">
+                <Clock className="h-4 w-4" />
+                <span>Strategy Version History</span>
+              </NeonButton>
+              
+              <NeonButton className="justify-start gap-2">
+                <Settings className="h-4 w-4" />
+                <span>Configure Dashboard</span>
+              </NeonButton>
+            </div>
+            
+            <div className="flex gap-3 p-3 bg-cyan-900/20 rounded-md border border-cyan-500/20 items-center">
+              <div className="h-8 w-8 bg-cyan-500/20 rounded-full flex items-center justify-center">
+                <Sparkles className="h-4 w-4 text-cyan-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm">Need to quickly analyze that last TSLA trade?</p>
+                <p className="text-xs text-cyan-400 mt-1 cursor-pointer hover:underline">Ask me to do that for you</p>
+              </div>
+            </div>
+          </CardContent>
+        </GlassCard>
+        
+        {/* Mini Check-ins */}
+        <GlassCard className="lg:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Thermometer className="w-5 h-5 text-cyan-400" />
+              <span>Mini Check-ins</span>
+            </CardTitle>
+            <CardDescription>Emotional and performance pulse</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="text-sm font-medium mb-2">Recent Emotions</h4>
+              <div className="flex flex-wrap gap-2">
+                {miniCheckinData.recentEmotions.map((emotion, idx) => (
+                  <Badge key={idx} className={cn(
+                    "capitalize",
+                    getEmotionColor(emotion)
+                  )}>
+                    {emotion}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <h4 className="text-sm font-medium">Confidence Trend</h4>
+                <span className="text-xs text-muted-foreground">Last 5 sessions</span>
+              </div>
+              <div className="h-[60px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={miniCheckinData.confidenceChecks.map((value, index) => ({
+                    day: index + 1,
+                    value
+                  }))}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis 
+                      dataKey="day" 
+                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
+                      axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                    />
+                    <YAxis 
+                      domain={[0, 5]}
+                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
+                      axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                    />
+                    <Bar 
+                      dataKey="value" 
+                      fill="rgba(6, 182, 212, 0.7)" 
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium mb-2 text-cyan-400">AI Observations:</h4>
+              {miniCheckinData.aiObservations.map((obs, idx) => (
+                <div key={idx} className="flex gap-2 items-start p-1.5 rounded hover:bg-white/5 transition-colors">
+                  <Zap className="h-4 w-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-xs">{obs}</span>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex justify-between">
+              <Button variant="outline" size="sm" className="gap-1 border-white/10">
+                <span>Add Note</span>
+                <Plus className="h-3 w-3" />
+              </Button>
+              <NeonButton size="sm" className="gap-1">
+                <span>Full History</span>
+                <ChevronRight className="h-4 w-4" />
+              </NeonButton>
+            </div>
+          </CardContent>
+        </GlassCard>
+      </div>
+      
+      {/* Floating AI Button */}
+      <Button
+        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/20 flex items-center justify-center p-0"
+        onClick={handleAiAssistantToggle}
+      >
+        <Mic className="h-5 w-5" />
+      </Button>
+    </div>
+  );
+}

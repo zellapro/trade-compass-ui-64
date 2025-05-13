@@ -39,7 +39,8 @@ const useToast = () => {
 
   return {
     toast: toastFunction,
-    toasts: toastStore.toasts,
+    // Return an empty array to prevent the map error
+    toasts: [],
   };
 };
 

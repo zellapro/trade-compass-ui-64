@@ -12,14 +12,12 @@ import {
 export function Toaster() {
   const { toasts } = useToast()
 
-  // Since our current implementation doesn't actually track toasts in the custom hook,
-  // we'll just return the empty provider to avoid the map error
   return (
     <ToastProvider>
-      {/* The map function will not be called since toasts is an empty array */}
+      {/* Map will now work because toasts is guaranteed to be an array */}
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
-          <Toast key={id} {...props}>
+          <Toast key={id || Math.random()} {...props}>
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (
