@@ -1,5 +1,5 @@
 
-import { toast as sonnerToast, type ToastT } from "sonner";
+import { toast as sonnerToast } from "sonner";
 
 export type ToastProps = {
   title?: string;
@@ -8,8 +8,6 @@ export type ToastProps = {
   duration?: number;
   action?: React.ReactNode;
 };
-
-type ToasterToast = ToastProps;
 
 const useToast = () => {
   const toast = (props: ToastProps = {}) => {
@@ -38,11 +36,11 @@ const useToast = () => {
 
   return {
     toast,
-    // Return an empty array to prevent the map error
-    toasts: [],
+    // Return an empty array to prevent the map error in any components still expecting it
+    toasts: []
   };
 };
 
 export { useToast };
 export { toast } from "sonner";
-export type { ToastT as Toast };
+export type Toast = ToastProps;
