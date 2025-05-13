@@ -1,48 +1,48 @@
 
-import { useToast as useSonnerToast, type Toast } from "sonner";
+import { toast as sonnerToast, type ToastT } from "sonner";
 
-export type ToastProps = Toast & {
+export type ToastProps = {
   title?: string;
   description?: React.ReactNode;
   variant?: "default" | "destructive";
+  duration?: number;
+  action?: React.ReactNode;
 };
 
 type ToasterToast = ToastProps;
 
-const TOAST_LIMIT = 5;
-type ToasterToastActionElement = React.ReactElement;
-
-interface ToasterStore {
-  toasts: ToasterToast[];
-  add: (toast: ToasterToast) => void;
-  dismiss: (toastId: string | number) => void;
-  remove: (toastId: string | number) => void;
-}
-
-// This is a mock store that mimics the original toast library to match the component interface
-const toastStore: ToasterStore = {
-  toasts: [],
-  add: () => {},
-  dismiss: () => {},
-  remove: () => {},
-};
-
 const useToast = () => {
-  const { toast } = useSonnerToast();
-
-  const toastFunction = ({ title, description, variant, ...props }: ToastProps = {}) => {
-    return toast(title, {
-      description,
-      ...props,
-    });
+  const toast = (props: ToastProps = {}) => {
+    const { title, description, variant, ...rest } = props;
+    
+    // If we have a title and description, use the more detailed toast format
+    if (title && description) {
+      return sonnerToast(title, {
+        description,
+        ...rest,
+      });
+    }
+    
+    // If we only have title, use it as the main message
+    if (title && !description) {
+      return sonnerToast(title, rest);
+    }
+    
+    // If we only have description, use it as the main message
+    if (!title && description) {
+      return sonnerToast(description as string, rest);
+    }
+    
+    return sonnerToast("", rest);
   };
 
   return {
-    toast: toastFunction,
+    toast,
     // Return an empty array to prevent the map error
     toasts: [],
   };
 };
 
-export { useToast, Toast };
+export { useToast };
 export { toast } from "sonner";
+export type { ToastT as Toast };
