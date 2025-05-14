@@ -1,17 +1,16 @@
 
 import { toast as sonnerToast } from "sonner";
-import { ReactNode } from "react";
 
-export type Toast = {
+export type ToastProps = {
   title?: string;
-  description?: ReactNode;
+  description?: React.ReactNode;
   variant?: "default" | "destructive";
   duration?: number;
-  action?: ReactNode;
+  action?: React.ReactNode;
 };
 
 const useToast = () => {
-  const toast = (props: Toast = {}) => {
+  const toast = (props: ToastProps = {}) => {
     const { title, description, variant, ...rest } = props;
     
     // If we have a title and description, use the more detailed toast format
@@ -29,11 +28,7 @@ const useToast = () => {
     
     // If we only have description, use it as the main message
     if (!title && description) {
-      if (typeof description === "string") {
-        return sonnerToast(description, rest);
-      }
-      // Handle non-string descriptions
-      return sonnerToast("Notification", { ...rest, description });
+      return sonnerToast(description as string, rest);
     }
     
     return sonnerToast("", rest);
@@ -48,3 +43,4 @@ const useToast = () => {
 
 export { useToast };
 export { toast } from "sonner";
+export type Toast = ToastProps;
