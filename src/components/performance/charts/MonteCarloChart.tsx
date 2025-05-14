@@ -1,145 +1,110 @@
 
 import React from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 
-// Generate mock data for the chart
+// Mock data for demonstration
 const generateMockData = () => {
-  const data = [];
-  let baseEquity = 10000;
-  let upperBound = baseEquity;
-  let lowerBound = baseEquity;
-  let median = baseEquity;
-  
-  for (let i = 0; i <= 100; i += 5) {
-    const tradeNum = i;
-    const volatility = Math.sqrt(i) * 200; // Increases with more trades
-    
-    median = baseEquity * (1 + 0.003 * i); // Median path assumes small positive edge
-    upperBound = median + volatility;
-    lowerBound = Math.max(median - volatility, 0); // Can't go below 0
-    
-    data.push({
-      trades: tradeNum,
-      median: median,
-      upper: upperBound,
-      lower: lowerBound,
-    });
-  }
-  
-  return data;
+  const baseSeries = Array.from({ length: 50 }, (_, i) => {
+    return { trade: i + 1, value: 10000 * (1 + Math.random() * 0.02) ** i };
+  });
+
+  const lowerBound = baseSeries.map(point => ({
+    trade: point.trade,
+    value: point.value * (1 - Math.random() * 0.3 - 0.1)
+  }));
+
+  const upperBound = baseSeries.map(point => ({
+    trade: point.trade,
+    value: point.value * (1 + Math.random() * 0.5 + 0.1)
+  }));
+
+  const medianPath = baseSeries.map(point => ({
+    trade: point.trade,
+    value: point.value
+  }));
+
+  const drawdownPath = baseSeries.slice(0, 15).map((point, i) => ({
+    trade: point.trade,
+    value: point.value * (1 - (i < 10 ? i * 0.03 : (15 - i) * 0.03))
+  }));
+
+  return { lowerBound, upperBound, medianPath, drawdownPath };
 };
 
 interface MonteCarloChartProps {
-  scale: "linear" | "log";
+  scale?: "linear" | "log";
 }
 
-export const MonteCarloChart = ({ scale }: MonteCarloChartProps) => {
-  const data = generateMockData();
-  
+export function MonteCarloChart({ scale = "linear" }: MonteCarloChartProps) {
+  const { lowerBound, upperBound, medianPath, drawdownPath } = generateMockData();
+
   return (
-    <ChartContainer
-      config={{
-        median: {
-          label: "Median Path",
-          color: "#00FF99", // Green for median line
-        },
-        upper: {
-          label: "Upper Bound",
-          color: "rgba(111, 0, 255, 0.4)", // Purple for confidence
-        },
-        lower: {
-          label: "Lower Bound",
-          color: "#FF4D6D", // Red for drawdown
-        },
-      }}
-      className="h-full"
-    >
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={data}
-          margin={{
-            top: 5,
-            right: 5,
-            left: 5,
-            bottom: 5,
-          }}
-        >
-          <defs>
-            <linearGradient id="colorUpper" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#6F00FF" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#6F00FF" stopOpacity={0.1} />
-            </linearGradient>
-            <linearGradient id="colorLower" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#FF4D6D" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#FF4D6D" stopOpacity={0.1} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
-          <XAxis 
-            dataKey="trades" 
-            stroke="hsl(var(--muted-foreground))" 
-            fontSize={10}
-            tickFormatter={(value) => `#${value}`}
-          />
-          <YAxis 
-            stroke="hsl(var(--muted-foreground))" 
-            fontSize={10}
-            scale={scale}
-            domain={scale === "log" ? ["auto", "auto"] : [0, "auto"]}
-            tickFormatter={(value) => `$${value.toLocaleString()}`}
-          />
-          <Tooltip 
-            content={({ active, payload }) => {
-              if (active && payload && payload.length) {
-                const tradeNum = payload[0].payload.trades;
-                const equityValue = payload[1].value;
-                
-                return (
-                  <div className="bg-background border border-border rounded-md p-2 shadow-md">
-                    <p className="text-xs font-medium text-foreground">{`Trade #${tradeNum}`}</p>
-                    <p className="text-xs text-muted-foreground">{`Equity: $${equityValue.toLocaleString()}`}</p>
-                  </div>
-                );
-              }
-              return null;
-            }}
-          />
-          
-          {/* Areas for the confidence interval */}
-          <Area 
-            type="monotone" 
-            dataKey="upper" 
-            stroke="rgba(111, 0, 255, 0.7)" 
-            fill="url(#colorUpper)" 
-            strokeWidth={1}
-          />
-          <Area 
-            type="monotone" 
-            dataKey="lower" 
-            stroke="rgba(255, 77, 109, 0.7)" 
-            fill="url(#colorLower)" 
-            strokeWidth={1}
-          />
-          
-          {/* Median line */}
-          <Area
-            type="monotone"
-            dataKey="median"
-            stroke="#00FF99"
-            strokeWidth={2}
-            fill="none"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
-    </ChartContainer>
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart
+        data={medianPath}
+        margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
+      >
+        <defs>
+          <linearGradient id="colorConfidence" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="rgba(111, 0, 255, 0.3)" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="rgba(111, 0, 255, 0.1)" stopOpacity={0.2} />
+          </linearGradient>
+          <linearGradient id="colorDrawdown" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="rgba(255, 77, 109, 0.6)" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="rgba(255, 77, 109, 0.1)" stopOpacity={0.2} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+        <XAxis 
+          dataKey="trade"
+          tickFormatter={(tick) => `${tick}`}
+          stroke="rgba(255,255,255,0.3)"
+        />
+        <YAxis
+          scale={scale}
+          domain={['auto', 'auto']}
+          tickFormatter={(tick) => `$${Math.round(tick).toLocaleString()}`}
+          stroke="rgba(255,255,255,0.3)"
+        />
+        <Tooltip
+          formatter={(value: number) => [`$${Math.round(value).toLocaleString()}`, 'Equity']}
+          labelFormatter={(label) => `Trade #${label}`}
+        />
+        
+        {/* Confidence area between upper and lower bounds */}
+        <Area
+          dataKey="value"
+          data={upperBound}
+          stroke="rgba(111, 0, 255, 0.5)"
+          fill="none"
+          strokeWidth={1}
+        />
+        <Area
+          dataKey="value"
+          data={lowerBound}
+          stroke="rgba(111, 0, 255, 0.5)"
+          fill="url(#colorConfidence)"
+          strokeWidth={1}
+        />
+        
+        {/* Drawdown demonstration */}
+        <Area
+          dataKey="value"
+          data={drawdownPath}
+          stroke="rgba(255, 77, 109, 0.8)"
+          fill="url(#colorDrawdown)"
+          strokeWidth={1.5}
+        />
+        
+        {/* Median path */}
+        <Area
+          dataKey="value"
+          data={medianPath}
+          stroke="#00FF99"
+          fill="none"
+          strokeWidth={2}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   );
-};
+}
