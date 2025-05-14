@@ -914,4 +914,3 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
     </div>
   );
 }
-
