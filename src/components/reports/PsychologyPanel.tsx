@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,7 +16,7 @@ import {
   ChevronDown,
   Download,
   FileText,
-  LineChart,
+  LineChart as LineChartIcon,
   BarChart as BarChartIcon,
   ArrowRight,
   FileSpreadsheet,
