@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,18 +17,25 @@ import {
   ChevronDown,
   Download,
   FileText,
-  LineChart as LineChartIcon,
-  BarChart as BarChartIcon,
+  LineChart,
+  BarChart,
   ArrowRight,
   FileSpreadsheet,
   Clock,
   CheckCircle,
   AlertCircle,
-  Calendar as CalendarIcon,
+  Lightbulb,
+  Trophy,
+  Shield,
+  Target,
+  Flag,
+  Radar,
+  Zap,
+  Award,
 } from 'lucide-react';
 
 import {
-  BarChart,
+  BarChart as RechartsBarChart,
   Bar,
   XAxis,
   YAxis,
@@ -35,7 +43,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
+  LineChart as RechartsLineChart,
   Line,
   PieChart,
   Pie,
@@ -44,7 +52,7 @@ import {
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-  Radar,
+  Radar as RechartsRadar,
   ScatterChart,
   Scatter,
 } from 'recharts';
@@ -100,6 +108,83 @@ const emotionPerformanceData = {
   ],
 };
 
+// Sample data for Cognitive Bias Profile
+const cognitiveBiasData = [
+  { bias: 'Confirmation', value: 68 },
+  { bias: 'Loss Aversion', value: 85 },
+  { bias: 'FOMO', value: 72 },
+  { bias: 'Sunk Cost', value: 45 },
+  { bias: 'Gambler\'s Fallacy', value: 38 },
+  { bias: 'Overconfidence', value: 64 },
+  { bias: 'Anchoring', value: 57 },
+];
+
+// Sample data for Mindset vs. Result
+const mindsetResultData = [
+  { mindset: 'Confident', winRate: 65, lossRate: 35, trades: 42 },
+  { mindset: 'Uncertain', winRate: 35, lossRate: 65, trades: 28 },
+  { mindset: 'Neutral', winRate: 68, lossRate: 32, trades: 53 },
+  { mindset: 'Overstimulated', winRate: 41, lossRate: 59, trades: 22 },
+  { mindset: 'Avoidant', winRate: 48, lossRate: 52, trades: 19 },
+  { mindset: 'Resigned', winRate: 30, lossRate: 70, trades: 14 },
+];
+
+// Sample data for Behavioral Goals
+const behavioralGoalsData = [
+  { 
+    id: 1, 
+    title: 'Follow trading plan 5 days in a row', 
+    progress: 80, 
+    streakDays: 4, 
+    target: 5,
+    category: 'Discipline',
+    isComplete: false,
+    dueDate: '2023-06-01',
+  },
+  { 
+    id: 2, 
+    title: 'Journal after every trade for 1 week', 
+    progress: 100, 
+    streakDays: 7, 
+    target: 7,
+    category: 'Journaling',
+    isComplete: true,
+    dueDate: '2023-05-28',
+  },
+  { 
+    id: 3, 
+    title: 'Avoid revenge trades for 10 sessions', 
+    progress: 60, 
+    streakDays: 6, 
+    target: 10,
+    category: 'Emotional Control',
+    isComplete: false,
+    dueDate: '2023-06-05',
+  },
+  { 
+    id: 4, 
+    title: 'Practice breathing before each session', 
+    progress: 40, 
+    streakDays: 2, 
+    target: 5,
+    category: 'Mindfulness',
+    isComplete: false,
+    dueDate: '2023-06-03',
+  },
+];
+
+// Sample data for Resilience Monitor
+const resilienceData = [
+  { week: 'Week 1', score: 45, recoveryTime: 12 },
+  { week: 'Week 2', score: 53, recoveryTime: 10 },
+  { week: 'Week 3', score: 48, recoveryTime: 11 },
+  { week: 'Week 4', score: 62, recoveryTime: 8 },
+  { week: 'Week 5', score: 68, recoveryTime: 7 },
+  { week: 'Week 6', score: 75, recoveryTime: 5 },
+  { week: 'Week 7', score: 72, recoveryTime: 6 },
+  { week: 'Week 8', score: 82, recoveryTime: 4 },
+];
+
 // Emotion colors
 const emotionColors = {
   Calm: '#4ade80',
@@ -114,6 +199,17 @@ const emotionColors = {
   Regretful: '#dc2626',
   Indifferent: '#9ca3af',
   Angry: '#b91c1c',
+};
+
+// Bias colors
+const biasColors = {
+  Confirmation: '#60a5fa',
+  'Loss Aversion': '#f87171',
+  'FOMO': '#fb923c',
+  'Sunk Cost': '#a78bfa',
+  'Gambler\'s Fallacy': '#34d399',
+  'Overconfidence': '#f43f5e',
+  'Anchoring': '#8b5cf6',
 };
 
 // Helper function to format dates
@@ -138,6 +234,14 @@ export function PsychologyPanel() {
   const [emotionTimelineCollapsed, setEmotionTimelineCollapsed] = useState(false);
   const [planAdherenceCollapsed, setPlanAdherenceCollapsed] = useState(false);
   const [emotionMatrixCollapsed, setEmotionMatrixCollapsed] = useState(false);
+  const [cognitiveBiasCollapsed, setCognitiveBiasCollapsed] = useState(false);
+  const [mindsetResultCollapsed, setMindsetResultCollapsed] = useState(false);
+  const [behavioralGoalsCollapsed, setBehavioralGoalsCollapsed] = useState(false);
+  const [resilienceCollapsed, setResilienceCollapsed] = useState(false);
+  const [biasFilter, setBiasFilter] = useState('all');
+  const [mindsetFilter, setMindsetFilter] = useState('all');
+  const [goalStatus, setGoalStatus] = useState('all');
+  const [resilienceFilter, setResilienceFilter] = useState('8w');
   
   // Export handlers
   const handleExportCSV = (type: string) => {
@@ -154,6 +258,14 @@ export function PsychologyPanel() {
       description: `${type} data will be downloaded as PDF shortly.`,
     });
     // Here we would implement actual PDF export functionality
+  };
+
+  const handleExportAll = () => {
+    showToast({
+      title: "Full Export Started",
+      description: "Complete psychological data will be downloaded shortly.",
+    });
+    // Here we would implement actual export functionality for all data
   };
 
   // Custom tooltip for emotion timeline
@@ -203,10 +315,13 @@ export function PsychologyPanel() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Brain className="h-6 w-6 text-primary" />
-          <h2 className="text-2xl font-bold tracking-tight">Psychological Analysis</h2>
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Psychological Behavior & Performance Insights</h2>
+            <p className="text-muted-foreground">Understand and improve your trading psychology using AI-powered behavioral analytics</p>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DatePickerWithRange
@@ -225,6 +340,10 @@ export function PsychologyPanel() {
               <SelectItem value="yearly">Yearly View</SelectItem>
             </SelectContent>
           </Select>
+          <Button variant="outline" onClick={handleExportAll} className="gap-2">
+            <Download className="h-4 w-4" />
+            Export All Data
+          </Button>
         </div>
       </div>
 
@@ -292,7 +411,7 @@ export function PsychologyPanel() {
             <CardContent className="pt-0">
               <div className="h-[300px] mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
+                  <RechartsLineChart
                     data={emotionTimelineData}
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
@@ -340,7 +459,7 @@ export function PsychologyPanel() {
                       dot={{ r: 6, strokeWidth: 2 }}
                       activeDot={{ r: 8, strokeWidth: 2 }}
                     />
-                  </LineChart>
+                  </RechartsLineChart>
                 </ResponsiveContainer>
               </div>
               
@@ -474,7 +593,7 @@ export function PsychologyPanel() {
                   <h4 className="font-semibold text-md mb-4">Weekly Discipline Streak</h4>
                   <div className="h-[200px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
+                      <RechartsBarChart
                         data={planAdherenceData.weeklyStreak}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                       >
@@ -493,7 +612,7 @@ export function PsychologyPanel() {
                             />
                           ))}
                         </Bar>
-                      </BarChart>
+                      </RechartsBarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
@@ -747,6 +866,723 @@ export function PsychologyPanel() {
                     <span>Focused during-trade emotion showed the highest profitability (2.1R average)</span>
                   </li>
                 </ul>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
+      {/* 4. Cognitive Bias Profile */}
+      <Collapsible
+        open={!cognitiveBiasCollapsed}
+        onOpenChange={setCognitiveBiasCollapsed}
+        className="space-y-2"
+      >
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+              <div className="flex items-center gap-2">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="hover:bg-transparent p-0">
+                    <ChevronDown className={cn("h-5 w-5 transition-all", !cognitiveBiasCollapsed ? "transform rotate-180" : "")} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CardTitle className="text-lg flex items-center">
+                  <Radar className="h-5 w-5 mr-2 text-primary" />
+                  Cognitive Bias Profile
+                </CardTitle>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Select onValueChange={setBiasFilter} value={biasFilter}>
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue placeholder="All Strategies" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Strategies</SelectItem>
+                    <SelectItem value="trend">Trend Following</SelectItem>
+                    <SelectItem value="reversal">Reversal</SelectItem>
+                    <SelectItem value="breakout">Breakout</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" onClick={() => handleExportCSV('Cognitive Bias')}>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  CSV
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => handleExportPDF('Cognitive Bias')}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  PDF
+                </Button>
+              </div>
+            </div>
+            <CardDescription>
+              Detect recurring mental biases affecting your trading decisions and visualize their impact.
+            </CardDescription>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+                <div className="lg:col-span-2 h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={cognitiveBiasData}>
+                      <PolarGrid stroke="#333" />
+                      <PolarAngleAxis dataKey="bias" />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                      <RechartsRadar
+                        name="Bias Level"
+                        dataKey="value"
+                        stroke="#8884d8"
+                        fill="#8884d8"
+                        fillOpacity={0.6}
+                      />
+                      <Tooltip 
+                        formatter={(value) => [`${value}%`, 'Intensity']}
+                        contentStyle={{ backgroundColor: 'rgba(24, 24, 27, 0.9)', borderColor: 'rgba(63, 63, 70, 0.5)', borderRadius: '0.375rem' }}
+                      />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-md mb-4">Dominant Biases</h4>
+                  <div className="space-y-3">
+                    {cognitiveBiasData
+                      .sort((a, b) => b.value - a.value)
+                      .slice(0, 3)
+                      .map((bias) => (
+                        <div key={bias.bias} className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: biasColors[bias.bias as keyof typeof biasColors] || '#888' }}
+                            />
+                            <span>{bias.bias}</span>
+                          </div>
+                          <Badge 
+                            variant="outline" 
+                            className={bias.value > 75 ? "text-red-500" : bias.value > 50 ? "text-amber-500" : "text-green-500"}
+                          >
+                            {bias.value}%
+                          </Badge>
+                        </div>
+                      ))}
+                  </div>
+
+                  <div className="mt-6">
+                    <h4 className="font-semibold text-md mb-3">Bias Tag Cloud</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {cognitiveBiasData.map((bias) => (
+                        <Badge 
+                          key={bias.bias}
+                          variant="outline" 
+                          style={{ 
+                            fontSize: `${Math.max(0.7, Math.min(1.4, bias.value / 60))}rem`,
+                            borderColor: biasColors[bias.bias as keyof typeof biasColors] || '#888'
+                          }}
+                        >
+                          {bias.bias}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Insights Feed */}
+              <div className="mt-6 border-t border-border pt-6">
+                <h4 className="font-semibold text-md mb-4">Bias Insight Feed</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card className="bg-background/50 border-red-500/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">FOMO Detection</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            FOMO triggered 3 of your 5 largest losses this month, primarily on NFP days.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-background/50 border-amber-500/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Loss Aversion</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Loss Aversion bias detected in 71% of your BE trades, reducing potential profit.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-background/50 border-blue-500/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-2">
+                        <Lightbulb className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Confirmation Bias</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            You tend to ignore conflicting indicators after forming a directional bias.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-background/50 border-green-500/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">Bias Improvement</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Anchoring bias has decreased by 18% since using your new checklist.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
+      {/* 5. Mindset vs. Result Correlation */}
+      <Collapsible
+        open={!mindsetResultCollapsed}
+        onOpenChange={setMindsetResultCollapsed}
+        className="space-y-2"
+      >
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+              <div className="flex items-center gap-2">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="hover:bg-transparent p-0">
+                    <ChevronDown className={cn("h-5 w-5 transition-all", !mindsetResultCollapsed ? "transform rotate-180" : "")} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CardTitle className="text-lg flex items-center">
+                  <BarChart className="h-5 w-5 mr-2 text-primary" />
+                  Mindset-Outcome Correlation
+                </CardTitle>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Select onValueChange={setMindsetFilter} value={mindsetFilter}>
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue placeholder="All Days" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Days</SelectItem>
+                    <SelectItem value="mon">Monday</SelectItem>
+                    <SelectItem value="tue">Tuesday</SelectItem>
+                    <SelectItem value="wed">Wednesday</SelectItem>
+                    <SelectItem value="thu">Thursday</SelectItem>
+                    <SelectItem value="fri">Friday</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" onClick={() => handleExportCSV('Mindset Analysis')}>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  CSV
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => handleExportPDF('Mindset Analysis')}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  PDF
+                </Button>
+              </div>
+            </div>
+            <CardDescription>
+              Visualize how different mindsets correlate with win/loss performance and trade outcomes.
+            </CardDescription>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent className="pt-0">
+              <div className="h-[350px] mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsBarChart
+                    data={mindsetResultData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                    <XAxis dataKey="mindset" />
+                    <YAxis domain={[0, 100]} />
+                    <Tooltip
+                      formatter={(value, name) => {
+                        return [`${value}%`, name === 'winRate' ? 'Win Rate' : 'Loss Rate'];
+                      }}
+                      contentStyle={{ backgroundColor: 'rgba(24, 24, 27, 0.9)', borderColor: 'rgba(63, 63, 70, 0.5)', borderRadius: '0.375rem' }}
+                    />
+                    <Legend />
+                    <Bar dataKey="winRate" name="Win Rate" fill="#4ade80" />
+                    <Bar dataKey="lossRate" name="Loss Rate" fill="#ef4444" />
+                  </RechartsBarChart>
+                </ResponsiveContainer>
+              </div>
+              
+              {/* Emotional Zones Map */}
+              <div className="mt-6">
+                <h4 className="font-semibold text-md mb-4">Emotional Trading Zones</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card className="bg-green-950/30 border-green-500/30">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base text-green-500">Healthy Zone</CardTitle>
+                      <CardDescription>Optimal trading mindsets</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span className="text-sm">Neutral</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span className="text-sm">Confident</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          68% average win rate in this zone
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-amber-950/30 border-amber-500/30">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base text-amber-500">Caution Zone</CardTitle>
+                      <CardDescription>Potential risk mindsets</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4 text-amber-500" />
+                          <span className="text-sm">Uncertain</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4 text-amber-500" />
+                          <span className="text-sm">Avoidant</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          42% average win rate in this zone
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-red-950/30 border-red-500/30">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base text-red-500">Danger Zone</CardTitle>
+                      <CardDescription>High risk mindsets</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                          <span className="text-sm">Overstimulated</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                          <span className="text-sm">Resigned</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          35% average win rate in this zone
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+              
+              {/* AI Summary Bubble */}
+              <div className="rounded-lg border border-border/50 bg-card p-4 mt-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Brain className="h-5 w-5 text-primary" />
+                  <h4 className="font-semibold">Mindset Performance AI Insights</h4>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
+                    <span>Neutral mindset leads to your highest win rate (68%) and most consistent R-multiple</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5" />
+                    <span>Avoidant mindset trades show inconsistent execution and frequent missed opportunities</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-red-500 mt-0.5" />
+                    <span>Resigned mindset is most common after 2+ losing trades and leads to your worst win rate</span>
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
+      {/* 6. Behavioral Goal Tracker */}
+      <Collapsible
+        open={!behavioralGoalsCollapsed}
+        onOpenChange={setBehavioralGoalsCollapsed}
+        className="space-y-2"
+      >
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+              <div className="flex items-center gap-2">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="hover:bg-transparent p-0">
+                    <ChevronDown className={cn("h-5 w-5 transition-all", !behavioralGoalsCollapsed ? "transform rotate-180" : "")} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CardTitle className="text-lg flex items-center">
+                  <Target className="h-5 w-5 mr-2 text-primary" />
+                  Behavioral Goal Tracker
+                </CardTitle>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Select onValueChange={setGoalStatus} value={goalStatus}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="All Goals" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Goals</SelectItem>
+                    <SelectItem value="active">Active Goals</SelectItem>
+                    <SelectItem value="completed">Completed Goals</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" onClick={() => handleExportCSV('Behavioral Goals')}>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  CSV
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => handleExportPDF('Behavioral Goals')}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  PDF
+                </Button>
+              </div>
+            </div>
+            <CardDescription>
+              Set and track psychology-driven behavioral goals to build discipline and consistency.
+            </CardDescription>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent className="pt-0">
+              {/* Goal Progress Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                {behavioralGoalsData.map((goal) => (
+                  <Card key={goal.id} className={cn(
+                    "overflow-hidden",
+                    goal.isComplete ? "border-green-500/30" : ""
+                  )}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <h4 className="font-medium text-sm">{goal.title}</h4>
+                        {goal.isComplete && (
+                          <Badge variant="success" className="ml-2">
+                            Complete
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="mt-4 space-y-2">
+                        <div className="flex justify-between text-xs mb-1">
+                          <span>{goal.streakDays}/{goal.target} Days</span>
+                          <span>{goal.progress}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full ${goal.isComplete ? 'bg-green-500' : 'bg-blue-500'} rounded-full`}
+                            style={{ width: `${goal.progress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 flex items-center justify-between pt-1 text-xs text-muted-foreground">
+                        <Badge variant="outline" className="font-normal">
+                          {goal.category}
+                        </Badge>
+                        <span>Due: {new Date(goal.dueDate).toLocaleDateString()}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              {/* Add New Goal Button */}
+              <div className="mt-4">
+                <Button variant="outline" className="w-full border-dashed">
+                  + Add New Behavioral Goal
+                </Button>
+              </div>
+              
+              {/* Calendar View */}
+              <div className="mt-6">
+                <h4 className="font-semibold text-md mb-4">Goal Achievement Calendar</h4>
+                <Card className="border-border/50">
+                  <CardContent className="p-4">
+                    <div className="grid grid-cols-7 gap-2 text-center">
+                      {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
+                        <div key={i} className="text-xs font-medium text-muted-foreground py-1">
+                          {day}
+                        </div>
+                      ))}
+                      
+                      {Array.from({ length: 28 }).map((_, index) => {
+                        // Generate some sample data for the calendar
+                        const completionRate = Math.random();
+                        let bgColor = 'bg-muted';
+                        
+                        if (completionRate > 0.8) bgColor = 'bg-green-500/30';
+                        else if (completionRate > 0.5) bgColor = 'bg-amber-500/30';
+                        else if (completionRate > 0) bgColor = 'bg-red-500/30';
+                        
+                        return (
+                          <div 
+                            key={index}
+                            className={`rounded-md aspect-square flex items-center justify-center text-xs ${bgColor}`}
+                          >
+                            {index + 1}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Insight Summary */}
+              <div className="rounded-lg border border-border/50 bg-card p-4 mt-6">
+                <div className="flex items-center gap-2 mb-2">
+                  <Brain className="h-5 w-5 text-primary" />
+                  <h4 className="font-semibold">Goal Achievement Insights</h4>
+                </div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm">Monthly Goal Success Rate:</span>
+                  <Badge variant="outline" className="text-green-500">86%</Badge>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
+                    <span>You've hit 86% of your behavioral goals this month – excellent consistency!</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5" />
+                    <span>Your success rate drops when emotional volatility is high – consider mindfulness goals</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Lightbulb className="h-4 w-4 text-blue-500 mt-0.5" />
+                    <span>Adding a daily checklist review goal would complement your existing routines</span>
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
+      {/* 7. Recovery & Resilience Monitor */}
+      <Collapsible
+        open={!resilienceCollapsed}
+        onOpenChange={setResilienceCollapsed}
+        className="space-y-2"
+      >
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+              <div className="flex items-center gap-2">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="hover:bg-transparent p-0">
+                    <ChevronDown className={cn("h-5 w-5 transition-all", !resilienceCollapsed ? "transform rotate-180" : "")} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CardTitle className="text-lg flex items-center">
+                  <Shield className="h-5 w-5 mr-2 text-primary" />
+                  Recovery & Resilience
+                </CardTitle>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Select onValueChange={setResilienceFilter} value={resilienceFilter}>
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue placeholder="Last 8 Weeks" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="8w">Last 8 Weeks</SelectItem>
+                    <SelectItem value="4w">Last 4 Weeks</SelectItem>
+                    <SelectItem value="3m">Last 3 Months</SelectItem>
+                    <SelectItem value="6m">Last 6 Months</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" onClick={() => handleExportCSV('Resilience Data')}>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  CSV
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => handleExportPDF('Resilience Report')}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  PDF
+                </Button>
+              </div>
+            </div>
+            <CardDescription>
+              Track how quickly and effectively you recover after trading setbacks.
+            </CardDescription>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-4">
+                {/* Resilience Score Meter */}
+                <Card className="bg-background/50 lg:col-span-1">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">Resilience Score</CardTitle>
+                    <CardDescription>Current mental recovery rating</CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-0 flex justify-center">
+                    <div className="relative h-[200px] w-[200px] mt-2">
+                      <svg width="200" height="200" viewBox="0 0 200 200">
+                        <circle
+                          cx="100"
+                          cy="100"
+                          r="80"
+                          fill="none"
+                          stroke="#333"
+                          strokeWidth="12"
+                        />
+                        <circle
+                          cx="100"
+                          cy="100"
+                          r="80"
+                          fill="none"
+                          stroke="#4ade80"
+                          strokeWidth="12"
+                          strokeDasharray={`${82 * 5.02} ${100 * 5.02}`}
+                          strokeDashoffset={25}
+                          transform="rotate(-90, 100, 100)"
+                        />
+                        <text
+                          x="100"
+                          y="110"
+                          textAnchor="middle"
+                          fontSize="36"
+                          fontWeight="bold"
+                          fill="currentColor"
+                        >
+                          82
+                        </text>
+                        <text
+                          x="100"
+                          y="130"
+                          textAnchor="middle"
+                          fontSize="12"
+                          fill="#888"
+                        >
+                          out of 100
+                        </text>
+                      </svg>
+                      <div className="absolute bottom-0 w-full text-center">
+                        <Badge 
+                          variant="outline" 
+                          className="text-green-500 font-normal"
+                        >
+                          Excellent
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Resilience Trend Chart */}
+                <div className="lg:col-span-3 h-[250px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsLineChart
+                      data={resilienceData}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                      <XAxis dataKey="week" />
+                      <YAxis yAxisId="left" domain={[0, 100]} />
+                      <YAxis yAxisId="right" orientation="right" domain={[0, 15]} />
+                      <Tooltip
+                        formatter={(value, name) => {
+                          if (name === 'score') return [`${value}/100`, 'Resilience Score'];
+                          return [`${value} hours`, 'Recovery Time'];
+                        }}
+                        contentStyle={{ backgroundColor: 'rgba(24, 24, 27, 0.9)', borderColor: 'rgba(63, 63, 70, 0.5)', borderRadius: '0.375rem' }}
+                      />
+                      <Legend />
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="score"
+                        stroke="#4ade80"
+                        name="Resilience Score"
+                        strokeWidth={3}
+                      />
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="recoveryTime"
+                        stroke="#f43f5e"
+                        name="Recovery Time"
+                        strokeWidth={3}
+                      />
+                    </RechartsLineChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                {/* Recovery Metrics */}
+                <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <Card className="bg-background/50">
+                    <CardContent className="p-4 flex flex-col">
+                      <div className="text-sm font-medium text-muted-foreground">Avg Recovery Time</div>
+                      <div className="mt-1 text-2xl font-bold text-blue-500">4.2 hrs</div>
+                      <div className="mt-auto pt-2 text-xs text-muted-foreground">time to regain trading confidence</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-background/50">
+                    <CardContent className="p-4 flex flex-col">
+                      <div className="text-sm font-medium text-muted-foreground">Post-Loss Discipline</div>
+                      <div className="mt-1 text-2xl font-bold text-green-500">72%</div>
+                      <div className="mt-auto pt-2 text-xs text-muted-foreground">trades following plan after a loss</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-background/50">
+                    <CardContent className="p-4 flex flex-col">
+                      <div className="text-sm font-medium text-muted-foreground">Emotional Stability</div>
+                      <div className="mt-1 text-2xl font-bold text-purple-500">69/100</div>
+                      <div className="mt-auto pt-2 text-xs text-muted-foreground">consistency in emotional response</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-background/50">
+                    <CardContent className="p-4 flex flex-col">
+                      <div className="text-sm font-medium text-muted-foreground">Bounce-Back Quality</div>
+                      <div className="mt-1 text-2xl font-bold text-amber-500">B+</div>
+                      <div className="mt-auto pt-2 text-xs text-muted-foreground">quality of first trade after loss</div>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                {/* AI Summary Bubble */}
+                <div className="lg:col-span-4 rounded-lg border border-border/50 bg-card p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Brain className="h-5 w-5 text-primary" />
+                    <h4 className="font-semibold">Resilience AI Insights</h4>
+                  </div>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
+                      <span>Your resilience score has improved by 37 points in 8 weeks - excellent progress!</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
+                      <span>You bounce back faster (4.2 hrs vs 7.5 hrs) when journaling immediately after losses</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5" />
+                      <span>Recovery time increases by 30% when losses occur in the afternoon session</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </CollapsibleContent>
