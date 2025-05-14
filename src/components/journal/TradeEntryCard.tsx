@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   ChevronDown, 
@@ -36,6 +35,7 @@ import { AiInsightCard } from "./AiInsightCard";
 import { StrategySelector } from "./StrategySelector";
 import { SelectedStrategy } from "./StrategySelectionModal";
 import { StrategyDisplay } from "./StrategyDisplay";
+import { TradeStatsModal } from "./TradeStatsModal";
 
 interface TradeEntryCardProps {
   trade: Trade;
@@ -45,6 +45,7 @@ export function TradeEntryCard({ trade }: TradeEntryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [strategyModalOpen, setStrategyModalOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(trade.pinned);
+  const [statsModalOpen, setStatsModalOpen] = useState(false);
   
   const tradeStrategy: SelectedStrategy | undefined = trade.strategyCategory ? {
     categoryId: trade.strategyCategory,
@@ -255,7 +256,12 @@ export function TradeEntryCard({ trade }: TradeEntryCardProps) {
             Edit
           </Button>
           
-          <Button variant="ghost" size="sm" className="h-8 px-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 px-2"
+            onClick={() => setStatsModalOpen(true)}
+          >
             <BarChart className="h-3.5 w-3.5 mr-1" />
             Stats
           </Button>
@@ -312,6 +318,12 @@ export function TradeEntryCard({ trade }: TradeEntryCardProps) {
           </Button>
         </div>
       </CardFooter>
+      
+      <TradeStatsModal 
+        trade={trade} 
+        open={statsModalOpen} 
+        onOpenChange={setStatsModalOpen} 
+      />
     </Card>
   );
 }
