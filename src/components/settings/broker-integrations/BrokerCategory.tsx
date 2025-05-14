@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BrokerCard } from "./BrokerCard";
@@ -22,10 +23,20 @@ const BrokerCategory: React.FC<BrokerCategoryProps> = ({ title, brokers }) => {
         {brokers.map((broker) => (
           <BrokerCard
             key={broker.id}
-            id={broker.id}
-            name={broker.name}
-            description={broker.description}
-            image={broker.image}
+            broker={{
+              id: broker.id,
+              name: broker.name,
+              description: broker.description,
+              image: broker.image,
+              logo: broker.image,
+              type: "Standard",
+              status: "Connected",
+              lastSync: new Date().toISOString(),
+              autoImport: true
+            }}
+            onToggleAutoImport={() => {}}
+            onDisconnect={() => {}}
+            onSync={() => {}}
           />
         ))}
       </CardContent>
