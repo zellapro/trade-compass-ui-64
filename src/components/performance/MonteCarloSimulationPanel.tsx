@@ -29,27 +29,24 @@ export const MonteCarloSimulationPanel = () => {
 
   return (
     <Card className="bg-card shadow-lg border-border/30 animate-fade-in">
-      <CardHeader className="pb-2 flex flex-row items-center justify-between">
-        <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
-          Monte Carlo Simulation
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info size={16} className="text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs">
-              Simulates potential future equity curves based on your risk parameters and historical performance data.
-            </TooltipContent>
-          </Tooltip>
-        </CardTitle>
-        <CollapsibleTrigger
-          onClick={() => setIsOpen(!isOpen)}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        </CollapsibleTrigger>
-      </CardHeader>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between">
+          <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
+            Monte Carlo Simulation
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info size={16} className="text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs">
+                Simulates potential future equity curves based on your risk parameters and historical performance data.
+              </TooltipContent>
+            </Tooltip>
+          </CardTitle>
+          <CollapsibleTrigger className="text-muted-foreground hover:text-foreground">
+            {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </CollapsibleTrigger>
+        </CardHeader>
 
-      <Collapsible open={isOpen} className="w-full">
         <CollapsibleContent>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
