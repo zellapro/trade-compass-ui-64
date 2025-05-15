@@ -5,7 +5,6 @@ import { BrokerCard } from "./BrokerCard";
 
 interface BrokerCategoryProps {
   title: string;
-  description: string;
   brokers: {
     id: string;
     name: string;
@@ -14,14 +13,13 @@ interface BrokerCategoryProps {
   }[];
 }
 
-export const BrokerCategory: React.FC<BrokerCategoryProps> = ({ title, description, brokers }) => {
+const BrokerCategory: React.FC<BrokerCategoryProps> = ({ title, brokers }) => {
   return (
-    <Card className="mb-6">
+    <Card className="border-border/50">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <p className="text-sm text-muted-foreground">{description}</p>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {brokers.map((broker) => (
           <BrokerCard
             key={broker.id}
@@ -31,19 +29,19 @@ export const BrokerCategory: React.FC<BrokerCategoryProps> = ({ title, descripti
               description: broker.description,
               image: broker.image,
               logo: broker.image,
-              type: "Real", // Changed from "Standard" to "Real" to match the allowed type
+              type: "Standard",
               status: "Connected",
               lastSync: new Date().toISOString(),
-              autoImport: true,
-              category: "stocks" // Adding required category field
+              autoImport: true
             }}
             onToggleAutoImport={() => {}}
             onDisconnect={() => {}}
             onSync={() => {}}
-            isLoading={false} // Adding required isLoading prop
           />
         ))}
       </CardContent>
     </Card>
   );
 };
+
+export default BrokerCategory;
