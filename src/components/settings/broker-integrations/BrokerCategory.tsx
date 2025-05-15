@@ -1,47 +1,55 @@
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BrokerCard } from "./BrokerCard";
-import type { BrokerAccount } from "./BrokerIntegrationPanel";
+import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { BrokerCard } from './BrokerCard';
+
+type BrokerType = "Real" | "Demo";
+type AssetClass = "stocks" | "crypto" | "forex" | "futures";
+
+interface Broker {
+  id: string;
+  name: string;
+  logo: string;
+  connected: boolean;
+  accountType: BrokerType;
+  assetClasses: AssetClass[];
+  apiSupport: boolean;
+  importSupport: boolean;
+  verificationLevel: number;
+}
 
 interface BrokerCategoryProps {
   title: string;
-  brokers: {
-    id: string;
-    name: string;
-    description: string;
-    image: string;
-    category?: string;
-  }[];
+  brokers: Broker[];
 }
 
 const BrokerCategory: React.FC<BrokerCategoryProps> = ({ title, brokers }) => {
+  // Filter out duplicates by name for display
+  const uniqueBrokers = brokers.reduce((acc: Broker[], current) => {
+    const x = acc.find(item => item.name === current.name);
+    if (!x) {
+      return acc.concat([current]);
+    } else {
+      return acc;
+    }
+  }, []);
+
   return (
-    <Card className="border-border/50">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {brokers.map((broker) => (
-          <BrokerCard
+    <div className="mb-8">
+      <h3 className="text-lg font-medium mb-3">{title}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {uniqueBrokers.map((broker) => (
+          <BrokerCard 
             key={broker.id}
             broker={{
-              id: broker.id,
-              name: broker.name,
-              logo: broker.image,
-              type: "Real", // Using allowed type value
-              status: "Connected",
-              lastSync: new Date().toISOString(),
-              autoImport: true,
-              category: broker.category || "stocks" // Providing default category
+              ...broker,
+              accountType: broker.accountType as BrokerType,
+              assetClasses: broker.assetClasses as AssetClass[]
             }}
-            onToggleAutoImport={() => {}}
-            onDisconnect={() => {}}
-            onSync={() => {}}
           />
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
