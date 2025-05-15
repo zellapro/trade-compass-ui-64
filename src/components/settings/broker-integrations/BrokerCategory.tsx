@@ -29,7 +29,7 @@ const BrokerCategory: React.FC<BrokerCategoryProps> = ({ title, brokers }) => {
               description: broker.description,
               image: broker.image,
               logo: broker.image,
-              type: "Standard",
+              type: "Real", // Changed from "Standard" to "Real" to match expected type
               status: "Connected",
               lastSync: new Date().toISOString(),
               autoImport: true
