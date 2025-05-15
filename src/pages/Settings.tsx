@@ -1,10 +1,11 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTheme } from "@/context/ThemeContext";
 import ProfileSettings from "@/components/settings/profile/ProfileSettings";
 import AccountManagement from "@/components/settings/AccountManagement";
 import BrokerIntegrations from "@/components/settings/broker-integrations/BrokerIntegrations";
+import { BrokerConnectPanel } from "@/components/settings/broker-integrations/BrokerConnectPanel";
+import { BrokerIntegrationPanel } from "@/components/settings/broker-integrations/BrokerIntegrationPanel";
 import NotificationSettings from "@/components/settings/NotificationSettings";
 import EnhancedAppearanceSettings from "@/components/settings/EnhancedAppearanceSettings";
 import TradingRules from "@/components/settings/TradingRules";
@@ -13,11 +14,13 @@ import ChartSettings from "@/components/settings/charts/ChartSettings";
 import SecuritySettings from "@/components/settings/security/SecuritySettings";
 import DeveloperSettings from "@/components/settings/DeveloperSettings";
 import AdvancedFeatures from "@/components/settings/AdvancedFeatures";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
   const [changesMade, setChangesMade] = useState<Record<string, boolean>>({});
   const { theme } = useTheme();
+  const { toast } = useToast();
 
   // Effect to handle tab change from URL
   useEffect(() => {
@@ -49,12 +52,27 @@ export default function Settings() {
     setChangesMade(prev => ({ ...prev, [section]: false }));
     // Here you would actually save the changes to the backend
     console.log(`Saving changes for ${section}`);
+    
+    toast({
+      title: "Settings saved",
+      description: `Your changes for ${section} settings have been saved.`,
+    });
   };
 
   const handleReset = (section: string) => {
     setChangesMade(prev => ({ ...prev, [section]: false }));
     // Here you would actually reset the settings for this section
     console.log(`Resetting settings for ${section}`);
+    
+    toast({
+      title: "Settings reset",
+      description: `Your ${section} settings have been reset to defaults.`,
+    });
+  };
+
+  const handleConnectBroker = (platform: string, apiKey: string, secretKey: string) => {
+    console.log('Connected platform:', platform, 'with keys:', apiKey.substring(0, 2) + '...');
+    handleSettingChange('broker');
   };
 
   return (
@@ -177,19 +195,31 @@ export default function Settings() {
               )}
 
               {activeTab === 'broker' && (
-                <BrokerIntegrations
-                  onSettingChange={() => handleSettingChange('broker')}
-                  saveResetButtons={
-                    <div className="flex gap-2">
-                      <button className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">
-                        Reset
-                      </button>
-                      <button className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
-                        Save Changes
-                      </button>
-                    </div>
-                  }
-                />
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-semibold">Broker Integrations</h2>
+                  <p className="text-muted-foreground">Connect and manage your trading platforms for automatic trade sync</p>
+                  
+                  {/* New Interface for connecting new brokers */}
+                  <BrokerConnectPanel onConnect={handleConnectBroker} />
+                  
+                  {/* Existing connected broker panel */}
+                  <BrokerIntegrationPanel onSettingChange={() => handleSettingChange('broker')} />
+                  
+                  <div className="flex justify-end gap-2 mt-6">
+                    <button
+                      onClick={() => handleReset('broker')}
+                      className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      onClick={() => handleSave('broker')}
+                      className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
               )}
 
               {activeTab === 'notifications' && (
