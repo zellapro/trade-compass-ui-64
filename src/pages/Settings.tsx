@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTheme } from "@/context/ThemeContext";
@@ -13,11 +12,33 @@ import ChartSettings from "@/components/settings/charts/ChartSettings";
 import SecuritySettings from "@/components/settings/security/SecuritySettings";
 import DeveloperSettings from "@/components/settings/DeveloperSettings";
 import AdvancedFeatures from "@/components/settings/AdvancedFeatures";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { 
+  User, Shield, Database, Bell, Palette, LineChart, 
+  FileText, BarChart, Lock, Code, Zap, Link 
+} from "lucide-react";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
   const [changesMade, setChangesMade] = useState<Record<string, boolean>>({});
   const { theme } = useTheme();
+
+  // Configuration for sidebar menu items
+  const settingsSections = [
+    { id: 'profile', name: 'Profile Settings', icon: User },
+    { id: 'account', name: 'Account Management', icon: Shield },
+    { id: 'broker', name: 'Broker Integrations', icon: Link, badge: 'New' },
+    { id: 'notifications', name: 'Notifications', icon: Bell },
+    { id: 'appearance', name: 'Appearance & UI', icon: Palette },
+    { id: 'trading', name: 'Trading Rules', icon: LineChart },
+    { id: 'reports', name: 'Report Settings', icon: FileText },
+    { id: 'charts', name: 'Chart Settings', icon: BarChart },
+    { id: 'security', name: 'Security & Privacy', icon: Lock },
+    { id: 'developer', name: 'Developer / API', icon: Code },
+    { id: 'advanced', name: 'Advanced Features', icon: Zap }
+  ];
 
   // Effect to handle tab change from URL
   useEffect(() => {
@@ -25,6 +46,11 @@ export default function Settings() {
     const tabParam = urlParams.get("tab");
     if (tabParam) {
       setActiveTab(tabParam);
+      // Show toast when navigating directly to a settings section
+      toast({
+        title: "Settings Navigation",
+        description: `Viewing ${tabParam.charAt(0).toUpperCase() + tabParam.slice(1)} settings`,
+      });
     }
   }, []);
   
@@ -65,97 +91,58 @@ export default function Settings() {
           <Card className={`${theme === 'dark' ? 'bg-sidebar border-gray-800' : 'bg-card'}`}>
             <CardContent className="p-0">
               <nav className="flex flex-col">
-                <button
-                  onClick={() => handleTabChange('profile')}
-                  className={`p-4 text-left ${activeTab === 'profile' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Profile Settings
-                </button>
-                <button
-                  onClick={() => handleTabChange('account')}
-                  className={`p-4 text-left ${activeTab === 'account' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Account Management
-                </button>
-                <button
-                  onClick={() => handleTabChange('broker')}
-                  className={`p-4 text-left ${activeTab === 'broker' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Broker Integrations
-                </button>
-                <button
-                  onClick={() => handleTabChange('notifications')}
-                  className={`p-4 text-left ${activeTab === 'notifications' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Notifications
-                </button>
-                <button
-                  onClick={() => handleTabChange('appearance')}
-                  className={`p-4 text-left ${activeTab === 'appearance' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Appearance & UI
-                </button>
-                <button
-                  onClick={() => handleTabChange('trading')}
-                  className={`p-4 text-left ${activeTab === 'trading' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Trading Rules
-                </button>
-                <button
-                  onClick={() => handleTabChange('reports')}
-                  className={`p-4 text-left ${activeTab === 'reports' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Report Settings
-                </button>
-                <button
-                  onClick={() => handleTabChange('charts')}
-                  className={`p-4 text-left ${activeTab === 'charts' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Chart Settings
-                </button>
-                <button
-                  onClick={() => handleTabChange('security')}
-                  className={`p-4 text-left ${activeTab === 'security' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Security & Privacy
-                </button>
-                <button
-                  onClick={() => handleTabChange('developer')}
-                  className={`p-4 text-left ${activeTab === 'developer' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Developer / API
-                </button>
-                <button
-                  onClick={() => handleTabChange('advanced')}
-                  className={`p-4 text-left ${activeTab === 'advanced' 
-                    ? 'bg-accent/10 border-l-4 border-primary' 
-                    : 'border-l-4 border-transparent'}`}
-                >
-                  Advanced Features
-                </button>
+                {settingsSections.map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => handleTabChange(section.id)}
+                    className={`p-4 text-left flex items-center justify-between ${
+                      activeTab === section.id 
+                        ? 'bg-accent/10 border-l-4 border-primary' 
+                        : 'border-l-4 border-transparent'
+                    }`}
+                  >
+                    <span className="flex items-center">
+                      <section.icon className="mr-2 h-4 w-4" />
+                      {section.name}
+                    </span>
+                    {section.badge && (
+                      <Badge variant="outline" className="ml-2 bg-primary/20 text-primary text-xs">
+                        {section.badge}
+                      </Badge>
+                    )}
+                  </button>
+                ))}
               </nav>
             </CardContent>
           </Card>
+          
+          {/* Quick Actions */}
+          <div className="mt-4 hidden lg:block">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start mb-2"
+              onClick={() => {
+                toast({
+                  title: "Export Settings",
+                  description: "Your settings have been exported",
+                });
+              }}
+            >
+              <FileText className="mr-2 h-4 w-4" /> Export All Settings
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => {
+                toast({
+                  title: "Help Center",
+                  description: "Opening settings documentation",
+                });
+              }}
+            >
+              <Database className="mr-2 h-4 w-4" /> Backup & Restore
+            </Button>
+          </div>
         </div>
         
         {/* Main Content */}

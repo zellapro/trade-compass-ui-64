@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BrokerCard } from "./BrokerCard";
+import type { BrokerAccount } from "./BrokerIntegrationPanel";
 
 interface BrokerCategoryProps {
   title: string;
@@ -10,6 +11,7 @@ interface BrokerCategoryProps {
     name: string;
     description: string;
     image: string;
+    category?: string;
   }[];
 }
 
@@ -26,13 +28,12 @@ const BrokerCategory: React.FC<BrokerCategoryProps> = ({ title, brokers }) => {
             broker={{
               id: broker.id,
               name: broker.name,
-              description: broker.description,
-              image: broker.image,
               logo: broker.image,
-              type: "Real", // Changed from "Standard" to "Real" to match expected type
+              type: "Real", // Using allowed type value
               status: "Connected",
               lastSync: new Date().toISOString(),
-              autoImport: true
+              autoImport: true,
+              category: broker.category || "stocks" // Providing default category
             }}
             onToggleAutoImport={() => {}}
             onDisconnect={() => {}}
