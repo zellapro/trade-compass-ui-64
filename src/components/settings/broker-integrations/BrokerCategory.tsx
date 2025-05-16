@@ -41,11 +41,7 @@ const BrokerCategory: React.FC<BrokerCategoryProps> = ({ title, brokers }) => {
         {uniqueBrokers.map((broker) => (
           <BrokerCard 
             key={broker.id}
-            broker={{
-              ...broker,
-              accountType: broker.accountType as BrokerType,
-              assetClasses: broker.assetClasses as AssetClass[]
-            }}
+            broker={broker}
           />
         ))}
       </div>
