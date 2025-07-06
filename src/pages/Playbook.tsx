@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { EdgeTherapistAI } from "@/components/playbook/EdgeTherapistAI";
-import { CognitiveProfiler } from "@/components/playbook/CognitiveProfiler";
+import { CognitiveProfilerDashboard } from "@/components/cognitive-profiler/CognitiveProfilerDashboard";
 import { ExecutionScanner } from "@/components/playbook/ExecutionScanner";
 import { StrategyBuilder } from "@/components/playbook/StrategyBuilder";
 import { MissedTradeLogger } from "@/components/playbook/MissedTradeLogger";
@@ -227,7 +227,7 @@ const Playbook = () => {
             
             <TabsContent value="psychology" className="mt-0 space-y-6 animate-fade-in">
               <div className="grid grid-cols-1 gap-6">
-                <CognitiveProfiler />
+                <CognitiveProfilerDashboard />
               </div>
             </TabsContent>
             
