@@ -69,6 +69,7 @@ import {
   Bar
 } from "recharts";
 import { Link } from "react-router-dom";
+import { useTheme } from "@/context/ThemeContext";
 
 // Mock data for the dashboard modules
 const edgeSummaryData = {
@@ -208,6 +209,9 @@ export default function Dashboard() {
   const { toast } = useToast();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
+  const { theme } = useTheme();
+  
+  const isLightMode = theme === 'light';
   
   useEffect(() => {
     // Load dashboard data here from API in a real implementation
@@ -230,34 +234,121 @@ export default function Dashboard() {
   const handleAiAssistantToggle = () => {
     setAiAssistantOpen(!aiAssistantOpen);
   };
+
+  // Smart Integration Bar handlers
+  const handleReplayLastTrade = () => {
+    toast({
+      title: "Replay Started",
+      description: "Loading your last trade for review...",
+      duration: 3000,
+    });
+  };
+  
+  const handleAddMissedTrade = () => {
+    toast({
+      title: "Add Missed Trade",
+      description: "Form opened to log your missed opportunity",
+      duration: 3000,
+    });
+  };
+  
+  const handleOpenJournal = () => {
+    toast({
+      title: "Journal Opened",
+      description: "Creating a new journal entry for today",
+      duration: 3000,
+    });
+  };
+  
+  const handleAiTherapy = () => {
+    toast({
+      title: "AI Therapy Session",
+      description: "Starting your trading psychology feedback session",
+      duration: 3000,
+    });
+  };
+  
+  const handleVersionHistory = () => {
+    toast({
+      title: "Strategy History",
+      description: "Loading your strategy evolution timeline",
+      duration: 3000,
+    });
+  };
+  
+  const handleConfigureDashboard = () => {
+    toast({
+      title: "Dashboard Configuration",
+      description: "Opening dashboard customization panel",
+      duration: 3000,
+    });
+  };
+  
+  const handleAnalyzeTrade = () => {
+    toast({
+      title: "Trade Analysis",
+      description: "Analyzing your last TSLA trade...",
+      duration: 3000,
+    });
+  };
   
   const getEmotionColor = (emotion: string) => {
-    switch (emotion) {
-      case "calm": return "bg-cyan-500/20 text-cyan-500";
-      case "focused": return "bg-green-500/20 text-green-500";
-      case "anxious": return "bg-amber-500/20 text-amber-500";
-      case "distracted": return "bg-red-500/20 text-red-500";
-      default: return "bg-blue-500/20 text-blue-500";
+    if (isLightMode) {
+      switch (emotion) {
+        case "calm": return "bg-cyan-100 text-cyan-800";
+        case "focused": return "bg-green-100 text-green-800";
+        case "anxious": return "bg-amber-100 text-amber-800";
+        case "distracted": return "bg-red-100 text-red-800";
+        default: return "bg-blue-100 text-blue-800";
+      }
+    } else {
+      switch (emotion) {
+        case "calm": return "bg-cyan-500/20 text-cyan-500";
+        case "focused": return "bg-green-500/20 text-green-500";
+        case "anxious": return "bg-amber-500/20 text-amber-500";
+        case "distracted": return "bg-red-500/20 text-red-500";
+        default: return "bg-blue-500/20 text-blue-500";
+      }
     }
   };
   
   const getActionColor = (category: string) => {
-    switch (category) {
-      case "journal": return "bg-purple-500/20 text-purple-500";
-      case "trade": return "bg-blue-500/20 text-blue-500";
-      case "market": return "bg-gray-500/20 text-gray-500";
-      case "rest": return "bg-green-500/20 text-green-500";
-      case "ai": return "bg-cyan-500/20 text-cyan-500";
-      case "replay": return "bg-amber-500/20 text-amber-500";
-      default: return "bg-gray-500/20 text-gray-500";
+    if (isLightMode) {
+      switch (category) {
+        case "journal": return "bg-purple-100 text-purple-800";
+        case "trade": return "bg-blue-100 text-blue-800";
+        case "market": return "bg-gray-100 text-gray-800";
+        case "rest": return "bg-green-100 text-green-800";
+        case "ai": return "bg-cyan-100 text-cyan-800";
+        case "replay": return "bg-amber-100 text-amber-800";
+        default: return "bg-gray-100 text-gray-800";
+      }
+    } else {
+      switch (category) {
+        case "journal": return "bg-purple-500/20 text-purple-500";
+        case "trade": return "bg-blue-500/20 text-blue-500";
+        case "market": return "bg-gray-500/20 text-gray-500";
+        case "rest": return "bg-green-500/20 text-green-500";
+        case "ai": return "bg-cyan-500/20 text-cyan-500";
+        case "replay": return "bg-amber-500/20 text-amber-500";
+        default: return "bg-gray-500/20 text-gray-500";
+      }
     }
   };
   
   const getResultColor = (result: string | null) => {
-    switch (result) {
-      case "win": return "bg-green-500/20 text-green-500";
-      case "loss": return "bg-red-500/20 text-red-500";
-      default: return "";
+    if (isLightMode) {
+      switch (result) {
+        case "win": return "bg-green-100 text-green-800";
+        case "loss": return "bg-red-100 text-red-800";
+        default: return "";
+      }
+    } else {
+      switch (result) {
+        case "win": return "bg-green-500/20 text-green-500";
+        case "loss": return "bg-red-500/20 text-red-500";
+        default: return "";
+      }
     }
   };
 
@@ -270,8 +361,12 @@ export default function Dashboard() {
   }: React.ComponentProps<typeof Card> & { neonAccent?: boolean }) => (
     <Card 
       className={cn(
-        "backdrop-blur-md bg-black/40 border border-white/10",
-        neonAccent && "shadow-[0_0_15px_rgba(0,255,255,0.15)]",
+        isLightMode 
+          ? "border border-gray-200 bg-white/80 shadow-sm" 
+          : "backdrop-blur-md bg-black/40 border border-white/10",
+        neonAccent && (isLightMode 
+          ? "shadow-md" 
+          : "shadow-[0_0_15px_rgba(0,255,255,0.15)]"),
         className
       )}
       {...props}
@@ -287,7 +382,10 @@ export default function Dashboard() {
   }: React.ComponentProps<typeof Button>) => (
     <Button 
       className={cn(
-        "bg-transparent backdrop-blur-sm border border-cyan-500/50 text-cyan-500 shadow-[0_0_10px_rgba(0,255,255,0.2)] hover:shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:bg-cyan-950/30 transition-all duration-300",
+        isLightMode
+          ? "bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 shadow-sm"
+          : "bg-transparent backdrop-blur-sm border border-cyan-500/50 text-cyan-500 shadow-[0_0_10px_rgba(0,255,255,0.2)] hover:shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:bg-cyan-950/30",
+        "transition-all duration-300",
         className
       )}
       {...props}
@@ -306,8 +404,8 @@ export default function Dashboard() {
     className?: string;
   }) => (
     <div className={cn("flex items-center gap-2 text-lg font-semibold", className)}>
-      <Icon className="w-5 h-5 text-cyan-400" />
-      <span className="bg-gradient-to-br from-white via-white/90 to-white/70 bg-clip-text text-transparent">
+      <Icon className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
+      <span className={isLightMode ? "text-gray-800" : "bg-gradient-to-br from-white via-white/90 to-white/70 bg-clip-text text-transparent"}>
         {title}
       </span>
     </div>
@@ -318,7 +416,11 @@ export default function Dashboard() {
       {/* Top header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+          <h1 className={`text-2xl font-bold tracking-tight ${
+            isLightMode 
+              ? "text-gray-800" 
+              : "bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent"
+          }`}>
             Trader Performance Cockpit
           </h1>
           <p className="text-muted-foreground">
@@ -327,7 +429,11 @@ export default function Dashboard() {
         </div>
         <Button 
           onClick={handleRefresh} 
-          className="flex items-center gap-2 bg-black/40 backdrop-blur-md border border-white/10" 
+          className={`flex items-center gap-2 ${
+            isLightMode 
+              ? "bg-white border border-gray-200 text-gray-700" 
+              : "bg-black/40 backdrop-blur-md border border-white/10"
+          }`}
           disabled={isRefreshing}
         >
           <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
@@ -341,7 +447,7 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-1 overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-cyan-400" />
+              <Brain className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>AI Daily Edge Summary</span>
             </CardTitle>
             <CardDescription>Overall performance analysis</CardDescription>
@@ -355,7 +461,7 @@ export default function Dashboard() {
                 </div>
                 <Progress 
                   value={edgeSummaryData.technicalSharpness} 
-                  className="h-1.5 bg-black/50"
+                  className={`h-1.5 ${isLightMode ? "bg-gray-100" : "bg-black/50"}`}
                 />
               </div>
               
@@ -366,7 +472,7 @@ export default function Dashboard() {
                 </div>
                 <Progress 
                   value={edgeSummaryData.emotionalEdge} 
-                  className="h-1.5 bg-black/50" 
+                  className={`h-1.5 ${isLightMode ? "bg-gray-100" : "bg-black/50"}`}
                 />
               </div>
               
@@ -377,7 +483,7 @@ export default function Dashboard() {
                 </div>
                 <Progress 
                   value={edgeSummaryData.disciplineScore} 
-                  className="h-1.5 bg-black/50"  
+                  className={`h-1.5 ${isLightMode ? "bg-gray-100" : "bg-black/50"}`}
                 />
               </div>
             </div>
@@ -385,8 +491,12 @@ export default function Dashboard() {
             {/* AI Insights */}
             <div className="space-y-2">
               {edgeSummaryData.insights.map((insight, idx) => (
-                <div key={idx} className="flex gap-2 p-2 rounded-md bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
-                  <Zap className="h-5 w-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                <div key={idx} className={`flex gap-2 p-2 rounded-md ${
+                  isLightMode 
+                    ? "bg-blue-50 hover:bg-blue-100" 
+                    : "bg-white/5 hover:bg-white/10"
+                } transition-colors cursor-pointer`}>
+                  <Zap className={`h-5 w-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"} flex-shrink-0 mt-0.5`} />
                   <span className="text-sm">{insight}</span>
                 </div>
               ))}
@@ -405,7 +515,7 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-2 overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <Gauge className="w-5 h-5 text-cyan-400" />
+              <Gauge className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>Technical Readiness Tracker</span>
             </CardTitle>
             <CardDescription>Strategy alignment and preparedness</CardDescription>
@@ -420,7 +530,7 @@ export default function Dashboard() {
                   </div>
                   <Progress 
                     value={readinessTrackerData.strategyAlignment} 
-                    className="h-2 bg-black/50" 
+                    className={`h-2 ${isLightMode ? "bg-gray-100" : "bg-black/50"}`}
                   />
                 </div>
                 
@@ -431,7 +541,7 @@ export default function Dashboard() {
                   </div>
                   <Progress 
                     value={readinessTrackerData.checklistUsage} 
-                    className="h-2 bg-black/50"
+                    className={`h-2 ${isLightMode ? "bg-gray-100" : "bg-black/50"}`}
                   />
                 </div>
                 
@@ -442,7 +552,7 @@ export default function Dashboard() {
                   </div>
                   <Progress 
                     value={readinessTrackerData.htfAlignment} 
-                    className="h-2 bg-black/50"
+                    className={`h-2 ${isLightMode ? "bg-gray-100" : "bg-black/50"}`}
                   />
                 </div>
               </div>
@@ -455,7 +565,7 @@ export default function Dashboard() {
                   </div>
                   <Progress 
                     value={readinessTrackerData.biasJournaling} 
-                    className="h-2 bg-black/50"
+                    className={`h-2 ${isLightMode ? "bg-gray-100" : "bg-black/50"}`}
                   />
                 </div>
                 
@@ -466,7 +576,7 @@ export default function Dashboard() {
                   </div>
                   <Progress 
                     value={readinessTrackerData.riskDiscipline} 
-                    className="h-2 bg-black/50"
+                    className={`h-2 ${isLightMode ? "bg-gray-100" : "bg-black/50"}`}
                   />
                 </div>
                 
@@ -490,7 +600,7 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-1" neonAccent>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-cyan-400" />
+              <Brain className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>Mindset + Discipline Monitor</span>
             </CardTitle>
             <div className="flex flex-wrap gap-2 mt-1">
@@ -510,9 +620,13 @@ export default function Dashboard() {
                 <span className="text-sm">Emotional Stability</span>
                 <span className="text-sm font-medium">{mindsetData.emotionalStability}%</span>
               </div>
-              <div className="w-full h-2 rounded-full bg-black/50 relative overflow-hidden">
+              <div className={`w-full h-2 rounded-full ${isLightMode ? "bg-gray-100" : "bg-black/50"} relative overflow-hidden`}>
                 <div 
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full"
+                  className={`absolute top-0 left-0 h-full ${
+                    isLightMode 
+                      ? "bg-gradient-to-r from-blue-400 to-indigo-500" 
+                      : "bg-gradient-to-r from-cyan-400 to-blue-500"
+                  } rounded-full`}
                   style={{ width: `${mindsetData.emotionalStability}%` }}
                 ></div>
               </div>
@@ -523,7 +637,7 @@ export default function Dashboard() {
                 <span className="text-sm">Impulsiveness Risk</span>
                 <span className="text-sm font-medium">{mindsetData.impulsiveness}%</span>
               </div>
-              <div className="w-full h-2 rounded-full bg-black/50 relative overflow-hidden">
+              <div className={`w-full h-2 rounded-full ${isLightMode ? "bg-gray-100" : "bg-black/50"} relative overflow-hidden`}>
                 <div 
                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-400 to-red-500 rounded-full"
                   style={{ width: `${mindsetData.impulsiveness}%` }}
@@ -536,7 +650,7 @@ export default function Dashboard() {
                 <span className="text-sm">Overtrading Risk</span>
                 <span className="text-sm font-medium">{mindsetData.overtradingRisk}%</span>
               </div>
-              <div className="w-full h-2 rounded-full bg-black/50 relative overflow-hidden">
+              <div className={`w-full h-2 rounded-full ${isLightMode ? "bg-gray-100" : "bg-black/50"} relative overflow-hidden`}>
                 <div 
                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-400 to-red-500 rounded-full"
                   style={{ width: `${mindsetData.overtradingRisk}%` }}
@@ -544,11 +658,11 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="bg-black/20 rounded-md p-3 space-y-2">
-              <h4 className="text-sm font-medium text-cyan-400">Recommendations</h4>
+            <div className={`${isLightMode ? "bg-blue-50" : "bg-black/20"} rounded-md p-3 space-y-2`}>
+              <h4 className={`text-sm font-medium ${isLightMode ? "text-blue-700" : "text-cyan-400"}`}>Recommendations</h4>
               {mindsetData.recommendations.map((rec, idx) => (
                 <div key={idx} className="flex items-center gap-2 text-xs">
-                  <Check className="h-3.5 w-3.5 text-green-400" />
+                  <Check className={`h-3.5 w-3.5 ${isLightMode ? "text-green-600" : "text-green-400"}`} />
                   <span>{rec}</span>
                 </div>
               ))}
@@ -569,7 +683,7 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <Compass className="w-5 h-5 text-cyan-400" />
+              <Compass className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>Daily Rhythm Map</span>
             </CardTitle>
             <CardDescription>Your trading day timeline</CardDescription>
@@ -577,28 +691,32 @@ export default function Dashboard() {
           <CardContent>
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute top-4 left-4 bottom-4 w-[1px] bg-white/10"></div>
+              <div className={`absolute top-4 left-4 bottom-4 w-[1px] ${isLightMode ? "bg-gray-200" : "bg-white/10"}`}></div>
               
               <div className="space-y-3 pl-9">
                 {rhythmMapData.map((item, idx) => (
                   <div key={idx} className="relative">
                     {/* Time node */}
-                    <div className="absolute -left-9 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-white/30 bg-black/80 flex items-center justify-center">
+                    <div className={`absolute -left-9 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full ${
+                      isLightMode 
+                        ? "border border-gray-300 bg-white" 
+                        : "border border-white/30 bg-black/80"
+                    } flex items-center justify-center`}>
                       <div className={cn("w-2 h-2 rounded-full", 
-                        item.result === "win" ? "bg-green-400" : 
-                        item.result === "loss" ? "bg-red-400" : 
-                        "bg-white/30"
+                        item.result === "win" ? (isLightMode ? "bg-green-500" : "bg-green-400") : 
+                        item.result === "loss" ? (isLightMode ? "bg-red-500" : "bg-red-400") : 
+                        (isLightMode ? "bg-gray-400" : "bg-white/30")
                       )}></div>
                     </div>
                     
                     {/* Time label */}
                     <div className="absolute -left-[4.5rem] top-1/2 -translate-y-1/2 w-8 text-right">
-                      <span className="text-xs text-gray-400">{item.time}</span>
+                      <span className={`text-xs ${isLightMode ? "text-gray-600" : "text-gray-400"}`}>{item.time}</span>
                     </div>
                     
                     {/* Content */}
                     <div className={cn(
-                      "p-2 rounded-md cursor-pointer transition-all hover:bg-white/10",
+                      `p-2 rounded-md cursor-pointer transition-all ${isLightMode ? "hover:bg-gray-50" : "hover:bg-white/10"}`,
                       item.result === "win" ? "border-l-2 border-l-green-500" :
                       item.result === "loss" ? "border-l-2 border-l-red-500" :
                       "border-l-2 border-l-transparent"
@@ -631,7 +749,7 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <PieChart className="w-5 h-5 text-cyan-400" />
+              <PieChart className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>Behavior vs. Outcome</span>
             </CardTitle>
             <CardDescription>Discipline correlation with results</CardDescription>
@@ -641,31 +759,31 @@ export default function Dashboard() {
               <ChartContainer
                 config={{
                   focused: {
-                    color: "#22c55e" // Green
+                    color: isLightMode ? "#16a34a" : "#22c55e" // Green
                   },
                   calm: {
-                    color: "#3b82f6" // Blue
+                    color: isLightMode ? "#2563eb" : "#3b82f6" // Blue
                   },
                   anxious: {
-                    color: "#f59e0b" // Amber
+                    color: isLightMode ? "#d97706" : "#f59e0b" // Amber
                   },
                   distracted: {
-                    color: "#ef4444" // Red
+                    color: isLightMode ? "#dc2626" : "#ef4444" // Red
                   }
                 }}
               >
                 <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isLightMode ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"} />
                   <XAxis 
                     type="number" 
                     dataKey="disciplineScore" 
                     name="Discipline" 
-                    tick={{ fill: "rgba(255,255,255,0.5)" }}
-                    stroke="rgba(255,255,255,0.2)"
+                    tick={{ fill: isLightMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.5)" }}
+                    stroke={isLightMode ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)"}
                     label={{ 
                       value: 'Discipline Score', 
                       position: 'bottom',
-                      fill: "rgba(255,255,255,0.5)",
+                      fill: isLightMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.5)",
                       fontSize: 12
                     }}
                   />
@@ -674,8 +792,8 @@ export default function Dashboard() {
                     dataKey="pnl" 
                     name="P&L" 
                     unit="$" 
-                    tick={{ fill: "rgba(255,255,255,0.5)" }}
-                    stroke="rgba(255,255,255,0.2)"
+                    tick={{ fill: isLightMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.5)" }}
+                    stroke={isLightMode ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)"}
                   />
                   <ChartTooltip cursor={{ strokeDasharray: '3 3' }} content={<ChartTooltipContent />} />
                   <Scatter 
@@ -685,10 +803,10 @@ export default function Dashboard() {
                     {behaviorOutcomeData.map((entry, index) => {
                       let color;
                       switch (entry.emotion) {
-                        case "focused": color = "#22c55e"; break;
-                        case "calm": color = "#3b82f6"; break;
-                        case "anxious": color = "#f59e0b"; break;
-                        case "distracted": color = "#ef4444"; break;
+                        case "focused": color = isLightMode ? "#16a34a" : "#22c55e"; break;
+                        case "calm": color = isLightMode ? "#2563eb" : "#3b82f6"; break;
+                        case "anxious": color = isLightMode ? "#d97706" : "#f59e0b"; break;
+                        case "distracted": color = isLightMode ? "#dc2626" : "#ef4444"; break;
                         default: color = "#8884d8";
                       }
                       return (
@@ -705,7 +823,7 @@ export default function Dashboard() {
                             x={10} 
                             y={10} 
                             textAnchor="start" 
-                            fill="rgba(255,255,255,0.6)" 
+                            fill={isLightMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.6)"} 
                             fontSize={10}
                           >
                             {entry.date}
@@ -723,10 +841,10 @@ export default function Dashboard() {
                 <div key={emotion} className="flex items-center gap-1">
                   <div className={cn(
                     "w-3 h-3 rounded-full",
-                    emotion === "focused" ? "bg-green-500" :
-                    emotion === "calm" ? "bg-blue-500" :
-                    emotion === "anxious" ? "bg-amber-500" :
-                    "bg-red-500"
+                    emotion === "focused" ? (isLightMode ? "bg-green-600" : "bg-green-500") :
+                    emotion === "calm" ? (isLightMode ? "bg-blue-600" : "bg-blue-500") :
+                    emotion === "anxious" ? (isLightMode ? "bg-amber-500" : "bg-amber-500") :
+                    (isLightMode ? "bg-red-600" : "bg-red-500")
                   )}></div>
                   <span className="text-xs capitalize">{emotion}</span>
                 </div>
@@ -736,7 +854,7 @@ export default function Dashboard() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="link" size="sm" className="mt-1 text-cyan-400">
+                  <Button variant="link" size="sm" className={`mt-1 ${isLightMode ? "text-blue-700" : "text-cyan-400"}`}>
                     Insight: Better outcomes correlated with higher discipline scores
                   </Button>
                 </TooltipTrigger>
@@ -761,12 +879,14 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-2 rounded-md bg-black/20">
+              <div className={`p-2 rounded-md ${isLightMode ? "bg-gray-50" : "bg-black/20"}`}>
                 <div className="text-xs text-muted-foreground">Win Rate</div>
                 <div className="text-lg font-bold">{edgeDriftData.winRate.current}%</div>
                 <div className={cn(
                   "text-xs flex items-center",
-                  edgeDriftData.winRate.change > 0 ? "text-green-400" : "text-red-400"
+                  edgeDriftData.winRate.change > 0 ? 
+                    (isLightMode ? "text-green-600" : "text-green-400") : 
+                    (isLightMode ? "text-red-600" : "text-red-400")
                 )}>
                   {edgeDriftData.winRate.change > 0 ? (
                     <TrendingUp className="h-3 w-3 mr-1" />
@@ -777,12 +897,14 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              <div className="p-2 rounded-md bg-black/20">
+              <div className={`p-2 rounded-md ${isLightMode ? "bg-gray-50" : "bg-black/20"}`}>
                 <div className="text-xs text-muted-foreground">Confidence</div>
                 <div className="text-lg font-bold">{edgeDriftData.confidence.current}%</div>
                 <div className={cn(
                   "text-xs flex items-center",
-                  edgeDriftData.confidence.change > 0 ? "text-green-400" : "text-red-400"
+                  edgeDriftData.confidence.change > 0 ? 
+                    (isLightMode ? "text-green-600" : "text-green-400") : 
+                    (isLightMode ? "text-red-600" : "text-red-400")
                 )}>
                   {edgeDriftData.confidence.change > 0 ? (
                     <TrendingUp className="h-3 w-3 mr-1" />
@@ -793,12 +915,14 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              <div className="p-2 rounded-md bg-black/20">
+              <div className={`p-2 rounded-md ${isLightMode ? "bg-gray-50" : "bg-black/20"}`}>
                 <div className="text-xs text-muted-foreground">Grading</div>
                 <div className="text-lg font-bold">{edgeDriftData.grading.current}%</div>
                 <div className={cn(
                   "text-xs flex items-center",
-                  edgeDriftData.grading.change > 0 ? "text-green-400" : "text-red-400"
+                  edgeDriftData.grading.change > 0 ? 
+                    (isLightMode ? "text-green-600" : "text-green-400") : 
+                    (isLightMode ? "text-red-600" : "text-red-400")
                 )}>
                   {edgeDriftData.grading.change > 0 ? (
                     <TrendingUp className="h-3 w-3 mr-1" />
@@ -809,12 +933,14 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              <div className="p-2 rounded-md bg-black/20">
+              <div className={`p-2 rounded-md ${isLightMode ? "bg-gray-50" : "bg-black/20"}`}>
                 <div className="text-xs text-muted-foreground">Personality Fit</div>
                 <div className="text-lg font-bold">{edgeDriftData.personalityFit.current}%</div>
                 <div className={cn(
                   "text-xs flex items-center",
-                  edgeDriftData.personalityFit.change > 0 ? "text-green-400" : "text-red-400"
+                  edgeDriftData.personalityFit.change > 0 ? 
+                    (isLightMode ? "text-green-600" : "text-green-400") : 
+                    (isLightMode ? "text-red-600" : "text-red-400")
                 )}>
                   {edgeDriftData.personalityFit.change > 0 ? (
                     <TrendingUp className="h-3 w-3 mr-1" />
@@ -829,7 +955,9 @@ export default function Dashboard() {
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-amber-400">Recommendations:</h4>
               {edgeDriftData.recommendations.map((rec, idx) => (
-                <div key={idx} className="flex gap-2 items-start p-1.5 rounded hover:bg-white/5 transition-colors">
+                <div key={idx} className={`flex gap-2 items-start p-1.5 rounded ${
+                  isLightMode ? "hover:bg-gray-50" : "hover:bg-white/5" 
+                } transition-colors`}>
                   <ArrowRight className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
                   <span className="text-xs">{rec}</span>
                 </div>
@@ -842,7 +970,7 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-cyan-400" />
+              <Zap className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>AI Performance Scanner</span>
             </CardTitle>
             <CardDescription>Trade execution analysis</CardDescription>
@@ -857,9 +985,9 @@ export default function Dashboard() {
                       <span>{cat.name}</span>
                       <span>{cat.count} occurrences ({cat.pctOfTotal}%)</span>
                     </div>
-                    <div className="w-full h-1.5 rounded-full bg-black/50 overflow-hidden">
+                    <div className={`w-full h-1.5 rounded-full ${isLightMode ? "bg-gray-100" : "bg-black/50"} overflow-hidden`}>
                       <div 
-                        className="h-full bg-cyan-500 rounded-full" 
+                        className={`h-full ${isLightMode ? "bg-blue-500" : "bg-cyan-500"} rounded-full`}
                         style={{ width: `${cat.pctOfTotal}%` }}
                       ></div>
                     </div>
@@ -869,10 +997,12 @@ export default function Dashboard() {
             </div>
             
             <div>
-              <h4 className="text-sm font-medium mb-2 text-cyan-400">Top Correctables:</h4>
+              <h4 className={`text-sm font-medium mb-2 ${isLightMode ? "text-blue-700" : "text-cyan-400"}`}>Top Correctables:</h4>
               {performanceScannerData.topCorrectables.map((item, idx) => (
-                <div key={idx} className="flex gap-2 items-start p-1.5 rounded hover:bg-white/5 transition-colors">
-                  <Check className="h-4 w-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+                <div key={idx} className={`flex gap-2 items-start p-1.5 rounded ${
+                  isLightMode ? "hover:bg-gray-50" : "hover:bg-white/5"
+                } transition-colors`}>
+                  <Check className={`h-4 w-4 ${isLightMode ? "text-blue-600" : "text-cyan-400"} flex-shrink-0 mt-0.5`} />
                   <span className="text-xs">{item}</span>
                 </div>
               ))}
@@ -883,22 +1013,26 @@ export default function Dashboard() {
               <div className="h-[60px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={performanceScannerData.improvementTrend}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke={isLightMode ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"} />
                     <XAxis 
                       dataKey="week" 
-                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
-                      axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                      tick={{ fill: isLightMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.5)", fontSize: 10 }}
+                      axisLine={{ stroke: isLightMode ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)" }}
                     />
                     <YAxis 
-                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
-                      axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                      tick={{ fill: isLightMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.5)", fontSize: 10 }}
+                      axisLine={{ stroke: isLightMode ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)" }}
                     />
                     <Line 
                       type="monotone" 
                       dataKey="mistakes" 
-                      stroke="#06b6d4" 
+                      stroke={isLightMode ? "#3b82f6" : "#06b6d4"}
                       strokeWidth={2} 
-                      dot={{ stroke: "#06b6d4", strokeWidth: 2, fill: "#06b6d4" }}
+                      dot={{ 
+                        stroke: isLightMode ? "#3b82f6" : "#06b6d4",
+                        strokeWidth: 2, 
+                        fill: isLightMode ? "#3b82f6" : "#06b6d4" 
+                      }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -914,34 +1048,38 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-cyan-400" />
+              <Target className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>Edge Amplifier</span>
             </CardTitle>
             <CardDescription>Daily focus recommendations</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-gradient-to-br from-cyan-500/20 to-purple-500/20 p-4 rounded-md border border-cyan-500/20">
-              <h3 className="font-medium text-cyan-400 mb-2">Daily Focus:</h3>
+            <div className={`${
+              isLightMode 
+                ? "bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100" 
+                : "bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-500/20"
+            } p-4 rounded-md`}>
+              <h3 className={`font-medium ${isLightMode ? "text-blue-700" : "text-cyan-400"} mb-2`}>Daily Focus:</h3>
               <p className="text-sm">{edgeAmplifierData.dailyFocus}</p>
             </div>
             
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-2 rounded-md bg-black/20">
+              <div className={`p-2 rounded-md ${isLightMode ? "bg-gray-50" : "bg-black/20"}`}>
                 <div className="text-xs text-muted-foreground">Setup of the Day</div>
                 <div className="font-medium text-sm">{edgeAmplifierData.setupOfDay}</div>
               </div>
               
-              <div className="p-2 rounded-md bg-black/20">
+              <div className={`p-2 rounded-md ${isLightMode ? "bg-gray-50" : "bg-black/20"}`}>
                 <div className="text-xs text-muted-foreground">Market Condition</div>
                 <div className="font-medium text-sm">{edgeAmplifierData.marketCondition}</div>
               </div>
               
-              <div className="p-2 rounded-md bg-black/20">
+              <div className={`p-2 rounded-md ${isLightMode ? "bg-gray-50" : "bg-black/20"}`}>
                 <div className="text-xs text-muted-foreground">Timeframe</div>
                 <div className="font-medium text-sm">{edgeAmplifierData.timeframeRecommendation}</div>
               </div>
               
-              <div className="p-2 rounded-md bg-black/20">
+              <div className={`p-2 rounded-md ${isLightMode ? "bg-gray-50" : "bg-black/20"}`}>
                 <div className="text-xs text-muted-foreground">Avoid Today</div>
                 <div className="font-medium text-sm">{edgeAmplifierData.avoidToday}</div>
               </div>
@@ -960,51 +1098,64 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <LayoutGrid className="w-5 h-5 text-cyan-400" />
+              <LayoutGrid className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>Smart Integration Bar</span>
             </CardTitle>
             <CardDescription>Quick actions for your workflow</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              <NeonButton className="justify-start gap-2">
+              <NeonButton className="justify-start gap-2" onClick={handleReplayLastTrade}>
                 <RotateCcw className="h-4 w-4" />
                 <span>Replay Last Trade</span>
               </NeonButton>
               
-              <NeonButton className="justify-start gap-2">
+              <NeonButton className="justify-start gap-2" onClick={handleAddMissedTrade}>
                 <Plus className="h-4 w-4" />
                 <span>Add Missed Trade</span>
               </NeonButton>
               
-              <NeonButton className="justify-start gap-2">
+              <NeonButton className="justify-start gap-2" onClick={handleOpenJournal}>
                 <MessageSquare className="h-4 w-4" />
                 <span>Open Journal Entry</span>
               </NeonButton>
               
-              <NeonButton className="justify-start gap-2">
+              <NeonButton className="justify-start gap-2" onClick={handleAiTherapy}>
                 <Brain className="h-4 w-4" />
                 <span>AI Therapy Feedback</span>
               </NeonButton>
               
-              <NeonButton className="justify-start gap-2">
+              <NeonButton className="justify-start gap-2" onClick={handleVersionHistory}>
                 <Clock className="h-4 w-4" />
                 <span>Strategy Version History</span>
               </NeonButton>
               
-              <NeonButton className="justify-start gap-2">
+              <NeonButton className="justify-start gap-2" onClick={handleConfigureDashboard}>
                 <Settings className="h-4 w-4" />
                 <span>Configure Dashboard</span>
               </NeonButton>
             </div>
             
-            <div className="flex gap-3 p-3 bg-cyan-900/20 rounded-md border border-cyan-500/20 items-center">
-              <div className="h-8 w-8 bg-cyan-500/20 rounded-full flex items-center justify-center">
-                <Sparkles className="h-4 w-4 text-cyan-400" />
+            <div className={`flex gap-3 p-3 ${
+              isLightMode 
+                ? "bg-blue-50 border border-blue-100" 
+                : "bg-cyan-900/20 border border-cyan-500/20"
+            } rounded-md items-center`}>
+              <div className={`h-8 w-8 ${
+                isLightMode 
+                  ? "bg-blue-100" 
+                  : "bg-cyan-500/20"
+              } rounded-full flex items-center justify-center`}>
+                <Sparkles className={`h-4 w-4 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               </div>
               <div className="flex-1">
                 <p className="text-sm">Need to quickly analyze that last TSLA trade?</p>
-                <p className="text-xs text-cyan-400 mt-1 cursor-pointer hover:underline">Ask me to do that for you</p>
+                <p 
+                  className={`text-xs ${isLightMode ? "text-blue-700" : "text-cyan-400"} mt-1 cursor-pointer hover:underline`}
+                  onClick={handleAnalyzeTrade}
+                >
+                  Ask me to do that for you
+                </p>
               </div>
             </div>
           </CardContent>
@@ -1014,7 +1165,7 @@ export default function Dashboard() {
         <GlassCard className="lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2">
-              <Thermometer className="w-5 h-5 text-cyan-400" />
+              <Thermometer className={`w-5 h-5 ${isLightMode ? "text-blue-600" : "text-cyan-400"}`} />
               <span>Mini Check-ins</span>
             </CardTitle>
             <CardDescription>Emotional and performance pulse</CardDescription>
@@ -1045,20 +1196,20 @@ export default function Dashboard() {
                     day: index + 1,
                     value
                   }))}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke={isLightMode ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"} />
                     <XAxis 
                       dataKey="day" 
-                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
-                      axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                      tick={{ fill: isLightMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.5)", fontSize: 10 }}
+                      axisLine={{ stroke: isLightMode ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)" }}
                     />
                     <YAxis 
                       domain={[0, 5]}
-                      tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
-                      axisLine={{ stroke: "rgba(255,255,255,0.2)" }}
+                      tick={{ fill: isLightMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.5)", fontSize: 10 }}
+                      axisLine={{ stroke: isLightMode ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)" }}
                     />
                     <Bar 
                       dataKey="value" 
-                      fill="rgba(6, 182, 212, 0.7)" 
+                      fill={isLightMode ? "rgba(59, 130, 246, 0.7)" : "rgba(6, 182, 212, 0.7)"}
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -1067,17 +1218,19 @@ export default function Dashboard() {
             </div>
             
             <div>
-              <h4 className="text-sm font-medium mb-2 text-cyan-400">AI Observations:</h4>
+              <h4 className={`text-sm font-medium mb-2 ${isLightMode ? "text-blue-700" : "text-cyan-400"}`}>AI Observations:</h4>
               {miniCheckinData.aiObservations.map((obs, idx) => (
-                <div key={idx} className="flex gap-2 items-start p-1.5 rounded hover:bg-white/5 transition-colors">
-                  <Zap className="h-4 w-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+                <div key={idx} className={`flex gap-2 items-start p-1.5 rounded ${
+                  isLightMode ? "hover:bg-gray-50" : "hover:bg-white/5"
+                } transition-colors`}>
+                  <Zap className={`h-4 w-4 ${isLightMode ? "text-blue-600" : "text-cyan-400"} flex-shrink-0 mt-0.5`} />
                   <span className="text-xs">{obs}</span>
                 </div>
               ))}
             </div>
             
             <div className="flex justify-between">
-              <Button variant="outline" size="sm" className="gap-1 border-white/10">
+              <Button variant="outline" size="sm" className={`gap-1 ${isLightMode ? "border-gray-200" : "border-white/10"}`}>
                 <span>Add Note</span>
                 <Plus className="h-3 w-3" />
               </Button>
@@ -1092,7 +1245,11 @@ export default function Dashboard() {
       
       {/* Floating AI Button */}
       <Button
-        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/20 flex items-center justify-center p-0"
+        className={`fixed bottom-6 right-6 w-12 h-12 rounded-full ${
+          isLightMode
+            ? "bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 shadow-lg shadow-blue-500/20"
+            : "bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/20"
+        } flex items-center justify-center p-0`}
         onClick={handleAiAssistantToggle}
       >
         <Mic className="h-5 w-5" />
