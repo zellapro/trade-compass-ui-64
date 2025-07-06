@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, type NavigationState, DayPickerNavigationProps } from "react-day-picker";
+import { DayPicker, useNavigation } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -22,10 +22,12 @@ const YearPicker = ({
   className?: string;
   disabled?: boolean;
 }) => {
+  const { goToMonth } = useNavigation();
   const currentYear = month.getFullYear();
   
   const handleMonthSelect = (monthIndex: number) => {
     const newMonth = new Date(currentYear, monthIndex);
+    goToMonth(newMonth);
     onMonthChange(newMonth);
   };
   
