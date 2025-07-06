@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,15 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import { DailyReportPanel } from '@/components/reports/DailyReportPanel';
-import { MetaAnalyticsPanel } from '@/components/reports/MetaAnalyticsPanel';
-import { OverviewMetricsPanel } from '@/components/reports/OverviewMetricsPanel';
-import { PsychologyPanel } from '@/components/reports/PsychologyPanel';
-import { SetupPerformancePanel } from '@/components/reports/SetupPerformancePanel';
-import { StrategyAnalyticsPanel } from '@/components/reports/StrategyAnalyticsPanel';
-import { StrategyBreakdownPanel } from '@/components/reports/StrategyBreakdownPanel';
-import { TraderIdentityPanel } from '@/components/reports/TraderIdentityPanel';
-import { AiCoachPanel } from '@/components/reports/AiCoachPanel';
 import { Badge } from '@/components/ui/badge';
 import {
   CalendarDays,
@@ -27,6 +19,16 @@ import {
   Hourglass,
   UserCircle,
 } from 'lucide-react';
+
+import { DailyReportPanel } from '@/components/reports/DailyReportPanel';
+import { MetaAnalyticsPanel } from '@/components/reports/MetaAnalyticsPanel';
+import { OverviewMetricsPanel } from '@/components/reports/OverviewMetricsPanel';
+import { PsychologyPanel } from '@/components/reports/PsychologyPanel';
+import { SetupPerformancePanel } from '@/components/reports/SetupPerformancePanel';
+import { StrategyAnalyticsPanel } from '@/components/reports/StrategyAnalyticsPanel';
+import { StrategyBreakdownPanel } from '@/components/reports/StrategyBreakdownPanel';
+import { TraderIdentityPanel } from '@/components/reports/TraderIdentityPanel';
+import { AiCoachPanel } from '@/components/reports/AiCoachPanel';
 
 import {
   BarChart,
