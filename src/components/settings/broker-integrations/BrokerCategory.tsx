@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
@@ -6,7 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, RefreshCw, Edit, Trash2, CheckCircle, XCircle, AlertCircle } from "lucide-react";
-import BrokerCard from "./BrokerCard";
+import { BrokerCard } from "./BrokerCard";  // Fixed import to use named import instead of default
 
 interface Broker {
   id: string;
