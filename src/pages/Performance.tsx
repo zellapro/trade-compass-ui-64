@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { FilterPanel } from "@/components/performance/FilterPanel";
 import { RiskMetricsPanel } from "@/components/performance/RiskMetricsPanel";
 import { StrategyTable } from "@/components/performance/StrategyTable";
@@ -11,35 +11,33 @@ import { PerformanceCalendar } from "@/components/performance/PerformanceCalenda
 import { MonteCarloSimulationPanel } from "@/components/performance/MonteCarloSimulationPanel";
 
 const Performance = () => {
-  const [timeframe, setTimeframe] = useState("30d"); // Default timeframe
-  
   return (
     <div className="space-y-6 pb-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Performance Analytics</h1>
       </div>
       
-      <FilterPanel onTimeframeChange={setTimeframe} />
+      <FilterPanel />
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Main Analytics Charts */}
         <div className="space-y-6">
-          <EquityCurveChart timeframe={timeframe} />
+          <EquityCurveChart />
           <MonteCarloSimulationPanel />
-          <TradeDistributionChart timeframe={timeframe} />
+          <TradeDistributionChart />
         </div>
         
         <div className="space-y-6">
-          <RiskMetricsPanel timeframe={timeframe} />
-          <StrategyBreakdownChart timeframe={timeframe} />
-          <SetupHeatmap timeframe={timeframe} />
+          <RiskMetricsPanel />
+          <StrategyBreakdownChart />
+          <SetupHeatmap />
         </div>
       </div>
       
       <div className="grid grid-cols-1 gap-6">
-        <MistakeAnalyticsChart timeframe={timeframe} />
-        <ConsistencyTracker timeframe={timeframe} />
-        <StrategyTable timeframe={timeframe} />
+        <MistakeAnalyticsChart />
+        <ConsistencyTracker />
+        <StrategyTable />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -48,7 +46,7 @@ const Performance = () => {
       </div>
       
       <div className="grid grid-cols-1 gap-6">
-        <PerformanceCalendar timeframe={timeframe} />
+        <PerformanceCalendar />
         <BrokerComparisonPanel />
       </div>
     </div>
