@@ -5,3 +5,4 @@ export { StrategyBreakdownChart } from "./StrategyBreakdownChart";
 export { SetupHeatmap } from "./SetupHeatmap";
 export { MistakeAnalyticsChart } from "./MistakeAnalyticsChart";
 export { ConsistencyTracker } from "./ConsistencyTracker";
+export { MonteCarloChart } from "./MonteCarloChart";
