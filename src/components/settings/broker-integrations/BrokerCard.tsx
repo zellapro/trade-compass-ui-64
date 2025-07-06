@@ -1,187 +1,267 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RefreshCw, Trash2, HelpCircle, ExternalLink, AlertTriangle, CheckCircle, Clock } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { BrokerAccount } from "./BrokerIntegrationPanel";
-import { formatDistanceToNow } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ExternalLink, Key, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface BrokerCardProps {
-  broker: BrokerAccount;
-  onToggleAutoImport: (id: string, value: boolean) => void;
+  id: string;
+  name: string;
+  type: string;
+  category: string;
+  connected: boolean;
+  requiresSecret?: boolean;
+  docsUrl?: string;
+  onConnect: (id: string, apiKey: string, apiSecret: string, region: string, connectionType: string, accountLabel?: string) => void;
   onDisconnect: (id: string) => void;
-  onSync: (broker: BrokerAccount) => void;
-  isLoading?: boolean;
 }
 
-export const BrokerCard: React.FC<BrokerCardProps> = ({
-  broker,
-  onToggleAutoImport,
+const REGIONS = [
+  { value: "usa", label: "USA" },
+  { value: "eu", label: "EU" },
+  { value: "australia", label: "Australia" },
+  { value: "india", label: "India" },
+  { value: "singapore", label: "Singapore" },
+  { value: "uae", label: "UAE" },
+  { value: "global", label: "Global" }
+];
+
+const CONNECTION_TYPES = [
+  { value: "rest", label: "REST API" },
+  { value: "fix", label: "FIX Protocol" },
+  { value: "websocket", label: "WebSocket" },
+  { value: "custom", label: "Custom Endpoint" }
+];
+
+const BrokerCard: React.FC<BrokerCardProps> = ({
+  id,
+  name,
+  type,
+  category,
+  connected,
+  requiresSecret = true,
+  docsUrl,
+  onConnect,
   onDisconnect,
-  onSync,
-  isLoading = false
 }) => {
-  // Status badge styling based on connection status
-  const getStatusBadge = () => {
-    switch (broker.status) {
-      case "Connected":
-        return (
-          <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Connected
-          </Badge>
-        );
-      case "Error":
-        return (
-          <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20">
-            <AlertTriangle className="h-3 w-3 mr-1" />
-            Error
-          </Badge>
-        );
-      case "Expired":
-        return (
-          <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">
-            <Clock className="h-3 w-3 mr-1" />
-            Expired
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="outline">
-            Unknown
-          </Badge>
-        );
-    }
-  };
+  const [apiKey, setApiKey] = useState("");
+  const [secretKey, setSecretKey] = useState("");
+  const [region, setRegion] = useState("global");
+  const [connectionType, setConnectionType] = useState("rest");
+  const [accountLabel, setAccountLabel] = useState("");
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [showSecretKey, setShowSecretKey] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Format the last sync time
-  const formatLastSync = (dateString: string) => {
+  const handleConnect = async () => {
+    if (!apiKey || (requiresSecret && !secretKey)) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const date = new Date(dateString);
-      return `Last sync: ${formatDistanceToNow(date, { addSuffix: true })}`;
-    } catch (e) {
-      return "Last sync: Unknown";
+      await onConnect(id, apiKey, secretKey, region, connectionType, accountLabel);
+      setApiKey("");
+      setSecretKey("");
+      setRegion("global");
+      setConnectionType("rest");
+      setAccountLabel("");
+      toast.success(`Connected to ${name} successfully`);
+    } catch (error) {
+      toast.error(`Failed to connect to ${name}. Please check your credentials.`);
     }
+    setIsSubmitting(false);
   };
 
-  // Get tooltip help content based on broker name
-  const getHelpContent = () => {
-    switch(broker.name) {
-      case 'Binance':
-        return "Connect to Binance using API keys with read-only trade permissions";
-      case 'MetaTrader 5':
-        return "Use your MT5 investor password or connect via our MT5 Bridge tool";
-      case 'Kite':
-        return "Generate an API key from your Kite dashboard and ensure it has trade data permissions";
-      case 'TradingView':
-        return "Export your trades from TradingView and import them manually";
-      default:
-        return `How to connect ${broker.name}`;
+  const handleDisconnect = async () => {
+    try {
+      await onDisconnect(id);
+      toast.success(`Disconnected from ${name}`);
+    } catch (error) {
+      toast.error(`Failed to disconnect from ${name}`);
     }
   };
 
   return (
-    <Card className={cn(
-      "overflow-hidden transition-all duration-300 hover:shadow-md",
-      broker.status === "Error" ? "border-red-500/30" : 
-      broker.status === "Expired" ? "border-amber-500/30" : "border-border"
-    )}>
+    <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
       <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {/* Broker Logo (placeholder) */}
-            <div className="h-10 w-10 bg-muted rounded-md flex items-center justify-center overflow-hidden">
-              {broker.logo ? (
-                <img 
-                  src={broker.logo} 
-                  alt={`${broker.name} logo`}
-                  className="h-full w-full object-cover" 
-                />
-              ) : (
-                <span className="font-semibold text-xs">{broker.name.substring(0, 2)}</span>
-              )}
-            </div>
-            
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold">{broker.name}</h3>
-                <Tooltip delayDuration={300}>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full">
-                      <HelpCircle className="h-3.5 w-3.5" />
-                      <span className="sr-only">Help</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs">{getHelpContent()}</p>
-                    <Button size="sm" variant="link" className="p-0 h-auto flex items-center gap-1">
-                      View setup guide
-                      <ExternalLink className="h-3 w-3" />
-                    </Button>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                <Badge variant="secondary" className="text-xs">
-                  {broker.type}
-                </Badge>
-                {getStatusBadge()}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-end">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-muted-foreground hover:text-destructive"
-              onClick={() => onDisconnect(broker.id)}
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="font-medium text-lg">{name}</h3>
+            <p className="text-sm text-muted-foreground">{type}</p>
+            <Badge
+              variant={connected ? "default" : "secondary"}
+              className="mt-2"
             >
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Remove broker</span>
-            </Button>
+              {connected ? "Connected" : "Not Connected"}
+            </Badge>
           </div>
+          {docsUrl && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={docsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>View API documentation</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
-        
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-4 pt-4 border-t">
-          <div className="text-xs text-muted-foreground">
-            {formatLastSync(broker.lastSync)}
-          </div>
-          
-          <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
-            <div className="flex items-center gap-2">
-              <Switch
-                id={`auto-import-${broker.id}`}
-                checked={broker.autoImport}
-                onCheckedChange={(checked) => onToggleAutoImport(broker.id, checked)}
-                className="data-[state=checked]:bg-primary"
-              />
-              <Label 
-                htmlFor={`auto-import-${broker.id}`} 
-                className="text-sm font-normal cursor-pointer"
-              >
-                Auto-Import
-              </Label>
+
+        {!connected && (
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor={`${id}-region`}>Region</Label>
+              <Select value={region} onValueChange={setRegion}>
+                <SelectTrigger id={`${id}-region`} className="w-full">
+                  <SelectValue placeholder="Select region" />
+                </SelectTrigger>
+                <SelectContent>
+                  {REGIONS.map(region => (
+                    <SelectItem key={region.value} value={region.value}>
+                      {region.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor={`${id}-api-key`}>API Key</Label>
+              <div className="relative">
+                <Input
+                  id={`${id}-api-key`}
+                  type={showApiKey ? "text" : "password"}
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="Enter your API key"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                >
+                  {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            {requiresSecret && (
+              <div className="grid gap-2">
+                <Label htmlFor={`${id}-secret-key`}>Secret Key</Label>
+                <div className="relative">
+                  <Input
+                    id={`${id}-secret-key`}
+                    type={showSecretKey ? "text" : "password"}
+                    value={secretKey}
+                    onChange={(e) => setSecretKey(e.target.value)}
+                    placeholder="Enter your secret key"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3"
+                    onClick={() => setShowSecretKey(!showSecretKey)}
+                  >
+                    {showSecretKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+            )}
             
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={() => onSync(broker)}
-              disabled={isLoading}
-            >
-              <RefreshCw className={cn("h-3 w-3", isLoading && "animate-spin")} />
-              <span>{isLoading ? "Syncing..." : "Sync Now"}</span>
-            </Button>
+            <div className="grid gap-2">
+              <Label htmlFor={`${id}-account-label`}>Account Label (Optional)</Label>
+              <Input
+                id={`${id}-account-label`}
+                value={accountLabel}
+                onChange={(e) => setAccountLabel(e.target.value)}
+                placeholder="E.g. Main Account, Demo Account, etc."
+              />
+            </div>
+
+            <Accordion type="single" collapsible>
+              <AccordionItem value="advanced">
+                <AccordionTrigger className="py-2 text-sm">Advanced Options</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 py-2">
+                    <div className="grid gap-2">
+                      <Label htmlFor={`${id}-connection-type`}>Connection Type</Label>
+                      <Select value={connectionType} onValueChange={setConnectionType}>
+                        <SelectTrigger id={`${id}-connection-type`} className="w-full">
+                          <SelectValue placeholder="Select connection type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CONNECTION_TYPES.map(type => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            
+            <div className="p-3 rounded-md bg-blue-500/10 border border-blue-500/20 text-xs text-blue-500">
+              <div className="flex items-center gap-2 mb-1">
+                <Key className="h-4 w-4" />
+                <span className="font-medium">Security Note</span>
+              </div>
+              Your credentials are end-to-end encrypted using Supabase Vault. You can revoke or rotate them anytime from the panel below.
+            </div>
           </div>
+        )}
+
+        <div className="mt-4">
+          {connected ? (
+            <Button 
+              variant="destructive" 
+              onClick={handleDisconnect}
+              className="w-full"
+            >
+              Disconnect
+            </Button>
+          ) : (
+            <Button
+              onClick={handleConnect}
+              disabled={isSubmitting}
+              className="w-full"
+            >
+              {isSubmitting ? "Connecting..." : "Connect"}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
   );
 };
+
+export default BrokerCard;
