@@ -365,7 +365,7 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                         <span className="text-sm font-medium">Consistency Score</span>
                         <span className="text-sm font-mono">83/100</span>
                       </div>
-                      <Progress value={83} className="h-2" />
+                      <Progress value={83} className="h-2" indicatorClassName="bg-emerald-500" />
                     </div>
                     
                     <div>
@@ -373,7 +373,7 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                         <span className="text-sm font-medium">Plan Adherence</span>
                         <span className="text-sm font-mono">85%</span>
                       </div>
-                      <Progress value={85} className="h-2" />
+                      <Progress value={85} className="h-2" indicatorClassName="bg-blue-500" />
                     </div>
                     
                     <div>
@@ -783,6 +783,7 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                             <Progress 
                               value={(goal.current / goal.target) * 100} 
                               className="h-2"
+                              indicatorClassName={goal.complete ? "bg-emerald-500" : "bg-blue-500"}
                             />
                             {goal.streak && (
                               <div className="flex items-center mt-2 text-sm text-amber-400">
@@ -874,7 +875,7 @@ export function PsychologyPanel({ timeframe = "30d" }: PsychologyPanelProps) {
                     <div className="space-y-2">
                       <h4 className="font-medium text-sm">Post-Loss Reaction Score</h4>
                       <div className="flex items-center gap-2">
-                        <Progress value={72} className="h-2" />
+                        <Progress value={72} className="h-2" indicatorClassName="bg-blue-500" />
                         <span className="text-sm font-mono">72/100</span>
                       </div>
                       <p className="text-xs text-muted-foreground">Measures how constructively you respond to losses</p>
