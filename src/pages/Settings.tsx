@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTheme } from "@/context/ThemeContext";
 import ProfileSettings from "@/components/settings/profile/ProfileSettings";
 import AccountManagement from "@/components/settings/AccountManagement";
+import BrokerIntegrations from "@/components/settings/broker-integrations/BrokerIntegrations";
 import NotificationSettings from "@/components/settings/NotificationSettings";
 import EnhancedAppearanceSettings from "@/components/settings/EnhancedAppearanceSettings";
 import TradingRules from "@/components/settings/TradingRules";
@@ -11,7 +13,6 @@ import ChartSettings from "@/components/settings/charts/ChartSettings";
 import SecuritySettings from "@/components/settings/security/SecuritySettings";
 import DeveloperSettings from "@/components/settings/DeveloperSettings";
 import AdvancedFeatures from "@/components/settings/AdvancedFeatures";
-import { BrokerIntegrationPanel } from "@/components/settings/broker-integrations/BrokerIntegrationPanel";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
@@ -176,8 +177,18 @@ export default function Settings() {
               )}
 
               {activeTab === 'broker' && (
-                <BrokerIntegrationPanel
+                <BrokerIntegrations
                   onSettingChange={() => handleSettingChange('broker')}
+                  saveResetButtons={
+                    <div className="flex gap-2">
+                      <button className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Reset
+                      </button>
+                      <button className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                        Save Changes
+                      </button>
+                    </div>
+                  }
                 />
               )}
 
