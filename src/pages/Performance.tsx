@@ -1,54 +1,73 @@
 
-import React from "react";
+import React, { useState } from "react";
+import { 
+  PerformanceSummary,
+  TradeQualityBreakdown,
+  PsychologicalEdgeTracker,
+  EmotionalInsightsPanel,
+  AiBehavioralFeedback,
+  GoalProgressTracker,
+  MistakeTaxLog,
+  StrategyPerformanceMatrix,
+  DailyPerformanceRhythm,
+  EdgeAmplifierProfile,
+  PerformanceAlerts
+} from "@/components/performance/panels";
+import { Card } from "@/components/ui/card";
 import { FilterPanel } from "@/components/performance/FilterPanel";
-import { RiskMetricsPanel } from "@/components/performance/RiskMetricsPanel";
-import { StrategyTable } from "@/components/performance/StrategyTable";
-import { EquityCurveChart, TradeDistributionChart, StrategyBreakdownChart, SetupHeatmap, MistakeAnalyticsChart, ConsistencyTracker } from "@/components/performance/charts";
-import { AiInsightsPanel } from "@/components/performance/AiInsightsPanel";
-import { BrokerComparisonPanel } from "@/components/performance/BrokerComparisonPanel";
-import { MilestonesPanel } from "@/components/performance/MilestonesPanel";
-import { PerformanceCalendar } from "@/components/performance/PerformanceCalendar";
-import { MonteCarloSimulationPanel } from "@/components/performance/MonteCarloSimulationPanel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Performance = () => {
+  const [timeframe, setTimeframe] = useState("30d");
+  
   return (
     <div className="space-y-6 pb-10">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold tracking-tight">Performance Analytics</h1>
       </div>
       
-      <FilterPanel />
+      <FilterPanel onTimeframeChange={setTimeframe} className="mb-6" />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Main Analytics Charts */}
-        <div className="space-y-6">
-          <EquityCurveChart />
-          <MonteCarloSimulationPanel />
-          <TradeDistributionChart />
-        </div>
+      {/* Performance Summary Section - Always visible */}
+      <section className="mb-8">
+        <PerformanceSummary timeframe={timeframe} />
+      </section>
+      
+      {/* Tabbed Sections for Organization */}
+      <Tabs defaultValue="technical" className="w-full">
+        <TabsList className="grid grid-cols-4 mb-6 w-full">
+          <TabsTrigger value="technical">Technical</TabsTrigger>
+          <TabsTrigger value="psychological">Psychological</TabsTrigger>
+          <TabsTrigger value="strategies">Strategies</TabsTrigger>
+          <TabsTrigger value="insights">AI Insights</TabsTrigger>
+        </TabsList>
         
-        <div className="space-y-6">
-          <RiskMetricsPanel />
-          <StrategyBreakdownChart />
-          <SetupHeatmap />
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 gap-6">
-        <MistakeAnalyticsChart />
-        <ConsistencyTracker />
-        <StrategyTable />
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <AiInsightsPanel />
-        <MilestonesPanel />
-      </div>
-      
-      <div className="grid grid-cols-1 gap-6">
-        <PerformanceCalendar />
-        <BrokerComparisonPanel />
-      </div>
+        {/* Technical Performance Tab */}
+        <TabsContent value="technical" className="space-y-8">
+          <TradeQualityBreakdown timeframe={timeframe} />
+          <DailyPerformanceRhythm timeframe={timeframe} />
+          <MistakeTaxLog timeframe={timeframe} />
+        </TabsContent>
+        
+        {/* Psychological Performance Tab */}
+        <TabsContent value="psychological" className="space-y-8">
+          <PsychologicalEdgeTracker timeframe={timeframe} />
+          <EmotionalInsightsPanel timeframe={timeframe} />
+        </TabsContent>
+        
+        {/* Strategies Tab */}
+        <TabsContent value="strategies" className="space-y-8">
+          <StrategyPerformanceMatrix timeframe={timeframe} />
+          <EdgeAmplifierProfile />
+          <GoalProgressTracker />
+        </TabsContent>
+        
+        {/* AI Insights Tab */}
+        <TabsContent value="insights" className="space-y-8">
+          <AiBehavioralFeedback timeframe={timeframe} />
+          <PerformanceAlerts />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
