@@ -58,22 +58,6 @@ export function FilterPanel({ onTimeframeChange, className }: FilterPanelProps) 
               </SelectContent>
             </Select>
           </div>
-
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="market" className="text-sm font-medium">Market:</Label>
-            <Select defaultValue="all">
-              <SelectTrigger id="market" className="w-[150px]">
-                <SelectValue placeholder="Select market" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Markets</SelectItem>
-                <SelectItem value="stocks">Stocks</SelectItem>
-                <SelectItem value="forex">Forex</SelectItem>
-                <SelectItem value="crypto">Crypto</SelectItem>
-                <SelectItem value="futures">Futures</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       </CardContent>
     </Card>
