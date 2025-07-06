@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,10 +11,10 @@ import { TradeFilterBar } from "@/components/journal/TradeFilterBar";
 import { StickySidebar } from "@/components/journal/StickySidebar";
 import { DailySummaryCard } from "@/components/journal/DailySummaryCard";
 
-// Note: Both components below need to be created in the right paths
-import { ScreenshotAnnotationPanel } from "../components/journal/ScreenshotAnnotationPanel";
-import { EmotionOutcomeAnalysis } from "../components/journal/EmotionOutcomeAnalysis";
-import { MultiAccountSupport } from "../components/journal/MultiAccountSupport";
+// Import components using @/ path
+import { ScreenshotAnnotationPanel } from "@/components/journal/ScreenshotAnnotationPanel";
+import { EmotionOutcomeAnalysis } from "@/components/journal/EmotionOutcomeAnalysis";
+import { MultiAccountSupport } from "@/components/journal/MultiAccountSupport";
 
 export interface Trade {
   id: string;

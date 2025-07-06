@@ -1,4 +1,5 @@
 
+// Export dashboard components
 export { BrokerIntegrationPanel } from './BrokerIntegrationPanel';
 export { MonteCarloSimulation } from './MonteCarloSimulation';
 export { CustomReportsBuilder } from './CustomReportsBuilder';
