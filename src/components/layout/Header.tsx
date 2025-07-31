@@ -8,16 +8,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, Sun, Moon, ChevronDown, Calendar } from "lucide-react";
+import { Bell, Sun, Moon, ChevronDown, Calendar, Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
+import { useSidebar } from "@/context/SidebarContext";
 
 export function Header() {
   const [dateRange, setDateRange] = useState("Last 30 days");
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const [notifications, setNotifications] = useState(3);
+  const { toggleMobile, isMobile } = useSidebar();
 
   const handleThemeToggle = () => {
     toggleTheme();
@@ -30,8 +32,21 @@ export function Header() {
 
   return (
     <header className="w-full h-16 px-4 flex items-center justify-between bg-background border-b">
-      {/* Left section: Logo and Account Switch */}
+      {/* Left section: Mobile menu + Logo and Account Switch */}
       <div className="flex items-center gap-4">
+        {/* Mobile menu button */}
+        {isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMobile}
+            className="lg:hidden"
+            aria-label="Toggle mobile menu"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        )}
+        
         <div className="text-2xl font-bold">ZellaPro</div>
         
         <DropdownMenu>
