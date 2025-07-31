@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Types
 type FocusCategory = "pattern" | "execution" | "mindset" | "strategy" | "other";
@@ -216,6 +216,8 @@ export function DailyFocusConfigurationPanel() {
       actionItems: updatedItems
     });
   };
+  
+  const { toast } = useToast();
   
   const handleAddFocusItem = () => {
     if (!newFocusItem.title) {

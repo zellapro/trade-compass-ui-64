@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Example goal data structure
 type GoalType = "limit" | "boolean" | "minimum" | "completion";
@@ -93,6 +93,8 @@ export function GoalConfigurationPanel() {
   const [isAddingGoal, setIsAddingGoal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editGoal, setEditGoal] = useState<Goal | null>(null);
+  
+  const { toast } = useToast();
   
   const handleAddGoal = () => {
     if (!newGoal.title) {
