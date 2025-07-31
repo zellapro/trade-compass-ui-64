@@ -6,19 +6,22 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, RefreshCw, Edit, Trash2, CheckCircle, XCircle, AlertCircle } from "lucide-react";
-import BrokerCard from "./BrokerCard";
+import { BrokerCard } from "./BrokerCard";
+import { BrokerAccount } from "./BrokerIntegrationPanel";
 
 interface Broker {
   id: string;
   name: string;
-  type: string;
-  category: string;
+  type: 'Real' | 'Demo';
+  category: 'crypto' | 'forex' | 'stocks' | 'futures';
   connected: boolean;
   requiresSecret?: boolean;
   docsUrl?: string;
   region?: string;
-  lastSync?: string;
-  status?: string;
+  lastSync: string;
+  status: 'Connected' | 'Error' | 'Expired';
+  autoImport: boolean;
+  logo?: string;
 }
 
 interface BrokerCategoryProps {
@@ -140,14 +143,29 @@ const BrokerCategory: React.FC<BrokerCategoryProps> = ({
             </CollapsibleTrigger>
             <CollapsibleContent>
               <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {unconnectedBrokers.map((broker) => (
-                  <BrokerCard
-                    key={broker.id}
-                    {...broker}
-                    onConnect={onConnect}
-                    onDisconnect={onDisconnect}
-                  />
-                ))}
+                {unconnectedBrokers.map((broker) => {
+                  // Convert Broker to BrokerAccount interface
+                  const brokerAccount: BrokerAccount = {
+                    id: broker.id,
+                    name: broker.name,
+                    logo: broker.logo || "",
+                    type: broker.type,
+                    status: broker.status,
+                    lastSync: broker.lastSync,
+                    autoImport: broker.autoImport,
+                    category: broker.category
+                  };
+                  
+                  return (
+                    <BrokerCard
+                      key={broker.id}
+                      broker={brokerAccount}
+                      onToggleAutoImport={(id, value) => {}}
+                      onDisconnect={onDisconnect}
+                      onSync={() => {}}
+                    />
+                  );
+                })}
               </CardContent>
             </CollapsibleContent>
           </Collapsible>
